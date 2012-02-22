@@ -1,0 +1,35 @@
+[color]
+    diff = auto
+    status = auto
+    branch = auto
+[user]
+    name =
+    email =
+[cola]
+    fontdiff = DejaVu Sans Mono,10,-1,5,50,0,0,0,0,0
+    fontui = Nimbus Sans L,12,-1,5,50,0,0,0,0,0
+    savewindowsettings = true
+[core]
+    editor = emacsclient  -nw
+    excludesfile = /home/chris/.gitignore
+[gui]
+    editor = emacsclient --no-wait
+
+[alias]
+    lol = log --pretty=oneline --abbrev-commit --graph --decorate
+    ci = commit
+    st = status
+    co = checkout
+    oneline = log --pretty=oneline
+    br = branch
+    la = log --pretty=\"format:%ad %h (%an): %s\" --date=short
+    pg = push origin HEAD:refs/for/master
+    nm = --no-merges
+
+[github]
+    user = minimal
+    token = *REMOVED*
+[merge]
+    tool = kdiff3
+[rerere]
+    enabled = 1
