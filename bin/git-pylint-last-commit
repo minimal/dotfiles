@@ -1,0 +1,34 @@
+#!/bin/bash
+
+PYLINT="pylint"
+ARGS="--disable=E1102"  # fixes fun.open is not callable false
+# positive error
+
+GIT_DIR=`git rev-parse --git-dir 2> /dev/null`
+if [ $? == 0 ]; then
+    # Find the repo root and check for virtualenv name override
+    GIT_DIR=`\cd $GIT_DIR; pwd`
+    PROJECT_ROOT=`dirname "$GIT_DIR"`
+    ENV_NAME=`basename "$PROJECT_ROOT"`
+    if [ -f "$PROJECT_ROOT/.venv" ]; then
+        ENV_NAME=`cat "$PROJECT_ROOT/.venv"`
+    fi
+    # set venv pylint if exists
+    if [ -x "$WORKON_HOME/$ENV_NAME/bin/pylint" ]; then
+       PYLINT="$WORKON_HOME/$ENV_NAME/bin/pylint"
+    fi
+fi
+
+
+files_modified=`git diff --name-only HEAD HEAD^`
+
+for f in $files_modified; do
+    if [[ $f == *.py ]]; then
+        echo "$PYLINT $ARGS -E $f"
+        $PYLINT -E $ARGS $f 
+        if [ $? != 0 ]; then
+            echo "Code fails pylint check."
+            exit 1
+        fi
+    fi
+done 
