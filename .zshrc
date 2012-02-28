@@ -86,14 +86,14 @@ parse_git_branch() {
 
 export LESS="-R"           # raw mode for correct colors
 export EDITOR="emacsclient -nw"  # no window mode
-export TERM=xterm-256color;      # nice colours 
+export TERM=xterm-256color;      # nice colours
 
 # start a Python HTTP server with webshare
 alias webshare='python -c "import SimpleHTTPServer;SimpleHTTPServer.test()"'
 
 # open in running emacs from  cmdline w/o waiting
-alias emacsc="emacsclient --no-wait"  
-                            
+alias emacsc="emacsclient --no-wait"
+
 
 extract () {
     if [ -f $1 ] ; then
@@ -127,7 +127,7 @@ compress () {
       *.rar)     rar $FILE $*      ;;
       *)         echo "Filetype not recognized" ;;
    esac
-} 
+}
 
 ##### Set the prompt
 #autoload colors zsh/terminfo
@@ -164,7 +164,7 @@ compress () {
 #virtualenv setup
 export WORKON_HOME="$HOME/Envs"
 #source $HOME/bin/virtualenvwrapper_bashrc
-source /usr/local/bin/virtualenvwrapper.sh 
+source /usr/local/bin/virtualenvwrapper.sh
 
 
 #PS1="$PS1\w\$(parse_git_branch) $ "
@@ -173,16 +173,16 @@ source /usr/local/bin/virtualenvwrapper.sh
 setopt prompt_subst
 autoload colors
 colors
- 
+
 autoload -Uz vcs_info
- 
+
 # set some colors
 for COLOR in RED GREEN YELLOW WHITE BLACK CYAN; do
 eval PR_$COLOR='%{$fg[${(L)COLOR}]%}'
     eval PR_BRIGHT_$COLOR='%{$fg_bold[${(L)COLOR}]%}'
 done
 PR_RESET="%{${reset_color}%}";
- 
+
 # set formats
 # %b - branchname
 # %u - unstagedstr (see below)
@@ -193,7 +193,7 @@ PR_RESET="%{${reset_color}%}";
 FMT_BRANCH="${PR_GREEN}%b%u%c${PR_RESET}" # e.g. master¹²
 FMT_ACTION="(${PR_CYAN}%a${PR_RESET}%)" # e.g. (rebase-i)
 FMT_PATH="%R${PR_YELLOW}/%S" # e.g. ~/repo/subdir
- 
+
 # check-for-changes can be really slow.
 # you should disable it, if you work with large repositories
 zstyle ':vcs_info:*:prompt:*' check-for-changes true
@@ -202,19 +202,19 @@ zstyle ':vcs_info:*:prompt:*' stagedstr '²' # display ² if there are staged ch
 zstyle ':vcs_info:*:prompt:*' actionformats "${FMT_BRANCH}${FMT_ACTION}//" "${FMT_PATH}"
 zstyle ':vcs_info:*:prompt:*' formats "${FMT_BRANCH}//" "${FMT_PATH}"
 zstyle ':vcs_info:*:prompt:*' nvcsformats "" "%~"
- 
+
 function precmd {
     vcs_info 'prompt'
 }
- 
+
 function lprompt {
     local brackets=$1
     local color1=$2
     local color2=$3
-                     
+
     local bracket_open="${color1}${brackets[1]}${PR_RESET}"
     local bracket_close="${color1}${brackets[2]}"
-                                                             
+
     local git='$vcs_info_msg_0_'
     local cwd="${color2}%B%1~%b"
     local smiley='%(?.%{${fg[green]}%}:).%{${fg[red]}%}:()%{${fg[default]}%}'
@@ -222,17 +222,17 @@ function lprompt {
     local timestamp='%B%{${fg[blue]}%}[%T]%{${fg[default]}%}%b'
     PROMPT="${bracket_open}${git}${cwd}${bracket_close}${PR_RESET}${newline}${smiley} ${timestamp} %(!.#.$) ${PR_RESET}"
 }
- 
+
 function rprompt {
     local brackets=$1
     local color1=$2
     local color2=$3
-                     
+
     local bracket_open="${color1}${brackets[1]}${PR_RESET}"
     local bracket_close="${color1}${brackets[2]}${PR_RESET}"
     local colon="${color1}:"
     local at="${color1}@${PR_RESET}"
-                                                            
+
     local user_host="${color2}%n${at}${color2}%m"
     local vcs_cwd='${${vcs_info_msg_1_%%.}/$HOME/~}'
     local cwd="${color2}%B%20<..<${vcs_cwd}%<<%b"
@@ -240,7 +240,7 @@ function rprompt {
     local newline=$'\n'
     RPROMPT="${PR_RESET}${bracket_open}${inner}${bracket_close}${PR_RESET}"
 }
- 
+
 lprompt '[]' $BR_BRIGHT_BLACK $PR_WHITE
 rprompt '()' $BR_BRIGHT_BLACK $PR_WHITE
 
@@ -255,7 +255,7 @@ rprompt '()' $BR_BRIGHT_BLACK $PR_WHITE
 # # old stuff
 # export AWS_ELB_HOME=~/share/ElasticLoadBalancing-1.0.14.3
 # export PATH=$PATH:$AWS_ELB_HOME/bin
-# export AWS_CREDENTIAL_FILE=~/.ssh/daryl/aws_creds  
+# export AWS_CREDENTIAL_FILE=~/.ssh/daryl/aws_creds
 # export EC2_HOME=~/share/ec2-api-tools-1.4.4.2
 # export PATH=$PATH:$EC2_HOME/bin
 # export EC2_PRIVATE_KEY=~/foo.pem
@@ -263,9 +263,9 @@ rprompt '()' $BR_BRIGHT_BLACK $PR_WHITE
 # export DISCO_HOME=/home/chris/dev/vendor/DISCO_HOME
 # export PATH=$PATH:$DISCO_HOME/bin
 
-function gitbr {                                                                                                                                                                                                                                                                
-    for k in `git branch|sed s/^..//`;do echo -e `git log -1 \                                                                                                                                                                                                                  
-    --pretty=format:"%Cgreen%ci %Cblue%cr%Creset" "$k"`\\t"$k";done|sort                                                                                                                                                                                                        
+function gitbr {
+    for k in `git branch|sed s/^..//`;do echo -e `git log -1 \
+    --pretty=format:"%Cgreen%ci %Cblue%cr%Creset" "$k"`\\t"$k";done|sort
 }
 
 function has_virtualenv() {
