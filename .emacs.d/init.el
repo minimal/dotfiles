@@ -35,6 +35,7 @@
                 marmalade scpaste python-mode
                 ;python
                 python-pep8 python-pylint pyflakes ipython
+                textmate coffee-mode gist 
                 anything anything-ipython yasnippet-bundle flymake-cursor))
 
 (dolist (p my-packages)
@@ -58,6 +59,8 @@
    (add-to-list 'flymake-allowed-file-name-masks
                 '("\\.py\\'" flymake-pyflakes-init)))
 
+(setq ipython-command "/usr/local/bin/ipython")
+(setq py-python-command "/usr/local/bin/ipython")
 
 (require 'ipython)
 (require 'anything)
@@ -65,6 +68,8 @@
 (when (require 'anything-show-completion nil t)
    (use-anything-show-completion 'anything-ipython-complete
                                  '(length initial-pattern)))
+(require 'textmate)
+(textmate-mode)
 
 ;; (require 'ecb)
 ;; (require 'ecb-autoloads)

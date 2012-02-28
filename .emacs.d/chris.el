@@ -24,16 +24,20 @@
 (setq x-super-keysym 'meta) ; make cmd key as meta - for apple keyboard on linux
 
 ;; (global-set-key "\r" 'newline-and-indent)
+;; f1 is help prefix, press twice for help-for-help
 (global-set-key [f2] 'goto-line)
-(global-set-key [f9] 'ido-switch-buffer)
+;; f3 is start record macro
+;; f4 is stop record macro / execute macro
 (global-set-key [f5] 'previous-multiframe-window)
 (global-set-key [f6] 'next-multiframe-window)
 (global-set-key [f7] 'kill-buffer)
 (global-set-key [f8] 'dired)
+;; f10 is menu-bar-open
+(global-set-key [f9] 'ido-switch-buffer)
+(global-set-key [f11] 'textmate-goto-symbol)
 (set-register ?e '(file . "~/.emacs.d/chris.el")) ; 'C-x r j e' opens this file 
 (define-key global-map (kbd "C-;") 'iedit-mode)
 (define-key global-map (kbd "C-3") 'comment-or-uncomment-region-or-line)
-(global-set-key [f11] 'textmate-goto-symbol)
 (global-set-key [(meta \])] 'textmate-shift-right)
 (global-set-key [(meta \[)] 'textmate-shift-left)
 
