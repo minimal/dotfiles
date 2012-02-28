@@ -17,7 +17,7 @@ compinit
 autoload -U promptinit && promptinit
 #prompt adam2
 
-
+export PIP_DOWNLOAD_CACHE=$HOME/.pip_download_cache
 export PATH="/home/chris/Komodo-Edit-6/bin:$PATH"
 
 export JAVA_HOME=/usr/lib64/jvm/jre-1.6.0-sun  # suse
