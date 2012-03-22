@@ -6,9 +6,10 @@
     name =
     email =
 [cola]
-    fontdiff = DejaVu Sans Mono,10,-1,5,50,0,0,0,0,0
+    fontdiff = Droid Sans Mono Dotted,10,-1,5,50,0,0,0,0,0
     fontui = Nimbus Sans L,12,-1,5,50,0,0,0,0,0
     savewindowsettings = true
+    tabwidth = 4
 [core]
     editor = emacsclient  -nw
     excludesfile = /home/chris/.gitignore
@@ -18,18 +19,23 @@
 [alias]
     lol = log --pretty=oneline --abbrev-commit --graph --decorate
     ci = commit
-    st = status
+    st = status -sb
     co = checkout
     oneline = log --pretty=oneline
     br = branch
     la = log --pretty=\"format:%ad %h (%an): %s\" --date=short
     pg = push origin HEAD:refs/for/master
     nm = --no-merges
+    dw = diff --word-diff
 
 [github]
     user = minimal
-    token = *REMOVED*
+    token =
 [merge]
     tool = kdiff3
 [rerere]
     enabled = 1
+[branch]
+    autosetuprebase = always
+[push]
+    default = upstream

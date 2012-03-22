@@ -1,0 +1,13 @@
+#! /usr/bin/zsh
+
+# cp my dotfiles to the git repo
+
+cd ~/
+dotfiles=(.ackrc .gitconfig  .gitignore  .zshenv  .zshrc)
+emacsfiles=(.emacs.d/init.el .emacs.d/chris.el)
+binfiles=(bin/git-pylint-last-commit  bin/pycheckers  bin/qfind bin/cpdotfiles)
+
+cp $dotfiles ~/code/dotfiles/
+cp $emacsfiles ~/code/dotfiles/.emacs.d/
+cp $binfiles ~/code/dotfiles/bin/
+

@@ -33,6 +33,7 @@
                 markdown-mode yaml-mode
                 ecb_snap
                 marmalade scpaste python-mode
+                full-ack
                 ;python
                 python-pep8 python-pylint pyflakes ipython
                 textmate coffee-mode gist 
@@ -43,7 +44,7 @@
     (package-install p))) 
 
 (require 'anything-show-completion)
-
+(require 'yaml-mode)
 (require 'python-mode)
 (add-to-list 'auto-mode-alist '("\\.py\\'" . python-mode))
 
@@ -70,7 +71,10 @@
                                  '(length initial-pattern)))
 (require 'textmate)
 (textmate-mode)
+(require 'full-ack)
+(require `tramp)
 
+(yas/load-directory "~/.emacs.d/snippets")
 ;; (require 'ecb)
 ;; (require 'ecb-autoloads)
 ;; following command allows ecb to start
