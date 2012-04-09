@@ -1,10 +1,23 @@
 #!/bin/zsh
 # Lines configured by zsh-newuser-install
+
+# history
 HISTFILE=~/.histfile
-HISTSIZE=5000
-SAVEHIST=5000
+HISTSIZE=10000
+SAVEHIST=10000
+
+setopt hist_ignore_dups
+setopt share_history
+setopt hist_verify
+setopt inc_append_history
+setopt extended_history
+setopt hist_expire_dups_first
+setopt hist_ignore_space
+# /history
+
 REPORTTIME=10  # if cmd takes longer than n seconds report the time
-setopt autocd extendedglob incappendhistory
+setopt autocd extendedglob 
+
 bindkey -e
 # End of lines configured by zsh-newuser-install
 # The following lines were added by compinstall
