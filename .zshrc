@@ -1,22 +1,16 @@
 #!/bin/zsh
 # Lines configured by zsh-newuser-install
 
-# history
-HISTFILE=~/.histfile
-HISTSIZE=10000
-SAVEHIST=10000
+export ZSH_HISTORY_PATH=$HOME/.histfile
 
-setopt hist_ignore_dups
-setopt share_history
-setopt hist_verify
-setopt inc_append_history
-setopt extended_history
-setopt hist_expire_dups_first
-setopt hist_ignore_space
-# /history
 
 REPORTTIME=10  # if cmd takes longer than n seconds report the time
 setopt autocd extendedglob 
+
+# includes
+for zsh_source in $HOME/.zsh_profile.d/*.zsh; do
+    source $zsh_source
+done
 
 bindkey -e
 # End of lines configured by zsh-newuser-install
