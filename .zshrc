@@ -294,6 +294,13 @@ function venv_cd () {
 }
 alias cd="venv_cd"
 
+# hubot
+# export HUBOT_IRC_NICK="hubot"
+# export HUBOT_IRC_ROOMS="#dev"
+# export HUBOT_IRC_SERVER="irc.site.com"
+# export HUBOT_IRC_PASSWORD=""
+
+
 # pip zsh completion start
 function _pip_completion {
   local words cword
