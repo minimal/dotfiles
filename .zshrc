@@ -287,8 +287,9 @@ function has_virtualenv() {
         workon `cat .venv`
     fi
 }
+
+unalias cd 
 function venv_cd () {
     cd "$@" && has_virtualenv
 }
-
 alias cd="venv_cd"
