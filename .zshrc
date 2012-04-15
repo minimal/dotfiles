@@ -268,3 +268,12 @@ function _pip_completion {
 compctl -K _pip_completion pip
 # pip zsh completion end
 
+# setup fasd https://github.com/clvv/fasd
+eval "$(fasd --init auto)"
+alias em="f -e 'emacsclient --no-wait'"
+
+
+# edit current line
+autoload edit-command-line
+zle -N edit-command-line
+bindkey '^X^E' edit-command-line

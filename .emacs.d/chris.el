@@ -19,6 +19,8 @@
 ;(cua-mode t nil (cua-base))
 ;(save-place t nil (saveplace))
 
+(setq-default cursor-type 'bar)
+
 ;; bindings
 
 (setq x-super-keysym 'meta) ; make cmd key as meta - for apple keyboard on linux
