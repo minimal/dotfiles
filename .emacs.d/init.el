@@ -20,6 +20,8 @@
 (require 'package)
 (add-to-list 'package-archives
              '("marmalade" . "http://marmalade-repo.org/packages/"))
+(add-to-list 'package-archives
+             '("melpa" . "http://melpa.milkbox.net/packages/") t)
 (package-initialize)
 
 
@@ -36,7 +38,9 @@
                 full-ack
                 ;python
                 python-pep8 python-pylint pyflakes ipython
-                textmate coffee-mode gist 
+                textmate coffee-mode gist
+                move-text
+                helm projectile
                 anything anything-ipython yasnippet-bundle flymake-cursor))
 
 (dolist (p my-packages)
@@ -73,6 +77,13 @@
 (textmate-mode)
 (require 'full-ack)
 (require `tramp)
+(require 'move-text)
+
+;; new
+(require 'helm)
+(require 'projectile)
+(projectile-global-mode) ;; to enable in all buffers
+(setq projectile-enable-caching t)
 
 (yas/load-directory "~/.emacs.d/snippets")
 ;; (require 'ecb)

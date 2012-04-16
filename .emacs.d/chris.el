@@ -3,10 +3,11 @@
 
 
 (setq-default tab-width 4)
+(setq-default whitespace-tab-width 4)
 (setq column-number-mode t)
 (setq js-indent-level 4)
 (setq recentf-max-menu-items 50)
-;; (setq recentf-auto-cleanup 'never) ;; disable before we start recentf!
+(setq recentf-auto-cleanup 'never) ;; disable before we start recentf!
 (global-linum-mode 1)
 
 ;; backup http://pejusdas.com/content/emacs-backup-files also see:
@@ -20,12 +21,17 @@
 ;(save-place t nil (saveplace))
 
 (setq-default cursor-type 'bar)
+(winner-mode 1) ;; C-c left => undo window layout change, C-c right => undo
 
 ;; bindings
 
-(setq x-super-keysym 'meta) ; make cmd key as meta - for apple keyboard on linux
+;; (setq x-super-keysym 'meta) ; make cmd key as meta - for apple keyboard on linux
 
 ;; (global-set-key "\r" 'newline-and-indent)
+
+;; http://xahlee.org/emacs/keyboard_shortcuts.html
+;; To unset a key e.g:
+;; (global-unset-key (kbd "C-_"))
 ;; f1 is help prefix, press twice for help-for-help
 (global-set-key [f2] 'goto-line)
 ;; f3 is start record macro
@@ -34,18 +40,24 @@
 (global-set-key [f6] 'next-multiframe-window)
 (global-set-key [f7] 'kill-buffer)
 (global-set-key [f8] 'dired)
+(global-set-key (kbd "<M-f8>") 'ido-find-file)
+(global-set-key [(shift f8)] 'ido-find-file-other-window)
 ;; f10 is menu-bar-open
 (global-set-key [f9] 'ido-switch-buffer)
+(global-set-key [(meta f9)] 'textmate-goto-file)
+(global-set-key (kbd "<S-f9>") 'ido-switch-buffer-other-window)
+(global-set-key [(meta shift f9)] 'helm-projectile)
 (global-set-key [f11] 'textmate-goto-symbol)
 (set-register ?e '(file . "~/.emacs.d/chris.el")) ; 'C-x r j e' opens this file 
 (define-key global-map (kbd "C-;") 'iedit-mode)
 (define-key global-map (kbd "C-3") 'comment-or-uncomment-region-or-line)
 (global-set-key [(meta \])] 'textmate-shift-right)
 (global-set-key [(meta \[)] 'textmate-shift-left)
+(global-set-key [(control q)] 'fill-paragraph) ;; virtual box
+;; overrides meta-q 
+(global-set-key [(meta n)] 'move-text-down)
+(global-set-key [(meta p)] 'move-text-up)
 
-;; (add-to-list 'load-path "~/.emacs.d/vendor/textmate.el")
-;; (require 'textmate)
-;; (textmate-mode)
 
 
 
