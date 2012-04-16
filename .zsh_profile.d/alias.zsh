@@ -9,6 +9,10 @@ alias lh='ls -lh'
 alias ldot='ls -ld .*'
 #alias ls='ls -G' # osx/bsd
 
+# ls++ http://github.com/trapd00r/ls--
+alias ll='ls++'
+alias lla='ls++ -a'
+
 alias rdirs='dirs -v'
 
 alias grep='grep --color=auto'
@@ -21,7 +25,7 @@ alias ackpy='ack --python'
 alias p-ack="ps ax | ack"
 
 alias rmpyc='rm **/*pyc'
-
+alias rm-git-turds='rm **/(*.orig|*(LOCAL|BASE|REMOTE|BACKUP)*)'
 
 alias dud='du --max-depth=1 -h'
 
@@ -46,4 +50,4 @@ alias gka="gitk --all&"
 alias webshare='python -c "import SimpleHTTPServer;SimpleHTTPServer.test()"'
 
 # open in running emacs from  cmdline w/o waiting
-alias em="emacsclient --no-wait"
+alias e="emacsclient --no-wait"
