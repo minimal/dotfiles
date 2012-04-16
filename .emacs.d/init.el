@@ -39,7 +39,7 @@
                 ;python
                 python-pep8 python-pylint pyflakes ipython
                 textmate coffee-mode gist
-                move-text
+                move-text highlight-indentation
                 helm projectile
                 anything anything-ipython yasnippet-bundle flymake-cursor))
 
@@ -49,30 +49,40 @@
 
 (require 'anything-show-completion)
 (require 'yaml-mode)
-(require 'python-mode)
-(add-to-list 'auto-mode-alist '("\\.py\\'" . python-mode))
 
-(require 'flymake-cursor)
-(when (load "flymake" t)
-  (defun flymake-pyflakes-init ()
-    (let* ((temp-file (flymake-init-create-temp-buffer-copy
-               'flymake-create-temp-inplace))
-       (local-file (file-relative-name
-            temp-file
-            (file-name-directory buffer-file-name))))
-      (list "pycheckers"  (list local-file))))
-   (add-to-list 'flymake-allowed-file-name-masks
-                '("\\.py\\'" flymake-pyflakes-init)))
+;;;; Now overriden by emacs for python
+;; (require 'python-mode)
+;; (add-to-list 'auto-mode-alist '("\\.py\\'" . python-mode))
+;; (require 'flymake-cursor)
+;; (when (load "flymake" t)
+;;   (defun flymake-pyflakes-init ()
+;;     (let* ((temp-file (flymake-init-create-temp-buffer-copy
+;;                'flymake-create-temp-inplace))
+;;        (local-file (file-relative-name
+;;             temp-file
+;;             (file-name-directory buffer-file-name))))
+;;       (list "pycheckers"  (list local-file))))
+;;    (add-to-list 'flymake-allowed-file-name-masks
+;;                 '("\\.py\\'" flymake-pyflakes-init)))
 
 (setq ipython-command "/usr/local/bin/ipython")
 (setq py-python-command "/usr/local/bin/ipython")
 
-(require 'ipython)
-(require 'anything)
-(require 'anything-ipython)
-(when (require 'anything-show-completion nil t)
-   (use-anything-show-completion 'anything-ipython-complete
-                                 '(length initial-pattern)))
+;; emacs for python https://github.com/gabrielelanaro/emacs-for-python.git
+(add-to-list 'load-path "~/.emacs.d/emacs-for-python/")
+(require 'epy-setup)
+(require 'epy-python)
+(require 'epy-completion)
+(epy-setup-checker "pycheckers %f")
+(require 'highlight-indentation)
+(add-hook 'python-mode-hook 'highlight-indentation)
+
+;; (require 'ipython)
+;; (require 'anything)
+;; (require 'anything-ipython)
+;; (when (require 'anything-show-completion nil t)
+;;    (use-anything-show-completion 'anything-ipython-complete
+;;                                  '(length initial-pattern)))
 (require 'textmate)
 (textmate-mode)
 (require 'full-ack)
