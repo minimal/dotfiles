@@ -40,9 +40,10 @@ alias open='kde-open'
 alias ppjson='python -c "import simplejson; import sys; print simplejson.dumps(simplejson.loads(sys.stdin.read()), indent=4)" | pygmentize -f console -l js'
 
 alias gita="git archive --format=zip `git reflog | grep 'HEAD@{0}' | cut -d \" \" -f1 | sed 's/[.]*//g'` > archive.zip"
+alias gka="gitk --all&"
 
 # start a Python HTTP server with webshare
 alias webshare='python -c "import SimpleHTTPServer;SimpleHTTPServer.test()"'
 
 # open in running emacs from  cmdline w/o waiting
-alias emacsc="emacsclient --no-wait"
+alias em="emacsclient --no-wait"

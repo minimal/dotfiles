@@ -17,8 +17,6 @@ bindkey -e
 # The following lines were added by compinstall
 zstyle :compinstall filename '/home/chris/.zshrc'
 #fpath=(/usr/local/share/zsh/4.3.10/functions)
-autoload -Uz compinit
-compinit
 # End of lines added by compinstall
 
 autoload -U promptinit && promptinit
@@ -243,7 +241,7 @@ function has_virtualenv() {
     fi
 }
 
-unalias cd 
+unalias cd 2> /dev/null 
 function venv_cd () {
     cd "$@" && has_virtualenv
 }
@@ -256,17 +254,8 @@ alias cd="venv_cd"
 # export HUBOT_IRC_PASSWORD=""
 
 
-# pip zsh completion start
-function _pip_completion {
-  local words cword
-  read -Ac words
-  read -cn cword
-  reply=( $( COMP_WORDS="$words[*]" \
-             COMP_CWORD=$(( cword-1 )) \
-             PIP_AUTO_COMPLETE=1 $words[1] ) )
-}
-compctl -K _pip_completion pip
-# pip zsh completion end
+
+[ -s "/home/chris/.scm_breeze/scm_breeze.sh" ] && source "/home/chris/.scm_breeze/scm_breeze.sh"
 
 # setup fasd https://github.com/clvv/fasd
 eval "$(fasd --init auto)"
