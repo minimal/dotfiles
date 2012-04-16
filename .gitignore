@@ -13,7 +13,11 @@
 *_flymake.py
 node_modules
 .webassets-cache
-
+.venv
+*.egg-info
+build/
+.ropeproject/
+coverage.xml
 
  # Compiled source #
 ###################

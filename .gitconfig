@@ -1,10 +1,10 @@
-[color]
-    diff = auto
-    status = auto
-    branch = auto
-[user]
+[color]                        
+    diff = auto            
+    status = auto          
+    branch = auto          
+[user]                         
     name =
-    email =
+    email = 
 [cola]
     fontdiff = Droid Sans Mono Dotted,10,-1,5,50,0,0,0,0,0
     fontui = Nimbus Sans L,12,-1,5,50,0,0,0,0,0
@@ -16,7 +16,7 @@
 [gui]
     editor = emacsclient --no-wait
 
-[alias]
+[alias] 
     lol = log --pretty=oneline --abbrev-commit --graph --decorate
     ci = commit
     st = status -sb
@@ -25,12 +25,15 @@
     br = branch
     la = log --pretty=\"format:%ad %h (%an): %s\" --date=short
     pg = push origin HEAD:refs/for/master
-    nm = --no-merges
+    nm = log --no-merges
     dw = diff --word-diff
+    d = diff
+    dc = diff --cached
+    mnff = merge --no-ff
 
 [github]
     user = minimal
-    token =
+    token = 
 [merge]
     tool = kdiff3
 [rerere]
