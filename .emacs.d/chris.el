@@ -66,6 +66,18 @@
   (align-regexp start end 
                 (concat "\\(\\s-*\\)" regexp) 1 1 t))
 
+;; See http://www.emacswiki.org/cgi-bin/wiki/misc-cmds.el
+(defun beginning-of-line-or-indentation ()
+  "move to beginning of line, or indentation"
+  (interactive)
+  (if (bolp)
+      (back-to-indentation)
+    (beginning-of-line)))
+
+(substitute-key-definition 'beginning-of-line
+                           'beginning-of-line-or-indentation
+                           (current-global-map)) ;; not working??
+(global-set-key [(control a)] 'beginning-of-line-or-indentation)
 
 ;; (add-hook 'python-mode-hook 
 ;;       (lambda () 
