@@ -41,6 +41,7 @@
                 textmate coffee-mode gist
                 move-text highlight-indentation
                 helm projectile
+                ace-jump-mode jump-char
                 anything anything-ipython yasnippet-bundle flymake-cursor))
 
 (dolist (p my-packages)
@@ -88,6 +89,8 @@
 (require 'full-ack)
 (require `tramp)
 (require 'move-text)
+(require 'jump-char)
+(require 'ace-jump-mode)
 
 ;; new
 (require 'helm)

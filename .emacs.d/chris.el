@@ -58,6 +58,10 @@
 (global-set-key [(meta n)] 'move-text-down)
 (global-set-key [(meta p)] 'move-text-up)
 
+(global-set-key [(meta m)] 'jump-char-forward)
+(global-set-key [(shift meta m)] 'jump-char-backward)
+(global-set-key [(meta i)] 'back-to-indentation)
+(global-set-key (kbd "M-#") 'ace-jump-mode)
 
 (defun align-repeat (start end regexp)
   "Repeat alignment with respect to 
