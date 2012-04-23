@@ -63,6 +63,7 @@
 (global-set-key [(meta i)] 'back-to-indentation)
 (global-set-key (kbd "M-#") 'ace-jump-mode)
 
+(global-set-key (kbd "C-=") 'er/expand-region)
 (defun align-repeat (start end regexp)
   "Repeat alignment with respect to 
      the given regular expression."

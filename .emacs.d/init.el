@@ -42,6 +42,7 @@
                 move-text highlight-indentation
                 helm projectile
                 ace-jump-mode jump-char
+                expand-region
                 anything anything-ipython yasnippet-bundle flymake-cursor))
 
 (dolist (p my-packages)
@@ -91,6 +92,7 @@
 (require 'move-text)
 (require 'jump-char)
 (require 'ace-jump-mode)
+(require 'expand-region)
 
 ;; new
 (require 'helm)
