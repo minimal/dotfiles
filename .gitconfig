@@ -1,7 +1,8 @@
 [color]                        
     diff = auto            
     status = auto          
-    branch = auto          
+    branch = auto
+    ui = auto
 [user]                         
     name =
     email = 
