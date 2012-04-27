@@ -94,6 +94,9 @@
 (require 'ace-jump-mode)
 (require 'expand-region)
 
+(add-to-list 'auto-mode-alist '("\\.markdown\\'" . markdown-mode))
+(add-to-list 'auto-mode-alist '("\\.md\\'" . markdown-mode))
+
 ;; new
 (require 'helm)
 (require 'projectile)

@@ -7,6 +7,32 @@ export ZSH_HISTORY_PATH=$HOME/.histfile
 REPORTTIME=10  # if cmd takes longer than n seconds report the time
 setopt autocd extendedglob 
 
+
+function has_virtualenv() {
+    if [ -e .venv ]; then
+        workon `cat .venv`
+    fi
+}
+
+unalias cd 2> /dev/null 
+function venv_cd () {
+    cd "$@" && has_virtualenv
+}
+alias cd="venv_cd"
+
+function h () {
+    cd ~/$1
+}
+
+[ -s "/home/chris/.scm_breeze/scm_breeze.sh" ] && source "/home/chris/.scm_breeze/scm_breeze.sh"
+
+function c () {
+    git_index $1
+}
+
+# alias c="git_index"
+fpath=(~/.zsh_profile.d/functions $fpath)
+
 # includes
 for zsh_source in $HOME/.zsh_profile.d/*.zsh; do
     source $zsh_source
@@ -235,17 +261,6 @@ function gitbr {
     --pretty=format:"%Cgreen%ci %Cblue%cr%Creset" "$k"`\\t"$k";done|sort
 }
 
-function has_virtualenv() {
-    if [ -e .venv ]; then
-        workon `cat .venv`
-    fi
-}
-
-unalias cd 2> /dev/null 
-function venv_cd () {
-    cd "$@" && has_virtualenv
-}
-alias cd="venv_cd"
 
 # hubot
 # export HUBOT_IRC_NICK="hubot"
@@ -255,7 +270,7 @@ alias cd="venv_cd"
 
 
 
-[ -s "/home/chris/.scm_breeze/scm_breeze.sh" ] && source "/home/chris/.scm_breeze/scm_breeze.sh"
+
 
 # setup fasd https://github.com/clvv/fasd
 eval "$(fasd --init auto)"
