@@ -6,7 +6,7 @@ export ZSH_HISTORY_PATH=$HOME/.histfile
 
 REPORTTIME=10  # if cmd takes longer than n seconds report the time
 setopt autocd extendedglob 
-
+setopt interactivecomments
 
 function has_virtualenv() {
     if [ -e .venv ]; then
