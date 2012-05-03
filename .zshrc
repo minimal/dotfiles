@@ -7,6 +7,9 @@ export ZSH_HISTORY_PATH=$HOME/.histfile
 REPORTTIME=10  # if cmd takes longer than n seconds report the time
 setopt autocd extendedglob 
 setopt interactivecomments
+function cmd_exists() {
+    command -v "$1" >/dev/null 2>&1;
+}
 
 function has_virtualenv() {
     if [ -e .venv ]; then
@@ -50,6 +53,8 @@ autoload -U promptinit && promptinit
 
 export PIP_DOWNLOAD_CACHE=$HOME/.pip_download_cache
 export PATH="/home/chris/Komodo-Edit-6/bin:$PATH"
+
+export GREP_OPTIONS='--color=auto --exclude=*.pyc --exclude-dir=.git --exclude-dir=.svn'
 
 export JAVA_HOME=/usr/lib64/jvm/jre-1.6.0-sun  # suse
 export RHINO_HOME=/home/chris/share/rhino1_7R3/

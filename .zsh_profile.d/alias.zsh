@@ -24,6 +24,18 @@ alias rgrep='rgrep --color=auto'
 alias ackpy='ack --python'
 alias p-ack="ps ax | ack"
 
+
+# use the fastest searcher for grepper
+if (cmd_exists ag); then
+    export GREPPER='ag'
+    alias agpy='ag -G "\.py$"'
+    alias p-ag="ps ax | ag"
+
+elif (cmd_exists ag); then
+    export GREPPER='ack'
+else
+    export GREPPER='grep'
+fi
 alias rmpyc='rm **/*pyc'
 alias rm-git-turds='rm **/(*.orig|*(LOCAL|BASE|REMOTE|BACKUP)*)'
 

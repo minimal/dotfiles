@@ -1,0 +1,8 @@
+#! /bin/sh
+regex="(TODO|XXX|FIXME)"
+if [ $GREPPER != 'grep' ]; then
+    $GREPPER $regex
+else
+    regex="\(TODO\|XXX\|FIXME\)"
+    $GREPPER -R "$regex" *
+fi
