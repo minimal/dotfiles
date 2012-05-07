@@ -43,6 +43,7 @@
                 helm projectile
                 ace-jump-mode jump-char
                 expand-region
+                flymake-coffee
                 anything anything-ipython yasnippet-bundle flymake-cursor))
 
 (dolist (p my-packages)

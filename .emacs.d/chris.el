@@ -93,7 +93,13 @@
             (local-set-key (kbd "<S-down>") 'windmove-down))
          )
 
+(defun coffee-custom ()
+  "coffee-mode-hook"
+ (set (make-local-variable 'tab-width) 2))
 
+(add-hook 'coffee-mode-hook
+  '(lambda() (coffee-custom)))
+(add-hook 'coffee-mode-hook 'flymake-coffee-load)
 ;; (add-hook 'python-mode-hook 
 ;;       (lambda () 
 ;;         (unless (eq buffer-file-name nil) (flymake-mode 1)) ;dont invoke flymake on temporary buffers for the interpreter
