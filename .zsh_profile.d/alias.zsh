@@ -12,6 +12,7 @@ alias ldot='ls -ld .*'
 # ls++ http://github.com/trapd00r/ls--
 alias ll='ls++'
 alias lla='ls++ -a'
+alias llo='ll --potsf'
 
 alias rdirs='dirs -v'
 
