@@ -31,6 +31,7 @@
     d = diff
     dc = diff --cached
     mnff = merge --no-ff
+    tags = !git for-each-ref --sort=-taggerdate --format '%(refname:short) %(taggerdate:relative)' refs/tags
 
 [github]
     user = minimal

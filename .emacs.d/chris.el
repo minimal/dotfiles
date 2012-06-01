@@ -95,7 +95,10 @@
 
 (defun coffee-custom ()
   "coffee-mode-hook"
- (set (make-local-variable 'tab-width) 2))
+  (set (make-local-variable 'tab-width) 2))
+
+(add-hook 'coffee-mode-hook
+          '(lambda() (coffee-custom)))
 
 (add-hook 'coffee-mode-hook
   '(lambda() (coffee-custom)))
@@ -109,6 +112,11 @@
 ;;         ))
 ;; activate minor whitespace mode when in python mode
 (add-hook 'python-mode-hook 'whitespace-mode)
+(add-hook 'python-mode-hook
+          (lambda ()
+            (font-lock-add-keywords
+             nil
+             '(("\\<\\(FIXME\\|TODO\\|BUG\\):" 1 font-lock-warning-face t)))))
 
 ;; (add-hook 'python-mode-hook
 ;;           (lambda()
@@ -116,6 +124,9 @@
 ;;                       '(lambda()
 ;;                          (save-excursion
 ;;                            (whitespace-cleanup))))))
+
+(add-to-list 'auto-mode-alist '("\\.zsh\\'" . shell-script-mode))
+(add-to-list 'auto-mode-alist '("\\.gitconfig\\'" . conf-mode))
 
 (setq-default indicate-empty-lines t
         indicate-buffer-boundaries 'left)
