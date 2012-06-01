@@ -116,7 +116,9 @@
           (lambda ()
             (font-lock-add-keywords
              nil
-             '(("\\<\\(FIXME\\|TODO\\|BUG\\):" 1 font-lock-warning-face t)))))
+             '(("\\<\\(FIXME\\|TODO\\|BUG\\):" 1 font-lock-warning-face t)))
+            (local-set-key (kbd "M-/") 'hippie-expand)
+            (local-set-key (kbd "M-SPC") 'rope-code-assist)
 
 ;; (add-hook 'python-mode-hook
 ;;           (lambda()

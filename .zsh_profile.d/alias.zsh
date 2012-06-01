@@ -37,10 +37,13 @@ elif (cmd_exists ag); then
 else
     export GREPPER='grep'
 fi
+
+
 alias rmpyc='rm **/*pyc'
 alias rm-git-turds='rm **/(*.orig|*(LOCAL|BASE|REMOTE|BACKUP)*)'
 
-alias dud='du --max-depth=1 -h'
+alias dud='du --max-depth=1 -h' 
+alias duds='du -h --max-depth=1 . | sort -h'
 
 alias ltmux="if tmux has; then tmux attach; else tmux new; fi"
 
