@@ -18,7 +18,8 @@
     editor = emacsclient --no-wait
 
 [alias] 
-    lol = log --pretty=oneline --abbrev-commit --graph --decorate
+    lol = log --oneline --graph --decorate
+    lola = log --graph --decorate --oneline --all
     ci = commit
     st = status -sb
     co = checkout
@@ -28,7 +29,7 @@
     pg = push origin HEAD:refs/for/master
     nm = log --no-merges
     dw = diff --word-diff
-    d = diff
+    d = diff --color-words --abbrev
     dc = diff --cached
     mnff = merge --no-ff
     tags = !git for-each-ref --sort=-taggerdate --format '%(refname:short) %(taggerdate:relative)' refs/tags
