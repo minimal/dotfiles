@@ -48,6 +48,7 @@ zstyle :compinstall filename '/home/chris/.zshrc'
 #fpath=(/usr/local/share/zsh/4.3.10/functions)
 # End of lines added by compinstall
 
+
 autoload -U promptinit && promptinit
 #prompt adam2
 
@@ -127,36 +128,6 @@ compress () {
    esac
 }
 
-##### Set the prompt
-#autoload colors zsh/terminfo
-#colors
-#setopt prompt_subst
-#if [[ $SYS_IS_GENTOO == 1 ]]; then
-#    # Make the system prompt look like the default Gentoo bash prompt
-#    PROMPT='%B%(!.%{${fg[red]}%}.%{${fg[green]}%}%n@)%m%{${fg[default]}%} %{${fg[blue]}%}%1~%b %(!.#.$)%{${fg[default]}%} '
-#else
-#    # Declare an associative array, "_pr_ompt _c_omponents"
-#    typeset -A prc
-#
-#    # Define common and useful things to put in a prompt
-#    prc[abbrevpath]='%{${fg[red]}%}%B%45<...<%~%<<%b%{${fg[default]}%}'
-#    prc[newline]=$'\n'
-#    prc[promptchar]='%(!.#.$)'
-#    prc[smiley]='%(?.%{${fg[green]}%}:).%{${fg[red]}%}:()%{${fg[default]}%}'
-#    prc[timestamp]='%B%{${fg[blue]}%}[%T]%{${fg[default]}%}%b'
-#    prc[userspec]='%B%(!.%{${fg[red]}%}.%{${fg[green]}%})%n@%m%{${fg[default]}%}%b'
-#
-#    # String them together in a readable format
-#    PROMPT="${prc[userspec]} ${prc[timestamp]} ${prc[abbrevpath]}${prc[newline]}${prc[smiley]} zsh \$(parse_git_branch)${prc[promptchar]} "
-#
-#    # Unclutter the namespace
-#    unset prc
-#fi
-#case $TERM in
-#    xterm*)
-#        precmd () {print -Pn "\e]0;%m:%y %h:%* - %n@%m:%~\a"}
-#        ;;
-#esac
 
 
 #virtualenv setup
@@ -242,24 +213,6 @@ function rprompt {
 lprompt '[]' $BR_BRIGHT_BLACK $PR_WHITE
 rprompt '()' $BR_BRIGHT_BLACK $PR_WHITE
 
-# # -- start rip config -- #
-# RIPDIR=/home/chris/.rip
-# RUBYLIB="$RUBYLIB:$RIPDIR/active/lib"
-# PATH="$PATH:$RIPDIR/active/bin"
-# export RIPDIR RUBYLIB PATH
-# # -- end rip config -- #
-#.lightning/functions.sh
-
-# # old stuff
-# export AWS_ELB_HOME=~/share/ElasticLoadBalancing-1.0.14.3
-# export PATH=$PATH:$AWS_ELB_HOME/bin
-# export AWS_CREDENTIAL_FILE=~/.ssh/daryl/aws_creds
-# export EC2_HOME=~/share/ec2-api-tools-1.4.4.2
-# export PATH=$PATH:$EC2_HOME/bin
-# export EC2_PRIVATE_KEY=~/foo.pem
-# export EC2_CERT=
-# export DISCO_HOME=/home/chris/dev/vendor/DISCO_HOME
-# export PATH=$PATH:$DISCO_HOME/bin
 
 function gitbr {
     for k in `git branch|sed s/^..//`;do echo -e `git log -1 \
@@ -274,9 +227,6 @@ function gitbr {
 # export HUBOT_IRC_PASSWORD=""
 
 
-
-
-
 # setup fasd https://github.com/clvv/fasd
 eval "$(fasd --init auto)"
 alias em="f -e 'emacsclient --no-wait'"
@@ -286,3 +236,20 @@ alias em="f -e 'emacsclient --no-wait'"
 autoload edit-command-line
 zle -N edit-command-line
 bindkey '^X^E' edit-command-line
+
+export PERL_LOCAL_LIB_ROOT="/home/chris/perl5";
+export PERL_MB_OPT="--install_base /home/chris/perl5";
+export PERL_MM_OPT="INSTALL_BASE=/home/chris/perl5";
+export PERL5LIB="/home/chris/perl5/lib/perl5/x86_64-linux-thread-multi:/home/chris/perl5/lib/perl5";
+export PATH="/home/chris/perl5/bin:$PATH";
+
+
+# settitle() {
+#     printf "\033k$1\033\\"
+# }
+# ssh() {
+#     settitle "$*"
+#     command ssh "$@"
+# }
+
+# export settitle=settitle
