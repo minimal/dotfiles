@@ -48,13 +48,13 @@
 (global-set-key (kbd "<S-f9>") 'ido-switch-buffer-other-window)
 (global-set-key [(meta shift f9)] 'helm-projectile)
 (global-set-key [f11] 'textmate-goto-symbol)
-(set-register ?e '(file . "~/.emacs.d/chris.el")) ; 'C-x r j e' opens this file 
+(set-register ?e '(file . "~/.emacs.d/chris.el")) ; 'C-x r j e' opens this file
 (define-key global-map (kbd "C-;") 'iedit-mode)
 (define-key global-map (kbd "C-3") 'comment-or-uncomment-region-or-line)
 (global-set-key [(meta \])] 'textmate-shift-right)
 (global-set-key [(meta \[)] 'textmate-shift-left)
 (global-set-key [(control q)] 'fill-paragraph) ;; virtual box
-;; overrides meta-q 
+;; overrides meta-q
 (global-set-key [(meta n)] 'move-text-down)
 (global-set-key [(meta p)] 'move-text-up)
 
@@ -65,10 +65,10 @@
 
 (global-set-key (kbd "C-=") 'er/expand-region)
 (defun align-repeat (start end regexp)
-  "Repeat alignment with respect to 
+  "Repeat alignment with respect to
      the given regular expression."
   (interactive "r\nsAlign regexp: ")
-  (align-regexp start end 
+  (align-regexp start end
                 (concat "\\(\\s-*\\)" regexp) 1 1 t))
 
 ;; See http://www.emacswiki.org/cgi-bin/wiki/misc-cmds.el
@@ -103,12 +103,12 @@
 (add-hook 'coffee-mode-hook
   '(lambda() (coffee-custom)))
 (add-hook 'coffee-mode-hook 'flymake-coffee-load)
-;; (add-hook 'python-mode-hook 
-;;       (lambda () 
+;; (add-hook 'python-mode-hook
+;;       (lambda ()
 ;;         (unless (eq buffer-file-name nil) (flymake-mode 1)) ;dont invoke flymake on temporary buffers for the interpreter
 ;;         ;(local-set-key [f7] 'flymake-goto-prev-error)
 ;;         ;(local-set-key [f8] 'flymake-goto-next-error)
-        
+
 ;;         ))
 ;; activate minor whitespace mode when in python mode
 (add-hook 'python-mode-hook 'whitespace-mode)
@@ -118,7 +118,7 @@
              nil
              '(("\\<\\(FIXME\\|TODO\\|BUG\\):" 1 font-lock-warning-face t)))
             (local-set-key (kbd "M-/") 'hippie-expand)
-            (local-set-key (kbd "M-SPC") 'rope-code-assist)
+            (local-set-key (kbd "M-SPC") 'rope-code-assist)))
 
 ;; (add-hook 'python-mode-hook
 ;;           (lambda()
@@ -148,7 +148,7 @@
   (interactive)
   (message
    (if (let (window (get-buffer-window (current-buffer)))
-         (set-window-dedicated-p window 
+         (set-window-dedicated-p window
                                  (not (window-dedicated-p window))))
        "Window '%s' is dedicated"
      "Window '%s' is normal")
