@@ -26,7 +26,7 @@
 ;; bindings
 
 ;; (setq x-super-keysym 'meta) ; make cmd key as meta - for apple keyboard on linux
-
+(setq mac-command-modifier 'meta) ;; on osx set command to control
 ;; (global-set-key "\r" 'newline-and-indent)
 
 ;; http://xahlee.org/emacs/keyboard_shortcuts.html
@@ -118,7 +118,7 @@
              nil
              '(("\\<\\(FIXME\\|TODO\\|BUG\\):" 1 font-lock-warning-face t)))
             (local-set-key (kbd "M-/") 'hippie-expand)
-            (local-set-key (kbd "M-SPC") 'rope-code-assist)
+            (local-set-key (kbd "M-SPC") 'rope-code-assist)))
 
 ;; (add-hook 'python-mode-hook
 ;;           (lambda()
