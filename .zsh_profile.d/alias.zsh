@@ -1,7 +1,10 @@
 # A few aliases
 
 # ls aliases
-alias ls='ls --color=auto'
+if [ "$kernel" = 'Linux' ]; then
+    alias ls='ls --color=auto'
+fi
+
 alias ll='ls -l'
 alias la='ls -A'
 alias l='ls -CF'
@@ -10,9 +13,11 @@ alias ldot='ls -ld .*'
 #alias ls='ls -G' # osx/bsd
 
 # ls++ http://github.com/trapd00r/ls--
-alias ll='ls++'
-alias lla='ls++ -a'
-alias llo='ll --potsf'
+if (cmd_exists ls++); then
+    alias ll='ls++'
+    alias lla='ls++ -a'
+    alias llo='ll --potsf'
+fi
 
 alias rdirs='dirs -v'
 
@@ -22,9 +27,10 @@ alias egrep='egrep --color=auto'
 alias rgrep='rgrep --color=auto'
 
 #alias ack='ack-grep'
-alias ackpy='ack --python'
-alias p-ack="ps ax | ack"
-
+if (cmd_exists ack); then
+    alias ackpy='ack --python'
+    alias p-ack="ps ax | ack"
+fi
 
 # use the fastest searcher for grepper
 if (cmd_exists ag); then
@@ -32,7 +38,7 @@ if (cmd_exists ag); then
     alias agpy='ag -G "\.py$"'
     alias p-ag="ps ax | ag"
 
-elif (cmd_exists ag); then
+elif (cmd_exists ack); then
     export GREPPER='ack'
 else
     export GREPPER='grep'
@@ -42,20 +48,22 @@ fi
 alias rmpyc='rm **/*pyc'
 alias rm-git-turds='rm **/(*.orig|*(LOCAL|BASE|REMOTE|BACKUP)*)'
 
-alias dud='du --max-depth=1 -h' 
+alias dud='du --max-depth=1 -h'
 alias duds='du -h --max-depth=1 . | sort -h'
 
 alias ltmux="if tmux has; then tmux attach; else tmux new; fi"
 
 # more aliases
 # debian/ubuntu shortcuts
-alias apt-install='sudo apt-get install'
-alias apt-remove='sudo apt-get remove'
+if [ "$kernel" = 'Linux' ]; then
+    alias apt-install='sudo apt-get install'
+    alias apt-remove='sudo apt-get remove'
 # suse
-alias zinstall='sudo zypper install' 
-alias zearch='zypper se'
-alias zrefresh='sudo zypper refresh'
-alias open='kde-open'
+    alias zinstall='sudo zypper install'
+    alias zearch='zypper se'
+    alias zrefresh='sudo zypper refresh'
+    alias open='kde-open'
+fi
 
 alias ppjson='python -c "import simplejson; import sys; print simplejson.dumps(simplejson.loads(sys.stdin.read()), indent=4)" | pygmentize -f console -l js'
 
@@ -66,4 +74,9 @@ alias gka="gitk --all&"
 alias webshare='python -c "import SimpleHTTPServer;SimpleHTTPServer.test()"'
 
 # open in running emacs from  cmdline w/o waiting
+if [ "$kernel" = 'Darwin' ]; then
+    alias emacsclient="/Applications/Emacs.app/Contents/MacOS/bin/emacsclient"
+fi
+
+
 alias e="emacsclient --no-wait"

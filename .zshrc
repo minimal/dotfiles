@@ -1,6 +1,8 @@
 #!/bin/zsh
 # Lines configured by zsh-newuser-install
 
+kernel=`uname`
+
 export ZSH_HISTORY_PATH=$HOME/.histfile
 
 
@@ -32,6 +34,9 @@ function h () {
 function c () {
     git_index $1
 }
+
+# for bsd ls
+export CLICOLOR='xtem-color'
 
 # alias c="git_index"
 fpath=(~/.zsh_profile.d/functions $fpath)
