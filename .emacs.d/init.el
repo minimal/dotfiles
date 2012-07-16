@@ -3,14 +3,14 @@
 ;; adjust this path:
 (add-to-list 'load-path "~/.emacs.d/emacs-jabber-0.8.90")
 ;; For 0.7.90 and above:
-(require 'jabber-autoloads)
+;;(require 'jabber-autoloads)
 
-(setq jabber-account-list
-      '(("<ME>@gmail.com" 
-	 (:network-server . "talk.google.com")
-	 (:connection-type . ssl))))
+;; (setq jabber-account-list
+;;       '(("<ME>@gmail.com" 
+;; 	 (:network-server . "talk.google.com")
+;; 	 (:connection-type . ssl))))
 
-(add-to-list 'load-path "~/.emacs.d/vendor/emacs-skype")
+;;(add-to-list 'load-path "~/.emacs.d/vendor/emacs-skype")
 ;; (require 'skype)
 ;; (setq skype--my-user-handle "ME")
 
@@ -139,3 +139,8 @@
  '(jabber-chat-prompt-local ((t (:foreground "deep sky blue" :weight bold)))))
 
 (server-start)
+;;; edit server for editing from chrome
+(when (require 'edit-server nil t)
+  (setq edit-server-new-frame nil)
+  (edit-server-start))
+

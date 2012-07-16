@@ -157,3 +157,17 @@
 ;; Press [pause] key in each window you want to "freeze"
 (global-set-key [pause] 'toggle-window-dedicated)
 ;;;;;;;;;;;;; dedicated
+
+;;; change in next quotes. like vim: ci"
+;;; TODO: choosing of quote char
+(fset 'change-in
+      (lambda (&optional arg) "Keyboard macro."
+        (interactive "p")
+        (kmacro-exec-ring-item
+         (quote ([19 91 39 34 93 13 67108896 19 19 2] 0 "%d")) arg)))
+
+;;; win git location
+(if (eq system-type 'windows-nt)
+    (setq exec-path (append exec-path '("J:/downloads/git-portable/bin")))
+)
+
