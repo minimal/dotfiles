@@ -50,7 +50,9 @@
   (when (not (package-installed-p p))
     (package-install p))) 
 
-(require 'anything-show-completion)
+;; Are we on a mac?
+(setq is-mac (equal system-type 'darwin))
+
 (require 'yaml-mode)
 
 ;;;; Now overriden by emacs for python
@@ -144,3 +146,12 @@
   (setq edit-server-new-frame nil)
   (edit-server-start))
 
+(when is-mac
+  ;; mac friendly font
+  (set-face-attribute 'default nil :font "Monaco-14")
+  ;; Ignore .DS_Store files with ido mode
+  (add-to-list 'ido-ignore-files "\\.DS_Store")
+  ;; Don't open files from the workspace in a new frame
+  (setq ns-pop-up-frames nil)
+  ;; Use aspell for spell checking: brew install aspell --lang=en
+  (setq ispell-program-name "/usr/local/bin/aspell"))
