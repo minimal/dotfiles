@@ -84,15 +84,6 @@
                            (current-global-map)) ;; not working??
 (global-set-key [(control a)] 'beginning-of-line-or-indentation)
 
-;; don't let org overwrite windmove keys!!
-(add-hook 'org-mode-hook
-          (lambda ()
-            (local-set-key (kbd "<S-left>") 'windmove-left)
-            (local-set-key (kbd "<S-right>") 'windmove-right)
-            (local-set-key (kbd "<S-up>") 'windmove-up)
-            (local-set-key (kbd "<S-down>") 'windmove-down))
-         )
-
 (defun coffee-custom ()
   "coffee-mode-hook"
   (set (make-local-variable 'tab-width) 2))

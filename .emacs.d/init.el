@@ -146,6 +146,8 @@
   (setq edit-server-new-frame nil)
   (edit-server-start))
 
+
+;; magnars stuff
 (when is-mac
   ;; mac friendly font
   (set-face-attribute 'default nil :font "Monaco-14")
@@ -155,3 +157,10 @@
   (setq ns-pop-up-frames nil)
   ;; Use aspell for spell checking: brew install aspell --lang=en
   (setq ispell-program-name "/usr/local/bin/aspell"))
+;; magnars sane defaults
+
+;; org-mode: Don't ruin S-arrow to switch windows please (use M-+ and M-- instead to toggle)
+(setq org-replace-disputed-keys t)
+
+;; Fontify org-mode code blocks
+(setq org-src-fontify-natively t)
