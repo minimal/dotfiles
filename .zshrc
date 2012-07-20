@@ -60,7 +60,9 @@ autoload -U promptinit && promptinit
 export PIP_DOWNLOAD_CACHE=$HOME/.pip_download_cache
 export PATH="/home/chris/Komodo-Edit-6/bin:$PATH"
 
-export GREP_OPTIONS='--color=auto --exclude=*.pyc --exclude-dir=.git --exclude-dir=.svn'
+if [ "$kernel" = 'Linux' ]; then
+    export GREP_OPTIONS='--color=auto --exclude=*.pyc --exclude-dir=.git --exclude-dir=.svn'
+fi
 
 export JAVA_HOME=/usr/lib64/jvm/jre-1.6.0-sun  # suse
 export RHINO_HOME=/home/chris/share/rhino1_7R3/
