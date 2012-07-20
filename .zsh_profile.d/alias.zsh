@@ -46,6 +46,7 @@ fi
 
 
 alias rmpyc='rm **/*pyc'
+alias pyclean='rmpyc'
 alias rm-git-turds='rm **/(*.orig|*(LOCAL|BASE|REMOTE|BACKUP)*)'
 
 alias dud='du --max-depth=1 -h'
@@ -69,6 +70,7 @@ alias ppjson='python -c "import simplejson; import sys; print simplejson.dumps(s
 
 alias gita="git archive --format=zip `git reflog | grep 'HEAD@{0}' | cut -d \" \" -f1 | sed 's/[.]*//g'` > archive.zip"
 alias gka="gitk --all&"
+alias g="git"
 
 # start a Python HTTP server with webshare
 alias webshare='python -c "import SimpleHTTPServer;SimpleHTTPServer.test()"'
