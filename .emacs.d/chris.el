@@ -96,18 +96,18 @@
 (add-hook 'coffee-mode-hook 'flymake-coffee-load)
 ;; (add-hook 'python-mode-hook
 ;;       (lambda ()
-;;         (unless (eq buffer-file-name nil) (flymake-mode 1)) ;dont invoke flymake on temporary buffers for the interpreter
-;;         ;(local-set-key [f7] 'flymake-goto-prev-error)
-;;         ;(local-set-key [f8] 'flymake-goto-next-error)
+            ;dont invoke flymake on temporary buffers for the interpreter
+            (unless (eq buffer-file-name nil) (flymake-mode 1))
+            (local-set-key [f5] 'flymake-goto-prev-error)
 
-;;         ))
+          )
 ;; activate minor whitespace mode when in python mode
 (add-hook 'python-mode-hook 'whitespace-mode)
 (add-hook 'python-mode-hook
           (lambda ()
             (font-lock-add-keywords
              nil
-             '(("\\<\\(FIXME\\|TODO\\|BUG\\):" 1 font-lock-warning-face t)))
+             '(("\\<\\(FIXME\\|TODO\\|BUG\\|XXX\\):" 1 font-lock-warning-face t)))
             (local-set-key (kbd "M-/") 'hippie-expand)
             (local-set-key (kbd "M-SPC") 'rope-code-assist)))
 
@@ -120,6 +120,7 @@
 
 (add-to-list 'auto-mode-alist '("\\.zsh\\'" . shell-script-mode))
 (add-to-list 'auto-mode-alist '("\\.gitconfig\\'" . conf-mode))
+(add-to-list 'auto-mode-alist '("\\.php\\'" . php-mode))
 
 (setq-default indicate-empty-lines t
         indicate-buffer-boundaries 'left)
