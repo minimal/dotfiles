@@ -44,6 +44,7 @@
                 ace-jump-mode jump-char
                 expand-region
                 flymake-coffee
+                smooth-scrolling
                 anything anything-ipython yasnippet-bundle flymake-cursor))
 
 (dolist (p my-packages)
@@ -54,6 +55,7 @@
 (setq is-mac (equal system-type 'darwin))
 
 (require 'yaml-mode)
+(require 'smooth-scrolling)
 
 ;;;; Now overriden by emacs for python
 ;; (require 'python-mode)
