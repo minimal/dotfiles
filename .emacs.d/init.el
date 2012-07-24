@@ -35,7 +35,7 @@
                 markdown-mode yaml-mode
                 ecb_snap
                 marmalade scpaste python-mode
-                full-ack
+                ack-and-a-half
                 ;python
                 python-pep8 python-pylint pyflakes ipython
                 textmate coffee-mode gist
@@ -90,7 +90,6 @@
 ;;                                  '(length initial-pattern)))
 (require 'textmate)
 (textmate-mode)
-(require 'full-ack)
 (require `tramp)
 (require 'move-text)
 (require 'jump-char)
@@ -164,3 +163,13 @@
 
 ;; Fontify org-mode code blocks
 (setq org-src-fontify-natively t)
+;; ack-and-a-half
+(autoload 'ack-and-a-half-same "ack-and-a-half" nil t)
+(autoload 'ack-and-a-half "ack-and-a-half" nil t)
+(autoload 'ack-and-a-half-find-file-samee "ack-and-a-half" nil t)
+(autoload 'ack-and-a-half-find-file "ack-and-a-half" nil t)
+;; Create shorter aliases
+(defalias 'ack 'ack-and-a-half)
+(defalias 'ack-same 'ack-and-a-half-same)
+(defalias 'ack-find-file 'ack-and-a-half-find-file)
+(defalias 'ack-find-file-same 'ack-and-a-half-find-file-same)
