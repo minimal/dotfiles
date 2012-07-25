@@ -94,13 +94,13 @@
 (add-hook 'coffee-mode-hook
   '(lambda() (coffee-custom)))
 (add-hook 'coffee-mode-hook 'flymake-coffee-load)
-;; (add-hook 'python-mode-hook
-;;       (lambda ()
+(add-hook 'python-mode-hook
+      (lambda ()
             ;dont invoke flymake on temporary buffers for the interpreter
             (unless (eq buffer-file-name nil) (flymake-mode 1))
             (local-set-key [f5] 'flymake-goto-prev-error)
 
-          )
+          ))
 ;; activate minor whitespace mode when in python mode
 (add-hook 'python-mode-hook 'whitespace-mode)
 (add-hook 'python-mode-hook
