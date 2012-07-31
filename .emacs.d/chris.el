@@ -99,7 +99,7 @@
             ;dont invoke flymake on temporary buffers for the interpreter
             (unless (eq buffer-file-name nil) (flymake-mode 1))
             (local-set-key [f5] 'flymake-goto-prev-error)
-
+            (local-set-key [f6] 'flymake-goto-next-error)
           ))
 ;; activate minor whitespace mode when in python mode
 (add-hook 'python-mode-hook 'whitespace-mode)
