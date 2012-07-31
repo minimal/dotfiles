@@ -20,7 +20,7 @@
 ;(cua-mode t nil (cua-base))
 ;(save-place t nil (saveplace))
 
-(setq-default cursor-type 'bar)
+(setq-default cursor-type 't)
 (winner-mode 1) ;; C-c left => undo window layout change, C-c right => undo
 
 ;; bindings
