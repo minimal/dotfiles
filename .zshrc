@@ -98,7 +98,12 @@ parse_git_branch() {
 }
 
 export LESS="-R"           # raw mode for correct colors
+
 export EDITOR="emacsclient -nw"  # no window mode
+if [ "$kernel" = 'Darwin' ]; then
+    export EDITOR="/Applications/Emacs.app/Contents/MacOS/bin/emacsclient -nw"
+fi
+
 export TERM=xterm-256color;      # nice colours
 
 extract () {
