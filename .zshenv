@@ -12,6 +12,7 @@ if [ "$kernel" = 'Linux' ]; then
     unset dircomponent
 
 else
-    path=($path ~/bin)
+    # path=($path ~/bin)
+    export PATH=/usr/local/bin:/usr/local/sbin:/bin:/usr/sbin:/sbin:/usr/bin:/usr/local/share/python:/usr/X11/bin:/Users/Chris/bin
 fi
 
