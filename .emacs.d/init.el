@@ -82,7 +82,7 @@
 (require 'epy-setup)
 (require 'epy-python)
 (require 'epy-completion)
-(epy-setup-checker "pycheckers %f")
+(epy-setup-checker "~/bin/pycheckers %f")
 (require 'highlight-indentation)
 (add-hook 'python-mode-hook 'highlight-indentation)
 
