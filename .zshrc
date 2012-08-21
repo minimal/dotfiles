@@ -240,9 +240,10 @@ function gitbr {
 
 
 # setup fasd https://github.com/clvv/fasd
-eval "$(fasd --init auto)"
-alias em="f -e 'emacsclient --no-wait'"
-
+if (cmd_exists fasd); then
+    eval "$(fasd --init auto)"
+    alias em="f -e 'emacsclient --no-wait'"
+fi
 
 # edit current line
 autoload edit-command-line
