@@ -1,7 +1,7 @@
 (setq visible-bell t)
 
 ;; adjust this path:
-(add-to-list 'load-path "~/.emacs.d/emacs-jabber-0.8.90")
+;(add-to-list 'load-path "~/.emacs.d/emacs-jabber-0.8.90")
 ;; For 0.7.90 and above:
 ;;(require 'jabber-autoloads)
 
@@ -54,6 +54,8 @@
 ;; Are we on a mac?
 (setq is-mac (equal system-type 'darwin))
 
+
+;; (require 'anything-show-completion)
 (require 'yaml-mode)
 (require 'smooth-scrolling)
 
