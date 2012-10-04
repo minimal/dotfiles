@@ -1,0 +1,10 @@
+#! /usr/local/bin/zsh
+services=(redis-server mongod mysqld git-dude cmd-key-happy bitlbee)
+
+for serv in $services
+do
+    if (pgrep -f $serv > /dev/null); then
+        echo $serv is up
+    fi
+done
+    
