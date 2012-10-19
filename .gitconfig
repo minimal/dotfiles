@@ -38,10 +38,17 @@
     user = minimal
     token = 
 [merge]
-    tool = kdiff3
+	tool = diffmerge
 [rerere]
     enabled = 1
 [branch]
     autosetuprebase = always
 [push]
     default = upstream
+[diff]
+	tool = diffmerge
+[difftool "diffmerge"]
+	cmd = diffmerge \"$LOCAL\" \"$REMOTE\"
+[mergetool "diffmerge"]
+	cmd = "diffmerge --merge --result=\"$MERGED\" \"$LOCAL\" \"$(if test -f \"$BASE\"; then echo \"$BASE\"; else echo \"$LOCAL\"; fi)\" \"$REMOTE\""
+	trustExitCode = true
