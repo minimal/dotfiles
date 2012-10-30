@@ -49,17 +49,19 @@ bind esc:cmd hint
 
 # mymods layouts Put emacs full screen on right screen, chrome left
 # half of left screen, iterm bottom right of left screen
-
+alias  iterm-trim  60
 layout  dev 'Emacs' throw 1 resize
-layout  dev 'Google Chrome' push left  bar-resize:screenSizeX/2  throw 0
-layout  dev 'iTerm'  corner bottom-right resize:screenSizeX/2;screenSizeY/2 throw 0
+layout  dev 'Google Chrome' push left  bar-resize:${iterm-trim}+screenSizeX/2  throw 0
+layout  dev 'iTerm'  move screenOriginX+screenSizeX/2+${iterm-trim};screenOriginY+screenSizeY/2 screenSizeX/2-${iterm-trim};screenSizeY/2 0
 
 #       do the opposite
+alias   chrome-right-offset  screenOriginX+screenSizeX/2-${iterm-trim}
 layout  devswap 'Emacs' throw 0 resize
-layout  devswap 'Google Chrome'  move screenOriginX;screenOriginY  screenSizeX/2;screenSizeY 1
-layout  devswap 'iTerm' move screenOriginX+screenSizeX/2;screenOriginY+screenSizeY/2  screenSizeX/2;screenSizeY/2 1
+layout  devswap 'Google Chrome'  move ${chrome-right-offset};screenOriginY  screenSizeX/2+${iterm-trim};screenSizeY 1
+layout  devswap 'iTerm' move screenOriginX;screenOriginY+screenSizeY/2  screenSizeX/2-${iterm-trim};screenSizeY/2 1
 
 bind    1:cmd;alt  layout dev
 bind    2:cmd;alt  layout devswap
 
 bind    tab:cmd switch
+# bind    l:cmd;alt 1source ~/.slate
