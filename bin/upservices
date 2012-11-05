@@ -5,6 +5,8 @@ for serv in $services
 do
     if (pgrep -f $serv > /dev/null); then
         echo $serv is up
+    elif [ "$1" = "-a" ]; then
+        echo $serv is down
     fi
 done
     
