@@ -50,26 +50,28 @@ bind esc:cmd hint
 # mymods layouts Put emacs full screen on right screen, chrome left
 # half of left screen, iterm bottom right of left screen
 alias  iterm-trim  60
-alias   chrome-right-offset  screenOriginX+screenSizeX/2-${iterm-trim}
+alias iterm-size screenSizeX/2-${iterm-trim};screenSizeY/2
+alias iterm-right  screenOriginX+screenSizeX/2+${iterm-trim};screenOriginY+screenSizeY/2
+alias chrome-right-offset  screenOriginX+screenSizeX/2-${iterm-trim}
+alias chrome-size  screenSizeX/2+${iterm-trim};screenSizeY
 
 layout  dev 'Emacs' throw 1 resize
-layout  dev 'Google Chrome' push left  bar-resize:${iterm-trim}+screenSizeX/2  throw 0
-layout  dev 'iTerm'  move screenOriginX+screenSizeX/2+${iterm-trim};screenOriginY+screenSizeY/2 screenSizeX/2-${iterm-trim};screenSizeY/2 0
+layout  dev 'Google Chrome' move screenOriginX;screenOriginY  ${chrome-size} 0
+layout  dev 'iTerm'  move ${iterm-right} ${iterm-size} 0
 
 layout  dev2 'Emacs' throw 1 resize
-layout  dev2 'Google Chrome' move ${chrome-right-offset};screenOriginY  screenSizeX/2+${iterm-trim};screenSizeY 0
-layout  dev2 'iTerm'  move screenOriginX;screenOriginY+screenSizeY/2  screenSizeX/2-${iterm-trim};screenSizeY/2 0
+layout  dev2 'Google Chrome' move ${chrome-right-offset};screenOriginY  ${chrome-size} 0
+layout  dev2 'iTerm'  move screenOriginX;screenOriginY+screenSizeY/2 ${iterm-size} 0
 
 #       do the opposite
-alias   chrome-right-offset  screenOriginX+screenSizeX/2-${iterm-trim}
 layout  devswap 'Emacs' throw 0 resize
-layout  devswap 'Google Chrome'  move ${chrome-right-offset};screenOriginY  screenSizeX/2+${iterm-trim};screenSizeY 1
-layout  devswap 'iTerm' move screenOriginX;screenOriginY+screenSizeY/2  screenSizeX/2-${iterm-trim};screenSizeY/2 1
+layout  devswap 'Google Chrome'  move ${chrome-right-offset};screenOriginY  ${chrome-size} 1
+layout  devswap 'iTerm' move screenOriginX;screenOriginY+screenSizeY/2  ${iterm-size} 1
 
 #       do the opposite with iterm and chrome swapped
 layout  devswap2 'Emacs' throw 0 resize
-layout  devswap2 'Google Chrome'  move screenOriginX;screenOriginY  screenSizeX/2+${iterm-trim};screenSizeY 1
-layout  devswap2 'iTerm' move screenOriginX+screenSizeX/2+${iterm-trim};screenOriginY+screenSizeY/2  screenSizeX/2-${iterm-trim};screenSizeY/2 1
+layout  devswap2 'Google Chrome'  move screenOriginX;screenOriginY  ${chrome-size} 1
+layout  devswap2 'iTerm' move ${iterm-right}  ${iterm-size} 1
 
 bind    1:cmd;alt  layout dev
 bind    2:cmd;alt  layout dev2
