@@ -54,6 +54,7 @@ alias iterm-size screenSizeX/2-${iterm-trim};screenSizeY/2
 alias iterm-right  screenOriginX+screenSizeX/2+${iterm-trim};screenOriginY+screenSizeY/2
 alias chrome-right-offset  screenOriginX+screenSizeX/2-${iterm-trim}
 alias chrome-size  screenSizeX/2+${iterm-trim};screenSizeY
+alias emacs-trim-size screenSizeX*0.8;screenSizeY
 
 layout  dev 'Emacs' throw 1 resize
 layout  dev 'Google Chrome' move screenOriginX;screenOriginY  ${chrome-size} 0
@@ -80,3 +81,10 @@ bind    4:cmd;alt  layout devswap2
 
 bind    tab:cmd switch
 # bind    l:cmd;alt 1source ~/.slate
+
+# from blog post http://thume.ca/howto/2012/11/19/using-slate/#configuration
+# Shows app icons and background apps, spreads icons in the same place.
+config windowHintsShowIcons true
+config windowHintsIgnoreHiddenWindows false
+config windowHintsSpread true
+
