@@ -169,7 +169,11 @@
   ;; Don't open files from the workspace in a new frame
   (setq ns-pop-up-frames nil)
   ;; Use aspell for spell checking: brew install aspell --lang=en
-  (setq ispell-program-name "/usr/local/bin/aspell"))
+  (setq ispell-program-name "/usr/local/bin/aspell")
+  (global-set-key '[(control kp-delete)] 'kill-word)
+  (global-set-key (kbd "¦") "|")  ;; I use uk layout which hides pipe key
+  )
+
 ;; magnars sane defaults
 
 ;; org-mode: Don't ruin S-arrow to switch windows please (use M-+ and M-- instead to toggle)
