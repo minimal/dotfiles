@@ -88,11 +88,6 @@ bindkey -s '^[[4~' '^E'
 # version control
 autoload -Uz vcs_info
 
-
-git-pickaxe() {
-    git log -S$1 -p
-}
-
 parse_git_branch() {
   git branch 2> /dev/null | sed -e '/^[^*]/d' -e 's/* \(.*\)/(\1)/'
 }
