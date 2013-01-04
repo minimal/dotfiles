@@ -31,6 +31,7 @@
     dw = diff --word-diff
     d = diff --color-words --abbrev
     dc = diff --cached
+    m = merge
     mnff = merge --no-ff
     tags = !git for-each-ref --sort=-taggerdate --format '%(refname:short) %(taggerdate:relative)' refs/tags
     pick = !sh -c 'git log -S$1 -p' -  # show log diffs that add/remove arg string
@@ -52,3 +53,5 @@
 [mergetool "diffmerge"]
 	cmd = "diffmerge --merge --result=\"$MERGED\" \"$LOCAL\" \"$(if test -f \"$BASE\"; then echo \"$BASE\"; else echo \"$LOCAL\"; fi)\" \"$REMOTE\""
 	trustExitCode = true
+[help]
+	autocorrect = 10
