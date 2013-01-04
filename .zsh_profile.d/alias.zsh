@@ -3,19 +3,28 @@
 # ls aliases
 if [ "$kernel" = 'Linux' ]; then
     alias ls='ls --color=auto'
+elif [ "$kernel" = 'Darwin' ]; then
+    alias ls='gls --color=auto'
+    alias du='gdu'
+    alias sort='gsort'
 fi
 
 alias ll='ls -l'
 alias la='ls -A'
 alias l='ls -CF'
 alias lh='ls -lh'
-alias ldot='ls -ld .*'
+alias ldot='ll -d .*'
+alias ltr='ll -tr'
 #alias ls='ls -G' # osx/bsd
 
 # ls++ http://github.com/trapd00r/ls--
 if (cmd_exists ls++); then
-    alias ll='ls++'
-    alias lla='ls++ -a'
+    if [ "$kernel" = 'Darwin' ]; then
+        alias ll='  LC_ALL=en_US.UTF-8 LANG=en ls++ '
+    else
+        alias ll='ls++'
+    fi
+    alias lla='ll -a'
     alias llo='ll --potsf'
 fi
 
@@ -47,6 +56,8 @@ fi
 
 alias rmpyc='rm **/*pyc'
 alias pyclean='rmpyc'
+alias pipreqs='pip install -r requirements.txt'
+
 alias rm-git-turds='rm **/(*.orig|*(LOCAL|BASE|REMOTE|BACKUP)*)'
 
 alias dud='du --max-depth=1 -h'
@@ -66,7 +77,7 @@ if [ "$kernel" = 'Linux' ]; then
     alias open='kde-open'
 fi
 
-alias ppjson='python -c "import simplejson; import sys; print simplejson.dumps(simplejson.loads(sys.stdin.read()), indent=4)" | pygmentize -f console -l js'
+alias ppjson='python -c "import json; import sys; print json.dumps(json.loads(sys.stdin.read()), indent=4)" | pygmentize -f console -l js'
 
 alias gita="git archive --format=zip `git reflog | grep 'HEAD@{0}' | cut -d \" \" -f1 | sed 's/[.]*//g'` > archive.zip"
 alias gka="gitk --all&"
