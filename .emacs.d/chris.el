@@ -106,6 +106,7 @@
 
 ;; activate minor whitespace mode when in python mode
 (add-hook 'python-mode-hook 'whitespace-mode)
+(add-hook 'python-mode-hook 'auto-complete-mode)
 (add-hook 'python-mode-hook
           (lambda ()
             (font-lock-add-keywords

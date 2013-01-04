@@ -83,10 +83,23 @@
 (add-to-list 'load-path "~/.emacs.d/emacs-for-python/")
 (require 'epy-setup)
 (require 'epy-python)
-(require 'epy-completion)
+;; (require 'epy-completion)
 (epy-setup-checker "~/bin/pycheckers %f")
 (require 'highlight-indentation)
 (add-hook 'python-mode-hook 'highlight-indentation)
+
+(add-to-list 'load-path "~/.emacs.d/el-get/el-get")
+(unless (require 'el-get nil 'noerror)
+  (with-current-buffer
+      (url-retrieve-synchronously
+       "https://raw.github.com/dimitri/el-get/master/el-get-install.el")
+    (let (el-get-master-branch)
+      (goto-char (point-max))
+      (eval-print-last-sexp))))
+(el-get 'sync)
+
+(setq jedi:setup-keys t)                ;install with: el-get-install jedi
+(add-hook 'python-mode-hook 'jedi:setup)
 
 ;; (require 'ipython)
 ;; (require 'anything)
