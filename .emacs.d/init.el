@@ -46,6 +46,7 @@
                 flymake-coffee
                 smooth-scrolling
                 multi-web-mode
+                pyregexp
                 anything anything-ipython yasnippet-bundle flymake-cursor))
 
 (dolist (p my-packages)
@@ -191,3 +192,12 @@
 (defalias 'ack-same 'ack-and-a-half-same)
 (defalias 'ack-find-file 'ack-and-a-half-find-file)
 (defalias 'ack-find-file-same 'ack-and-a-half-find-file-same)
+
+;; awesome!
+(require 'pyregexp)
+;; (define-key global-map (kbd "C-c r") 'pyregexp-replace)
+;; (define-key global-map (kbd "C-c q") 'pyregexp-query-replace)
+;; to use pyregexp isearch instead of the built-in regexp isearch, also include the following lines:
+(define-key esc-map (kbd "C-r") 'pyregexp-isearch-backward)
+(define-key esc-map (kbd "C-s") 'pyregexp-isearch-forward)
+

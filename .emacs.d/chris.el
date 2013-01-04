@@ -39,7 +39,7 @@
 (global-set-key [f5] 'previous-multiframe-window)
 (global-set-key [f6] 'next-multiframe-window)
 (global-set-key [f7] 'kill-buffer)
-(global-set-key [f8] 'dired)
+(global-set-key [f8] 'dired-jump)
 (global-set-key (kbd "<M-f8>") 'ido-find-file)
 (global-set-key [(shift f8)] 'ido-find-file-other-window)
 ;; f10 is menu-bar-open
