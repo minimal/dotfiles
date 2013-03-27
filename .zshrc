@@ -58,13 +58,13 @@ autoload -U promptinit && promptinit
 #prompt adam2
 
 export PIP_DOWNLOAD_CACHE=$HOME/.pip_download_cache
-export PATH="/home/chris/Komodo-Edit-6/bin:$PATH"
+# export PATH="/home/chris/Komodo-Edit-6/bin:$PATH"
 
 if [ "$kernel" = 'Linux' ]; then
     export GREP_OPTIONS='--color=auto --exclude=*.pyc --exclude-dir=.git --exclude-dir=.svn'
+    export JAVA_HOME=/usr/lib64/jvm/jre-1.6.0-sun  # suse
 fi
 
-export JAVA_HOME=/usr/lib64/jvm/jre-1.6.0-sun  # suse
 export RHINO_HOME=/home/chris/share/rhino1_7R3/
 
 # daryl
@@ -97,6 +97,7 @@ export LESS="-R"           # raw mode for correct colors
 export EDITOR="emacsclient -nw"  # no window mode
 if [ "$kernel" = 'Darwin' ]; then
     export EDITOR="/Applications/Emacs.app/Contents/MacOS/bin/emacsclient -nw"
+    export JAVA_HOME=$(/usr/libexec/java_home)
 fi
 
 export TERM=xterm-256color;      # nice colours
@@ -181,6 +182,9 @@ zstyle ':vcs_info:*:prompt:*' nvcsformats "" "%~"
 
 function precmd {
     vcs_info 'prompt'
+    if [ "$kernel" = 'Darwin' ]; then
+        echo -n -e "\e]0;${PWD##*/}\a"
+    fi
 }
 
 function lprompt {
@@ -244,12 +248,11 @@ fi
 autoload edit-command-line
 zle -N edit-command-line
 bindkey '^X^E' edit-command-line
-
-export PERL_LOCAL_LIB_ROOT="/home/chris/perl5";
-export PERL_MB_OPT="--install_base /home/chris/perl5";
-export PERL_MM_OPT="INSTALL_BASE=/home/chris/perl5";
-export PERL5LIB="/home/chris/perl5/lib/perl5/x86_64-linux-thread-multi:/home/chris/perl5/lib/perl5";
-export PATH="/home/chris/perl5/bin:$PATH";
+# export PERL_LOCAL_LIB_ROOT="/home/chris/perl5";
+# export PERL_MB_OPT="--install_base /home/chris/perl5";
+# export PERL_MM_OPT="INSTALL_BASE=/home/chris/perl5";
+# export PERL5LIB="/home/chris/perl5/lib/perl5/x86_64-linux-thread-multi:/home/chris/perl5/lib/perl5";
+# export PATH="/home/chris/perl5/bin:$PATH";
 
 
 # settitle() {
@@ -261,3 +264,18 @@ export PATH="/home/chris/perl5/bin:$PATH";
 # }
 
 # export settitle=settitle
+
+
+if [ "$kernel" = 'Darwin' ]; then
+    export GOROOT=/usr/local/Cellar/go/1.0.3/
+    export PYTHONPATH=$(brew --prefix)/lib/python2.7/site-packages
+    export PATH=/usr/local/tranquil/bin:$PATH
+
+    function grep_port {
+        lsof -n -i4TCP:$1 | grep LISTEN
+    }
+else
+    function grep_port {
+        netstat -pntl | grep $1
+    }
+fi
