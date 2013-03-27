@@ -5,9 +5,8 @@ kernel=`uname`
 
 export ZSH_HISTORY_PATH=$HOME/.histfile
 
-
 REPORTTIME=10  # if cmd takes longer than n seconds report the time
-setopt autocd extendedglob 
+setopt autocd extendedglob
 setopt interactivecomments
 function cmd_exists() {
     command -v "$1" >/dev/null 2>&1;
@@ -19,7 +18,7 @@ function has_virtualenv() {
     fi
 }
 
-unalias cd 2> /dev/null 
+unalias cd 2> /dev/null
 function venv_cd () {
     cd "$@" && has_virtualenv
 }
@@ -32,7 +31,8 @@ function h () {
 [ -s "/home/chris/.scm_breeze/scm_breeze.sh" ] && source "/home/chris/.scm_breeze/scm_breeze.sh"
 
 function c () {
-    git_index $1
+    #git_index $1
+    venv_cd ~/code/$1;
 }
 
 # for bsd ls
@@ -227,7 +227,7 @@ rprompt '()' $BR_BRIGHT_BLACK $PR_WHITE
 
 function gitbr {
     for k in `git branch|sed s/^..//`;do echo -e `git log -1 \
-    --pretty=format:"%Cgreen%ci %Cblue%cr%Creset" "$k"`\\t"$k";done|sort
+    --pretty=format:"%Cgreen%ci %Cblue%cr%Creset" "$k"`\\t"$k";done
 }
 
 
@@ -271,11 +271,11 @@ if [ "$kernel" = 'Darwin' ]; then
     export PYTHONPATH=$(brew --prefix)/lib/python2.7/site-packages
     export PATH=/usr/local/tranquil/bin:$PATH
 
-    function grep_port {
+    function grep-port {
         lsof -n -i4TCP:$1 | grep LISTEN
     }
 else
-    function grep_port {
+    function grep-port {
         netstat -pntl | grep $1
     }
 fi

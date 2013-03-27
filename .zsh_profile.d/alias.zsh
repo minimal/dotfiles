@@ -84,12 +84,16 @@ alias gka="gitk --all&"
 alias g="git"
 
 # start a Python HTTP server with webshare
-alias webshare='python -c "import SimpleHTTPServer;SimpleHTTPServer.test()"'
+alias webshare='python -m SimpleHTTPServer 8000'
+alias websharecgi='python -m CGIHTTPServer 8001'
 
 # open in running emacs from  cmdline w/o waiting
 if [ "$kernel" = 'Darwin' ]; then
-    alias emacsclient="/Applications/Emacs.app/Contents/MacOS/bin/emacsclient"
+
+    alias emacsclient="/usr/local/Cellar/emacs/24.3/bin/emacsclient"
 fi
 
 
 alias e="emacsclient --no-wait"
+
+function gitio () { curl -i http://git.io -F 'url=$1'; }

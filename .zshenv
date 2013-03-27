@@ -13,6 +13,6 @@ if [ "$kernel" = 'Linux' ]; then
 
 else
     # path=($path ~/bin)
-    export PATH=/usr/local/bin:/usr/local/sbin:/bin:/usr/sbin:/sbin:/usr/bin:/usr/local/share/python:/usr/X11/bin:/Users/Chris/bin
+    export PATH=/usr/local/share/python:/usr/local/bin:/usr/local/sbin:/bin:/usr/sbin:/sbin:/usr/bin:/usr/X11/bin:/Users/Chris/bin
 fi
 
