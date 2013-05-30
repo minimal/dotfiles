@@ -82,6 +82,7 @@ alias ppjson='python -c "import json; import sys; print json.dumps(json.loads(sy
 alias gita="git archive --format=zip `git reflog | grep 'HEAD@{0}' | cut -d \" \" -f1 | sed 's/[.]*//g'` > archive.zip"
 alias gka="gitk --all&"
 alias g="git"
+alias cdgroot="cd `git root`"
 
 # start a Python HTTP server with webshare
 alias webshare='python -m SimpleHTTPServer 8000'

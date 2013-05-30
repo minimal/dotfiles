@@ -35,6 +35,7 @@
     mnff = merge --no-ff
     tags = !git for-each-ref --sort=-taggerdate --format '%(refname:short) %(taggerdate:relative)' refs/tags
     pick = !sh -c 'git log -S$1 -p' -  # show log diffs that add/remove arg string
+    root = !pwd
 [github]
     user = minimal
     token = 
