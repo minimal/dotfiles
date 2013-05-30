@@ -48,6 +48,7 @@
                 multi-web-mode
                 pyregexp
                 anything anything-ipython yasnippet-bundle flymake-cursor))
+                flycheck
 
 (dolist (p my-packages)
   (when (not (package-installed-p p))

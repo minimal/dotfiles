@@ -167,3 +167,10 @@
     (setq exec-path (append exec-path '("J:/downloads/git-portable/bin")))
 )
 
+
+;; go
+(add-hook 'go-mode-hook 'flycheck-mode)
+(add-hook 'go-mode-hook
+          (lambda ()
+            (local-set-key [f5] 'flycheck-previous-error)
+            (local-set-key [f6] 'flycheck-next-error)))
