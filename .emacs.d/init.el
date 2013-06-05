@@ -49,6 +49,7 @@
                 pyregexp
                 anything anything-ipython yasnippet-bundle flymake-cursor))
                 flycheck
+                exec-path-from-shell
 
 (dolist (p my-packages)
   (when (not (package-installed-p p))
@@ -215,3 +216,5 @@
 (define-key esc-map (kbd "C-r") 'pyregexp-isearch-backward)
 (define-key esc-map (kbd "C-s") 'pyregexp-isearch-forward)
 
+(when (memq window-system '(mac ns))
+  (exec-path-from-shell-initialize))
