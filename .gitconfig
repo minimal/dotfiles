@@ -34,8 +34,11 @@
     m = merge
     mnff = merge --no-ff
     tags = !git for-each-ref --sort=-taggerdate --format '%(refname:short) %(taggerdate:relative)' refs/tags
+    tagsonly = !git for-each-ref --sort=-taggerdate --format '%(refname:short)' refs/tags
     pick = !sh -c 'git log -S$1 -p' -  # show log diffs that add/remove arg string
+    graphviz = "!f() { echo 'digraph git {' ; git log --pretty='format:  %h -> { %p }' \"$@\" | sed 's/[0-9a-f][0-9a-f]*/\"&\"/g' ; echo '}'; }; f"
     root = !pwd
+	pu = push --follow-tags
 [github]
     user = minimal
     token = 
