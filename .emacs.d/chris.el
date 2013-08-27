@@ -9,6 +9,7 @@
 (setq recentf-max-menu-items 50)
 (setq recentf-auto-cleanup 'never) ;; disable before we start recentf!
 (global-linum-mode 1)
+(setq linum-format "  %d")  ;; reduce glitching with fring
 
 ;; backup http://pejusdas.com/content/emacs-backup-files also see:
 ;; http://amitp.blogspot.com/2007/03/emacs-move-autosave-and-backup-files.html
@@ -105,7 +106,7 @@
 ))
 
 ;; activate minor whitespace mode when in python mode
-(add-hook 'python-mode-hook 'whitespace-mode)
+;; (add-hook 'python-mode-hook 'whitespace-mode)
 (add-hook 'python-mode-hook 'auto-complete-mode)
 (add-hook 'python-mode-hook
           (lambda ()
@@ -113,7 +114,8 @@
              nil
              '(("\\<\\(FIXME\\|TODO\\|BUG\\|XXX\\):" 1 font-lock-warning-face t)))
             (local-set-key (kbd "M-/") 'hippie-expand)
-            (local-set-key (kbd "M-SPC") 'rope-code-assist)))
+            ;; (local-set-key (kbd "M-SPC") 'rope-code-assist)
+            (local-set-key (kbd "M-RET") 'newline)))
 
 ;; (add-hook 'python-mode-hook
 ;;           (lambda()

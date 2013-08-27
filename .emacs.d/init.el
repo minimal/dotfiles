@@ -28,7 +28,7 @@
 (when (not package-archive-contents)
   (package-refresh-contents))
 
-(defvar my-packages 
+(defvar my-packages
   '(starter-kit starter-kit-lisp starter-kit-eshell starter-kit-js
                 starter-kit-bindings scpaste
                 clojure-mode clojure-test-mode
@@ -47,13 +47,16 @@
                 smooth-scrolling
                 multi-web-mode
                 pyregexp
-                anything anything-ipython yasnippet-bundle flymake-cursor))
+                visual-regexp
+                visual-regexp-steroids
+                ag
                 flycheck
                 exec-path-from-shell
+                yasnippet-bundle flymake-cursor))
 
 (dolist (p my-packages)
   (when (not (package-installed-p p))
-    (package-install p))) 
+    (package-install p)))
 
 ;; Are we on a mac?
 (setq is-mac (equal system-type 'darwin))
@@ -63,6 +66,7 @@
 (require 'yaml-mode)
 (require 'smooth-scrolling)
 
+(require 'ag)
 ;;;; Now overriden by emacs for python
 ;; (require 'python-mode)
 ;; (add-to-list 'auto-mode-alist '("\\.py\\'" . python-mode))
@@ -81,6 +85,7 @@
 (setq ipython-command "/usr/local/bin/ipython")
 (setq py-python-command "/usr/local/bin/ipython")
 
+(require 'auto-complete)
 ;; emacs for python https://github.com/gabrielelanaro/emacs-for-python.git
 (add-to-list 'load-path "~/.emacs.d/emacs-for-python/")
 (require 'epy-setup)
@@ -100,7 +105,10 @@
       (eval-print-last-sexp))))
 (el-get 'sync)
 
-(setq jedi:setup-keys t)                ;install with: el-get-install jedi
+(setq jedi:setup-keys t)                ;install with: el-get-install
+                                    ;jedi
+(require 'jedi)
+(global-auto-complete-mode t)
 (add-hook 'python-mode-hook 'jedi:setup)
 
 ;; (require 'ipython)
@@ -209,12 +217,15 @@
 (defalias 'ack-find-file-same 'ack-and-a-half-find-file-same)
 
 ;; awesome!
-(require 'pyregexp)
 ;; (define-key global-map (kbd "C-c r") 'pyregexp-replace)
 ;; (define-key global-map (kbd "C-c q") 'pyregexp-query-replace)
 ;; to use pyregexp isearch instead of the built-in regexp isearch, also include the following lines:
 (define-key esc-map (kbd "C-r") 'pyregexp-isearch-backward)
 (define-key esc-map (kbd "C-s") 'pyregexp-isearch-forward)
+(require 'visual-regexp-steroids)
+
+(require 'multiple-cursors)
+(global-ethan-wspace-mode 1)
 
 (when (memq window-system '(mac ns))
   (exec-path-from-shell-initialize))
