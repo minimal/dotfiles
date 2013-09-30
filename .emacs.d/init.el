@@ -33,10 +33,8 @@
                 starter-kit-bindings scpaste
                 clojure-mode clojure-test-mode
                 markdown-mode yaml-mode
-                ecb_snap
                 marmalade scpaste python-mode
                 ack-and-a-half
-                ;python
                 python-pep8 python-pylint pyflakes ipython
                 textmate coffee-mode gist
                 move-text highlight-indentation
@@ -46,13 +44,15 @@
                 flymake-coffee
                 smooth-scrolling
                 multi-web-mode
-                pyregexp
                 visual-regexp
                 visual-regexp-steroids
+                volatile-highlights
                 ag
+                auto-complete
                 flycheck
                 exec-path-from-shell
-                yasnippet-bundle flymake-cursor))
+                yasnippet-bundle flymake-cursor
+                ))
 
 (dolist (p my-packages)
   (when (not (package-installed-p p))
@@ -229,3 +229,7 @@
 
 (when (memq window-system '(mac ns))
   (exec-path-from-shell-initialize))
+
+(require 'volatile-highlights)
+
+(volatile-highlights-mode)
