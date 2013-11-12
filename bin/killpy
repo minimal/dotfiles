@@ -1,0 +1,3 @@
+#!/bin/sh -ex
+
+kill `pgrep -L python | grep $1 | grep --only-matching "[0-9]*"`

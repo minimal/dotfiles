@@ -18,6 +18,9 @@ node_modules
 build/
 .ropeproject/
 coverage.xml
+skimlinks.zsh
+.idea
+.cache
 
  # Compiled source #
 ###################

@@ -1,0 +1,7 @@
+#!/bin/sh
+
+pip install ipython
+pip install ipdb
+pip install ipdbplugin
+pip install nose
+pip install nose-progressive
