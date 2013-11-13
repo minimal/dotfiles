@@ -52,6 +52,7 @@
                 flycheck
                 exec-path-from-shell
                 yasnippet-bundle flymake-cursor
+                rainbow-mode  ;; colours css colours
                 ))
 
 (dolist (p my-packages)

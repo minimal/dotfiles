@@ -124,6 +124,8 @@
 ;;                          (save-excursion
 ;;                            (whitespace-cleanup))))))
 
+(add-hook 'css-mode-hook 'rainbow-mode)
+
 (add-to-list 'auto-mode-alist '("\\.zsh\\'" . shell-script-mode))
 (add-to-list 'auto-mode-alist '("\\.gitconfig\\'" . conf-mode))
 (add-to-list 'auto-mode-alist '("\\.php\\'" . php-mode))
