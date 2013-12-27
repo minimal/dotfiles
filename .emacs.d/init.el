@@ -37,11 +37,12 @@
                 ack-and-a-half
                 python-pep8 python-pylint pyflakes ipython
                 textmate coffee-mode gist
-                move-text highlight-indentation
+                highlight-indentation
                 helm projectile
                 ace-jump-mode jump-char
                 expand-region
                 flymake-coffee
+                drag-stuff
                 smooth-scrolling
                 multi-web-mode
                 visual-regexp
@@ -121,7 +122,6 @@
 (require 'textmate)
 (textmate-mode)
 (require `tramp)
-(require 'move-text)
 (require 'jump-char)
 (require 'ace-jump-mode)
 (require 'expand-region)

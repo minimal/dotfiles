@@ -24,6 +24,7 @@
 (setq-default cursor-type 't)
 (winner-mode 1) ;; C-c left => undo window layout change, C-c right => undo
 
+(drag-stuff-global-mode 1)
 ;; bindings
 
 ;; (setq x-super-keysym 'meta) ; make cmd key as meta - for apple keyboard on linux
@@ -56,8 +57,8 @@
 (global-set-key [(meta \[)] 'textmate-shift-left)
 (global-set-key [(control q)] 'fill-paragraph) ;; virtual box
 ;; overrides meta-q
-(global-set-key [(meta n)] 'move-text-down)
-(global-set-key [(meta p)] 'move-text-up)
+(global-set-key [(meta n)] 'drag-stuff-down)
+(global-set-key [(meta p)] 'drag-stuff-up)
 
 (global-set-key [(meta m)] 'jump-char-forward)
 (global-set-key [(shift meta m)] 'jump-char-backward)
