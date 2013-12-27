@@ -30,6 +30,7 @@ skimlinks.zsh
 *.exe
 *.o
 *.so
+*.pyc
 
 # Packages #
 ############
@@ -56,3 +57,4 @@ skimlinks.zsh
 ehthumbs.db
 Icon?
 Thumbs.db
+/.emacs.d/repl-port
