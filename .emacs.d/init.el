@@ -18,8 +18,8 @@
 
 
 (require 'package)
-(add-to-list 'package-archives
-             '("marmalade" . "http://marmalade-repo.org/packages/"))
+;(add-to-list 'package-archives
+;             '("marmalade" . "http://marmalade-repo.org/packages/") t)
 (add-to-list 'package-archives
              '("melpa" . "http://melpa.milkbox.net/packages/") t)
 (package-initialize)
@@ -29,32 +29,52 @@
   (package-refresh-contents))
 
 (defvar my-packages
-  '(starter-kit starter-kit-lisp starter-kit-eshell starter-kit-js
-                starter-kit-bindings scpaste
-                clojure-mode clojure-test-mode
-                markdown-mode yaml-mode
-                marmalade scpaste python-mode
-                ack-and-a-half
-                python-pep8 python-pylint pyflakes ipython
-                textmate coffee-mode gist
-                highlight-indentation
-                helm projectile
-                ace-jump-mode jump-char
-                expand-region
-                flymake-coffee
-                drag-stuff
-                smooth-scrolling
-                multi-web-mode
-                visual-regexp
-                visual-regexp-steroids
-                volatile-highlights
-                ag
-                auto-complete
-                flycheck
-                exec-path-from-shell
-                yasnippet-bundle flymake-cursor
-                rainbow-mode  ;; colours css colours
-                ))
+  '(
+    starter-kit
+    ;starter-kit-lisp
+    ;starter-kit-eshell
+    ;starter-kit-js
+    ;starter-kit-bindings
+    scpaste
+    clojure-mode
+    clojure-test-mode
+    markdown-mode
+    yaml-mode
+    marmalade
+    scpaste
+    python-mode
+    ack-and-a-half
+    python-pep8
+    python-pylint
+    pyflakes
+    ipython
+    textmate
+    coffee-mode
+    gist
+    highlight-indentation
+    helm
+    projectile
+    ace-jump-mode
+    jump-char
+    expand-region
+    flymake-coffee
+    drag-stuff
+    smooth-scrolling
+    multi-web-mode
+    visual-regexp
+    visual-regexp-steroids
+    volatile-highlights
+    ag
+    auto-complete
+    flycheck
+    exec-path-from-shell
+    ;;yasnippet-bundle
+
+    yasnippet
+    flymake-cursor
+    rainbow-mode)  ;; colours css colours
+)
+
 
 (dolist (p my-packages)
   (when (not (package-installed-p p))
