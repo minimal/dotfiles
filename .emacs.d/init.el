@@ -107,13 +107,28 @@
 (setq ipython-command "/usr/local/bin/ipython")
 (setq py-python-command "/usr/local/bin/ipython")
 
+;;; yasnippet
+;;; should be loaded before auto complete so that they can work together
+(require 'yasnippet)
+(yas/global-mode 1)
 (require 'auto-complete)
+
+;;; auto complete mod
+;;; should be loaded after yasnippet so that they can work together
+(require 'auto-complete-config)
+(ac-config-default)
+;;; set the trigger key so that it can work together with yasnippet on tab key,
+;;; if the word exists in yasnippet, pressing tab will cause yasnippet to
+;;; activate, otherwise, auto-complete will
+(ac-set-trigger-key "TAB")
+(ac-set-trigger-key "<tab>")
+
 ;; emacs for python https://github.com/gabrielelanaro/emacs-for-python.git
-(add-to-list 'load-path "~/.emacs.d/emacs-for-python/")
-(require 'epy-setup)
-(require 'epy-python)
+;(add-to-list 'load-path "~/.emacs.d/emacs-for-python/")
+;; (require 'epy-setup)
+;; (require 'epy-python)
 ;; (require 'epy-completion)
-(epy-setup-checker "~/bin/pycheckers %f")
+;; (epy-setup-checker "~/bin/pycheckers %f")
 (require 'highlight-indentation)
 (add-hook 'python-mode-hook 'highlight-indentation)
 
@@ -126,7 +141,6 @@
       (goto-char (point-max))
       (eval-print-last-sexp))))
 (el-get 'sync)
-
 (setq jedi:setup-keys t)                ;install with: el-get-install
                                     ;jedi
 (require 'jedi)
@@ -208,15 +222,16 @@
 ;; magnars stuff
 (when is-mac
   ;; mac friendly font
-  (set-face-attribute 'default nil :font "Monaco-14")
+  (set-face-attribute 'default nil :font "Monaco-12")
   ;; Ignore .DS_Store files with ido mode
   (add-to-list 'ido-ignore-files "\\.DS_Store")
   ;; Don't open files from the workspace in a new frame
   (setq ns-pop-up-frames nil)
   ;; Use aspell for spell checking: brew install aspell --lang=en
   (setq ispell-program-name "/usr/local/bin/aspell")
+  ;; (global-set-key (kbd "<kp-delete>") 'delete)
   (global-set-key '[(control kp-delete)] 'kill-word)
-  (global-set-key (kbd "¦") "|")  ;; I use uk layout which hides pipe key
+  (global-set-key (kbd "Â¦") "|")  ;; I use uk layout which hides pipe key
   )
 
 ;; magnars sane defaults
@@ -241,16 +256,26 @@
 ;; (define-key global-map (kbd "C-c r") 'pyregexp-replace)
 ;; (define-key global-map (kbd "C-c q") 'pyregexp-query-replace)
 ;; to use pyregexp isearch instead of the built-in regexp isearch, also include the following lines:
-(define-key esc-map (kbd "C-r") 'pyregexp-isearch-backward)
-(define-key esc-map (kbd "C-s") 'pyregexp-isearch-forward)
+;; (define-key esc-map (kbd "C-r") 'pyregexp-isearch-backward)
+;; (define-key esc-map (kbd "C-s") 'pyregexp-isearch-forward)
+;; (require 'visual-regexp)
 (require 'visual-regexp-steroids)
 
 (require 'multiple-cursors)
+
+(require 'popwin)
+(setq display-buffer-function 'popwin:display-buffer)
+;; (push '("*Ack-and-a-half*" :height 20) popwin:special-display-config)
+(push "*vc-diff*" popwin:special-display-config)
+(push "*undo-tree*" popwin:special-display-config)
+
 (global-ethan-wspace-mode 1)
 
 (when (memq window-system '(mac ns))
   (exec-path-from-shell-initialize))
 
 (require 'volatile-highlights)
-
 (volatile-highlights-mode)
+
+(require 'go-autocomplete)
+(require 'auto-complete-config)
