@@ -28,7 +28,7 @@
 ;; bindings
 
 ;; (setq x-super-keysym 'meta) ; make cmd key as meta - for apple keyboard on linux
-(setq mac-command-modifier 'meta) ;; on osx set command to control
+(setq mac-command-modifier 'meta) ;; on osx set command to meta
 ;; (global-set-key "\r" 'newline-and-indent)
 
 ;; http://xahlee.org/emacs/keyboard_shortcuts.html
@@ -53,9 +53,10 @@
 (set-register ?e '(file . "~/.emacs.d/chris.el")) ; 'C-x r j e' opens this file
 (define-key global-map (kbd "C-;") 'iedit-mode)
 (define-key global-map (kbd "C-3") 'comment-or-uncomment-region-or-line)
+(define-key global-map (kbd "M-3") 'comment-or-uncomment-region-or-line)
 (global-set-key [(meta \])] 'textmate-shift-right)
 (global-set-key [(meta \[)] 'textmate-shift-left)
-(global-set-key [(control q)] 'fill-paragraph) ;; virtual box
+;; (global-set-key [(control q)] 'fill-paragraph) ;; virtual box
 ;; overrides meta-q
 (global-set-key [(meta n)] 'drag-stuff-down)
 (global-set-key [(meta p)] 'drag-stuff-up)
@@ -99,9 +100,9 @@
 (add-hook 'python-mode-hook
       (lambda ()
             ;dont invoke flymake on temporary buffers for the interpreter
-            (unless (eq buffer-file-name nil) (flymake-mode 1))
-            (local-set-key [f5] 'flymake-goto-prev-error)
-            (local-set-key [f6] 'flymake-goto-next-error)
+            (unless (eq buffer-file-name nil) (flycheck-mode 1))
+            (local-set-key [f5] 'flycheck-previous-error)
+            (local-set-key [f6] 'flycheck-next-error)
             ;; if tabs make sure they are 4 spaces wide
             (set (make-local-variable 'tab-width) 4)
 ))
