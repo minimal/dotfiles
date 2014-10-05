@@ -67,6 +67,11 @@
 (global-set-key (kbd "M-#") 'ace-jump-mode)
 
 (global-set-key (kbd "C-=") 'er/expand-region)
+(global-set-key (kbd "M-K")
+                (lambda ()
+                  (interactive)
+                  (join-line -1)))
+
 (defun align-repeat (start end regexp)
   "Repeat alignment with respect to
      the given regular expression."
@@ -125,6 +130,10 @@
 ;;                       '(lambda()
 ;;                          (save-excursion
 ;;                            (whitespace-cleanup))))))
+
+;; To get jedi completion with a venv:
+;; * venv-workon <env>
+;; * jedi:stop-server
 
 (add-hook 'css-mode-hook 'rainbow-mode)
 
