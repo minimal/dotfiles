@@ -45,11 +45,13 @@
 (global-set-key (kbd "<M-f8>") 'ido-find-file)
 (global-set-key [(shift f8)] 'ido-find-file-other-window)
 ;; f10 is menu-bar-open
-(global-set-key [f9] 'ido-switch-buffer)
+;; (global-set-key [f9] 'ido-switch-buffer)
+(global-set-key [f9] 'helm-mini) ;; this should be better that above
 (global-set-key [(meta f9)] 'textmate-goto-file)
 (global-set-key (kbd "<S-f9>") 'ido-switch-buffer-other-window)
 (global-set-key [(meta shift f9)] 'helm-projectile)
-(global-set-key [f11] 'textmate-goto-symbol)
+;; (global-set-key [f11] 'textmate-goto-symbol)
+(global-set-key [f11] 'helm-semantic-or-imenu)
 (set-register ?e '(file . "~/.emacs.d/chris.el")) ; 'C-x r j e' opens this file
 (define-key global-map (kbd "C-;") 'iedit-mode)
 (define-key global-map (kbd "C-3") 'comment-or-uncomment-region-or-line)
@@ -71,6 +73,8 @@
                 (lambda ()
                   (interactive)
                   (join-line -1)))
+
+(global-set-key (kbd "M-x") 'helm-M-x)
 
 (defun align-repeat (start end regexp)
   "Repeat alignment with respect to
