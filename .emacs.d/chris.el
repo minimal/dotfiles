@@ -214,3 +214,43 @@
           (lambda ()
             (local-set-key [f5] 'flycheck-previous-error)
             (local-set-key [f6] 'flycheck-next-error)))
+
+;; clojure
+
+(add-hook 'cider-mode-hook 'cider-turn-on-eldoc-mode)
+(setq cider-repl-popup-stacktraces nil)
+(add-hook 'cider-repl-mode-hook 'paredit-mode)
+
+;; use company mode instead of auto-complete-mode
+(add-hook 'cider-mode-hook 'company-mode)
+(add-hook 'cider-repl-mode-hook 'company-mode)
+
+;; Reloaded reset from and clojure buffer
+(defun cider-namespace-refresh ()
+  (interactive)
+  (save-some-buffers)
+  (with-current-buffer (cider-current-repl-buffer)
+    (cider-interactive-eval
+     "(reloaded.repl/reset)")))
+
+
+(defun cider-eval-expression-at-point-in-repl ()
+  (interactive)
+  (let ((form (cider-sexp-at-point)))
+    ;; Strip excess whitespace
+    (while (string-match "\\`\s+\\|\n+\\'" form)
+      (setq form (replace-match "" t t form)))
+    (with-current-buffer (cider-current-repl-buffer)
+      (goto-char (point-max))
+      (insert form)
+      (cider-repl-return))))
+
+(add-hook 'clojure-mode-hook
+          (lambda ()
+            (define-key clojure-mode-map (kbd "C-x M-r") 'cider-namespace-refresh)
+            (local-set-key (kbd "C-`") 'cider-eval-expression-at-point-in-repl)
+            (auto-complete-mode -1)
+            (clj-refactor-mode)
+            (aggressive-indent-mode)
+            (highlight-indentation-mode)))
+
