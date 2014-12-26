@@ -304,8 +304,6 @@
 
 ;; end clojure
           (lambda ()
-            (define-key clojure-mode-map (kbd "C-x M-r") 'cider-namespace-refresh)
-            (local-set-key (kbd "C-`") 'cider-eval-expression-at-point-in-repl)
             (auto-complete-mode -1)
             (clj-refactor-mode)
             (aggressive-indent-mode)
