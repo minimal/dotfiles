@@ -140,16 +140,29 @@
 ;; * jedi:stop-server
 
 (add-hook 'css-mode-hook 'rainbow-mode)
+(add-hook 'js-mode-hook 'flymake-jshint-load)
 
 (add-to-list 'auto-mode-alist '("\\.zsh\\'" . shell-script-mode))
 (add-to-list 'auto-mode-alist '("\\.gitconfig\\'" . conf-mode))
 (add-to-list 'auto-mode-alist '("\\.php\\'" . php-mode))
+(add-to-list 'auto-mode-alist '("\\.cs\\'" . coffee-mode)) ;; /sigh
+(add-to-list 'auto-mode-alist '("\\.slate\\'" . conf-mode))
 
 (setq-default indicate-empty-lines t
         indicate-buffer-boundaries 'left)
 
 (idle-highlight-mode)
+(defun my-buffer-face-mode-variable ()
+  "Set different fonts in current buffer"
+  (interactive)
+  ;; (setq buffer-face-mode-face '(:font "Monaco-8"))
+  ;; (set-face-attribute 'default nil :font "Monaco-14")
+  (setq buffer-face-mode-face '(:height 122))
+  (buffer-face-mode))
 
+(add-hook 'erc-mode-hook
+          'my-buffer-face-mode-variable)
+;; (remove-hook 'erc-mode-hook  'my-buffer-face-mode-variable)
 
 ;;;;; Dedicated window
 (defadvice pop-to-buffer (before cancel-other-window first)
@@ -184,7 +197,113 @@
 ;;; win git location
 (if (eq system-type 'windows-nt)
     (setq exec-path (append exec-path '("J:/downloads/git-portable/bin")))
-)
+  )
+
+;; Notifications
+;; look at erc-track-exclude-types variable
+
+(require 'todochiku)
+;; (unless (posix-string-match "^\\** *Users on " message))
+(defun my-erc-hook (match-type nick message)
+  "Shows a todochiku notification, when user's nick was
+mentioned. If the buffer is currently not visible, makes it
+sticky."
+  (unless (or (posix-string-match "^\\*** " message)
+              (posix-string-match "localhost has changed mode for " message)
+              (posix-string-match "^<root>" message)
+              (posix-string-match "as changed mode for " message))
+    (todochiku-message
+     (concat "ERC: " nick " mentioned on " (buffer-name (current-buffer)))
+     message
+     (todochiku-icon 'compile)
+     )))
+
+(add-hook 'erc-text-matched-hook 'my-erc-hook)
+
+;; (remove-hook 'erc-text-matched-hook  'my-erc-hook)
+
+(setq erc-dangerous-hosts '("localhost"))
+
+;; Annoying arrows mode <- too annoying!
+;; (add-to-list 'load-path "~/.emacs.d/vendor/annoying-arrows-mode.el/")
+;; (require 'annoying-arrows-mode)
+;; (global-annoying-arrows-mode)
+
+(wrap-region-global-mode t)
+
+;; (setq line-move-visual 'nil)
+
+(add-hook 'ibuffer-hook
+          (lambda ()
+            (ibuffer-vc-set-filter-groups-by-vc-root)
+            (unless (eq ibuffer-sorting-mode 'alphabetic)
+              (ibuffer-do-sort-by-alphabetic))))
+
+;; (add-hook 'nrepl-interaction-mode-hook
+;;           'nrepl-turn-on-eldoc-mode)
+;; (setq nrepl-popup-stacktraces nil)
+;; (add-to-list 'same-window-buffer-names "*nrepl*")
+
+
+;; Diminish modeline clutter
+(require 'diminish)
+(diminish 'wrap-region-mode)
+;; (diminish 'yas/minor-mode)
+;; (diminish 'auto-fill-mode) ;; errors!
+
+(setq erc-autojoin-channels-alist
+      '(;("irc.skimlinks.com" "#dev")
+        ;("localhost")
+        ("irc.freenode.net" "#typed-clojure")))
+
+;; Keep emacs Custom-settings in separate file
+(setq custom-file (expand-file-name "secret.el" user-emacs-directory))
+(load custom-file)
+
+
+(ethan-wspace-mode)
+
+(defun toggle-window-split ()
+  (interactive)
+  (if (= (count-windows) 2)
+      (let* ((this-win-buffer (window-buffer))
+             (next-win-buffer (window-buffer (next-window)))
+             (this-win-edges (window-edges (selected-window)))
+             (next-win-edges (window-edges (next-window)))
+             (this-win-2nd (not (and (<= (car this-win-edges)
+                                         (car next-win-edges))
+                                     (<= (cadr this-win-edges)
+                                         (cadr next-win-edges)))))
+             (splitter
+              (if (= (car this-win-edges)
+                     (car (window-edges (next-window))))
+                  'split-window-horizontally
+                'split-window-vertically)))
+        (delete-other-windows)
+        (let ((first-win (selected-window)))
+          (funcall splitter)
+          (if this-win-2nd (other-window 1))
+          (set-window-buffer (selected-window) this-win-buffer)
+          (set-window-buffer (next-window) next-win-buffer)
+          (select-window first-win)
+          (if this-win-2nd (other-window 1))))))
+
+(defadvice yank-pop (around kill-ring-browse-maybe (arg))
+  "If last action was not a yank, run `browse-kill-ring' instead."
+  ;; yank-pop has an (interactive "*p") form which does not allow
+  ;; it to run in a read-only buffer.  We want browse-kill-ring to
+  ;; be allowed to run in a read only buffer, so we change the
+  ;; interactive form here.  In that case, we need to
+  ;; barf-if-buffer-read-only if we're going to call yank-pop with
+  ;; ad-do-it
+  (interactive "p")
+  (if (not (eq last-command 'yank))
+      (helm-show-kill-ring)
+    (barf-if-buffer-read-only)
+    ad-do-it))
+(ad-activate 'yank-pop)
+
+(global-rainbow-delimiters-mode t)
 
 ;; Ido-mode customizations
 (setq ido-decorations                                                      ; Make ido-mode display vertically
@@ -230,6 +349,13 @@
     (cider-interactive-eval
      "(reloaded.repl/reset)")))
 
+;; Use this to define add hoc reset
+;; (define-key clojure-mode-map (kbd "M-r")
+;;   (lambda ()
+;;     (interactive)
+;;     (cider-interactive-eval
+;;       "(require '[clojure.pprint :refer [pprint]])
+;;        (pprint @interesting-atom)")))
 
 (defun cider-eval-expression-at-point-in-repl ()
   (interactive)
@@ -301,11 +427,191 @@
      (percentiles 2)
      )))
 
+;; (put-clojure-indent 'dom/div 'defun)
+
+;; (add-custom-clojure-indents 'dom 2)
+
+;; compojure
+;; (define-clojure-indent
+;;   (defroutes 'defun)
+;;   (GET 2)
+;;   (POST 2)
+;;   (PUT 2)
+;;   (DELETE 2)
+;;   (HEAD 2)
+;;   (ANY 2)
+;;   (context 2)
+;;   (dom/div 2))
+;;(put-clojure-indent 'match 1) ;; core.match
+
+;; (put-clojure-indent 'dom/div 2)
+
 
 ;; end clojure
+
+(add-to-list 'dash-at-point-mode-alist '(python-mode . "python2"))
+
+(defun clone-buffer-and-narrow-to-function ()
+      (interactive)
+      (clone-indirect-buffer-other-window (which-function) 'pop-to-buffer)
+      (mark-defun) ; works not only in emacs-lisp, but C++, Python, ...
+      (narrow-to-region (mark) (point))
+      (pop-mark)
+      (other-window 1))
+(require 'region-bindings-mode)
+(region-bindings-mode-enable)
+(define-key region-bindings-mode-map "a" 'mc/mark-all-like-this)
+(define-key region-bindings-mode-map "p" 'mc/mark-previous-like-this)
+(define-key region-bindings-mode-map "n" 'mc/mark-next-like-this)
+(define-key region-bindings-mode-map "m" 'mc/mark-more-like-this-extended)
+(define-key region-bindings-mode-map "s" 'mc/skip-to-next-like-this)
+
+;; (define-key global-map (kbd "C-x 4 n") 'clone-buffer-and-narrow-to-function) ; or whatever key you prefer
+
+
+;; sudo stuff
+
+;; (set-default 'tramp-default-proxies-alist (quote (("my-sudo-alias" nil "/ssh:chris@rogervm.skimlinks.com#17555:"))))
+
+(projectile-global-mode)
+
+;; (require 'flx-ido)
+;; (ido-mode 1)
+;; (ido-everywhere 1)
+;; (flx-ido-mode 1)
+;; disable ido faces to see flx highlights.
+;; (setq ido-use-faces nil)
+
+
+;; Haskell WIP
+;; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+
+(setenv "PATH" (concat "/Applications/ghc-7.8.3.app/Contents/bin:" "~/.cabal/bin:" (getenv "PATH")))
+(add-to-list 'exec-path "~/.cabal/bin")
+(add-to-list 'exec-path "/Applications/ghc-7.8.3.app/Contents/bin")
+;; Use Unicode arrows in place of ugly ASCII arrows
+;; (require 'bodil-defuns)
+(defun font-lock-replace-symbol (mode reg sym)
+  (font-lock-add-keywords
+   mode `((,reg
+           (0 (progn (compose-region (match-beginning 1) (match-end 1)
+                                     ,sym 'decompose-region)))))))
+
+;; arrows: ⬅ ⟵  ➫ ➙ →
+(defun setup-haskell-arrows (mode mode-map)
+  (font-lock-replace-symbol mode "\\(->\\)" "➙")
+  (font-lock-replace-symbol mode "\\(<-\\)" "⟵")
+  (font-lock-replace-symbol mode "\\(=>\\)" "⇒")
+
+  (define-key mode-map (kbd "➙") (lambda () (interactive) (insert "->")))
+  (define-key mode-map (kbd "⟵") (lambda () (interactive) (insert "<-")))
+  (define-key mode-map (kbd "⇒") (lambda () (interactive) (insert "=>"))))
+(eval-after-load "haskell-mode"
+  '(setup-haskell-arrows 'haskell-mode haskell-mode-map))
+
+(add-hook 'haskell-mode-hook
           (lambda ()
             (auto-complete-mode -1)
-            (clj-refactor-mode)
-            (aggressive-indent-mode)
-            (highlight-indentation-mode)))
+            (setq ghc-display-error 'minibuffer)))
 
+(autoload 'ghc-init "ghc" nil t)
+(autoload 'ghc-debug "ghc" nil t)
+(add-hook 'haskell-mode-hook (lambda () (ghc-init)))
+
+
+;; end haskell
+;; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+;;; PureScript cheat mode
+(define-derived-mode purescript-mode haskell-mode "PureScript"
+  "Major mode for PureScript")
+(add-to-list 'auto-mode-alist (cons "\\.purs\\'" 'purescript-mode))
+(setup-haskell-arrows 'purescript-mode purescript-mode-map)
+
+
+;; round quotes
+(eval-after-load 'org
+  '(define-key org-mode-map
+     "\"" #'endless/round-quotes))
+
+(defun endless/round-quotes (italicize)
+  "Insert “” and leave point in the middle.
+With prefix argument ITALICIZE, insert /“”/ instead (meant for
+org-mode).
+If inside a code-block, simply calls `self-insert-command'."
+  (interactive "P")
+  (if (and (derived-mode-p 'org-mode) (org-in-src-block-p))
+      (call-interactively 'self-insert-command)
+    (if (looking-at "”[/=_\\*]?")
+        (goto-char (match-end 0))
+      (when italicize
+        (insert "//")
+        (forward-char -1))
+      (insert "“”")
+      (forward-char -1))))
+;; end round quotes
+
+
+;; (define-derived-mode purescript-mode haskell-mode "PureScript"
+;;   "Major mode for PureScript")
+;; (add-to-list 'auto-mode-alist (cons "\\.purs\\'" 'purescript-mode))
+
+(eval-after-load 'flycheck
+  '(progn
+     (flycheck-define-checker purs-check
+       "Use purscheck to flycheck PureScript code."
+       :command ("/Users/chris/code/scratch/purescript-chapter3/.cabal-sandbox/bin/purscheck" source source-original temporary-file-name)
+       :error-patterns
+       ((error line-start
+               (or (and "Error at " (file-name)    " line " line ", column " column ":" (zero-or-more " "))
+                   (and "\""        (file-name) "\" (line " line ", column " column "):"))
+               (or (message (one-or-more not-newline))
+                   (and "\n"
+                        (message
+                         (zero-or-more " ") (one-or-more not-newline)
+                         (zero-or-more "\n"
+                                       (zero-or-more " ")
+                                       (one-or-more not-newline)))))
+               line-end))
+       :modes purescript-mode)
+     (add-to-list 'flycheck-checkers 'purs-check)))
+
+(provide 'purscheck)
+
+(eval-after-load 'flycheck
+  '(add-hook 'flycheck-mode-hook #'flycheck-haskell-setup))
+
+
+;; (py-test-define-project
+;;  :name "Classifier"
+;;  :python-command "/Users/chris/Envs/classi/bin/python"
+;;  :base-directory (expand-file-name "~/code/product-enrichment/classifier-py/")
+;;  :test-runner (expand-file-name "/Users/chris/Envs/classi/bin/py.test")
+;;  :working-directory (expand-file-name "~/code/product-enrichment/classifier-py/"))
+
+
+;; (pprint (sort (.split (System/getProperty "java.class.path") ":")))
+
+
+(use-package org-projectile
+  ;; :bind (("C-c n p" . org-projectile:project-todo-completing-read)
+  ;;        ("C-c c" . org-capture))
+  :config
+  (progn
+    (setq org-projectile:projects-file
+          "~/Dropbox/code/projects.org")
+    (add-to-list 'org-capture-templates (org-projectile:project-todo-entry "p")))
+  :ensure t)
+
+;;http://sachachua.com/blog/2014/12/emacs-kaizen-ace-jump-zap-lets-use-c-u-zap-character/
+(use-package ace-jump-zap
+  :ensure ace-jump-zap
+  :bind
+  (("M-z" . ace-jump-zap-up-to-char-dwim)
+   ("C-M-z" . ace-jump-zap-to-char-dwim)))
+
+;; http://ericjmritz.name/2014/12/23/using-quickrun-in-emacs/
+;; try quickrun-region, quickrun-replace-region
+(use-package quickrun
+  :ensure t)
