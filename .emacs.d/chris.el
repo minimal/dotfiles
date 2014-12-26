@@ -9,7 +9,7 @@
 (setq recentf-max-menu-items 50)
 (setq recentf-auto-cleanup 'never) ;; disable before we start recentf!
 (global-linum-mode 1)
-(setq linum-format "  %d")  ;; reduce glitching with fring
+(setq linum-format " %d  ")  ;; reduce glitching with fring
 
 ;; backup http://pejusdas.com/content/emacs-backup-files also see:
 ;; http://amitp.blogspot.com/2007/03/emacs-move-autosave-and-backup-files.html
@@ -47,7 +47,7 @@
 ;; f10 is menu-bar-open
 ;; (global-set-key [f9] 'ido-switch-buffer)
 (global-set-key [f9] 'helm-mini) ;; this should be better that above
-(global-set-key [(meta f9)] 'textmate-goto-file)
+(global-set-key [(meta f9)] 'helm-projectile-find-file)
 (global-set-key (kbd "<S-f9>") 'ido-switch-buffer-other-window)
 (global-set-key [(meta shift f9)] 'helm-projectile)
 ;; (global-set-key [f11] 'textmate-goto-symbol)
