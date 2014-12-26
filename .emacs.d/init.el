@@ -69,7 +69,7 @@
     flycheck
     exec-path-from-shell
     ;;yasnippet-bundle
-
+    use-package
     yasnippet
     flymake-cursor
     rainbow-mode)  ;; colours css colours
@@ -83,7 +83,7 @@
 ;; Are we on a mac?
 (setq is-mac (equal system-type 'darwin))
 
-
+(require 'use-package)
 ;; (require 'anything-show-completion)
 (require 'yaml-mode)
 (require 'smooth-scrolling)
