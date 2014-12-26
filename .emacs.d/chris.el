@@ -215,15 +215,12 @@
             (local-set-key [f5] 'flycheck-previous-error)
             (local-set-key [f6] 'flycheck-next-error)))
 
+
+(eval-after-load 'flycheck
+  '(custom-set-variables
+    '(flycheck-display-errors-function #'flycheck-pos-tip-error-messages)))
+
 ;; clojure
-
-;; (add-hook 'cider-mode-hook 'cider-turn-on-eldoc-mode)
-;; (setq cider-repl-popup-stacktraces nil)
-;; (add-hook 'cider-repl-mode-hook 'paredit-mode)
-
-;; use company mode instead of auto-complete-mode
-;; (add-hook 'cider-mode-hook 'company-mode)
-;; (add-hook 'cider-repl-mode-hook 'company-mode)
 
 ;; Reloaded reset from and clojure buffer
 (defun cider-namespace-refresh ()
@@ -244,22 +241,6 @@
       (goto-char (point-max))
       (insert form)
       (cider-repl-return))))
-
-
-(eval-after-load 'flycheck
-  '(custom-set-variables
-    '(flycheck-display-errors-function #'flycheck-pos-tip-error-messages)))
-
-;; (add-hook 'clojure-mode-hook
-;;           (lambda ()
-;;             (require 'squiggly-clojure)
-;;             (define-key clojure-mode-map (kbd "C-x M-r") 'cider-namespace-refresh)
-;;             (local-set-key (kbd "C-`") 'cider-eval-expression-at-point-in-repl)
-;;             (auto-complete-mode -1)
-;;             (clj-refactor-mode)
-;;             (aggressive-indent-mode)
-;;             (flycheck-mode 1)
-;;             (highlight-indentation-mode)))
 
 (use-package cider
   :ensure t
@@ -287,6 +268,38 @@
     (clj-refactor-mode)
     (aggressive-indent-mode)
     (highlight-indentation-mode)))
+
+;; indentation tweaks for korma etc
+(add-hook
+ 'clojure-mode-hook
+ (lambda ()
+   (define-clojure-indent
+     (copy 2)
+     (create-table 1)
+     (delete 1)
+     (drop-table 1)
+     (insert 2)
+     (select 1)
+     (truncate 1)
+     (update 2)
+     (dom/div 2)
+     (dom/ 2)
+     (alter-var-root 1)
+     ;; storm
+     (nextTuple 1)
+     ;;cats
+     (mlet 1)
+     ;; manifold
+     (let-flow 1)
+     ;; riemann
+     (tagged 1)
+     (where 1)
+     (rollup 2)
+     (by 1)
+     (with 1)
+     (splitp 2)
+     (percentiles 2)
+     )))
 
 
 ;; end clojure
