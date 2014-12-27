@@ -36,8 +36,6 @@
     ;starter-kit-js
     ;starter-kit-bindings
     scpaste
-    clojure-mode
-    clojure-test-mode
     markdown-mode
     yaml-mode
     marmalade
@@ -52,8 +50,6 @@
     coffee-mode
     gist
     highlight-indentation
-    helm
-    projectile
     ace-jump-mode
     jump-char
     expand-region
@@ -162,12 +158,7 @@
 
 (add-to-list 'auto-mode-alist '("\\.markdown\\'" . markdown-mode))
 (add-to-list 'auto-mode-alist '("\\.md\\'" . markdown-mode))
-
 ;; new
-(require 'helm)
-(require 'projectile)
-(projectile-global-mode) ;; to enable in all buffers
-(setq projectile-enable-caching t)
 
 (yas/load-directory "~/.emacs.d/snippets")
 ;; (require 'ecb)

@@ -45,13 +45,8 @@
 (global-set-key (kbd "<M-f8>") 'ido-find-file)
 (global-set-key [(shift f8)] 'ido-find-file-other-window)
 ;; f10 is menu-bar-open
-;; (global-set-key [f9] 'ido-switch-buffer)
-(global-set-key [f9] 'helm-mini) ;; this should be better that above
-(global-set-key [(meta f9)] 'helm-projectile-find-file)
 (global-set-key (kbd "<S-f9>") 'ido-switch-buffer-other-window)
-(global-set-key [(meta shift f9)] 'helm-projectile)
 ;; (global-set-key [f11] 'textmate-goto-symbol)
-(global-set-key [f11] 'helm-semantic-or-imenu)
 (set-register ?e '(file . "~/.emacs.d/chris.el")) ; 'C-x r j e' opens this file
 (define-key global-map (kbd "C-;") 'iedit-mode)
 (define-key global-map (kbd "C-3") 'comment-or-uncomment-region-or-line)
@@ -74,7 +69,54 @@
                   (interactive)
                   (join-line -1)))
 
-(global-set-key (kbd "M-x") 'helm-M-x)
+;; helm
+
+;; more options http://pages.sachachua.com/.emacs.d/Sacha.html#unnumbered-14
+(use-package helm
+  :ensure helm
+  :diminish helm-mode
+  :init
+  (progn
+    (setq helm-quick-update t
+          helm-ff-skip-boring-files t)
+    (helm-mode))
+                                        ;:config
+  :bind (("<f9>" . helm-mini)
+         ("M-<f9>" . helm-projectile-find-file)
+         ("M-S-<f9>" . helm-projectile)
+         ("<f11>" . helm-semantic-or-imenu)
+         ("M-x" . helm-M-x)))
+
+(use-package helm-swoop
+  :bind
+  (("C-M-s" . helm-swoop)
+   ;; ("C-S-s" . helm-swoop)
+   ;; ("M-i" . helm-swoop)
+   ;; ("M-s s" . helm-swoop)
+   ;; ("M-s M-s" . helm-swoop)
+   ("M-I" . helm-swoop-back-to-last-point)
+   ("C-c M-i" . helm-multi-swoop)
+   ("C-x M-i" . helm-multi-swoop-all)
+   )
+  :config
+  (progn
+    (define-key isearch-mode-map (kbd "M-i") 'helm-swoop-from-isearch)
+    (define-key helm-swoop-map (kbd "M-i") 'helm-multi-swoop-all-from-helm-swoop)))
+
+(use-package projectile
+  :ensure projectile
+  :diminish projectile-mode
+  :init
+  (progn
+    ;; (setq projectile-keymap-prefix (kbd "C-c p"))
+    ;; (setq projectile-completion-system 'default)
+    ;; (setq projectile-enable-caching t)
+    (projectile-global-mode)))
+
+(use-package helm-projectile
+  :ensure helm-projectile)
+
+;; end helm
 
 (defun align-repeat (start end regexp)
   "Repeat alignment with respect to
@@ -478,8 +520,6 @@ sticky."
 ;; sudo stuff
 
 ;; (set-default 'tramp-default-proxies-alist (quote (("my-sudo-alias" nil "/ssh:chris@rogervm.skimlinks.com#17555:"))))
-
-(projectile-global-mode)
 
 ;; (require 'flx-ido)
 ;; (ido-mode 1)
