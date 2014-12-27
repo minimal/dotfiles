@@ -24,7 +24,6 @@
 (setq-default cursor-type 't)
 (winner-mode 1) ;; C-c left => undo window layout change, C-c right => undo
 
-(drag-stuff-global-mode 1)
 ;; bindings
 
 ;; (setq x-super-keysym 'meta) ; make cmd key as meta - for apple keyboard on linux
@@ -46,7 +45,6 @@
 (global-set-key [(shift f8)] 'ido-find-file-other-window)
 ;; f10 is menu-bar-open
 (global-set-key (kbd "<S-f9>") 'ido-switch-buffer-other-window)
-;; (global-set-key [f11] 'textmate-goto-symbol)
 (set-register ?e '(file . "~/.emacs.d/chris.el")) ; 'C-x r j e' opens this file
 (define-key global-map (kbd "C-;") 'iedit-mode)
 (define-key global-map (kbd "C-3") 'comment-or-uncomment-region-or-line)
@@ -55,8 +53,7 @@
 (global-set-key [(meta \[)] 'textmate-shift-left)
 ;; (global-set-key [(control q)] 'fill-paragraph) ;; virtual box
 ;; overrides meta-q
-(global-set-key [(meta n)] 'drag-stuff-down)
-(global-set-key [(meta p)] 'drag-stuff-up)
+
 
 (global-set-key [(meta m)] 'jump-char-forward)
 (global-set-key [(shift meta m)] 'jump-char-backward)
@@ -117,6 +114,15 @@
   :ensure helm-projectile)
 
 ;; end helm
+
+(use-package drag-stuff
+  :ensure t
+  :bind
+  (("M-n" . drag-stuff-down)
+   ("M-p" . drag-stuff-up))
+  :init
+  (progn
+    (drag-stuff-global-mode)))
 
 (defun align-repeat (start end regexp)
   "Repeat alignment with respect to
