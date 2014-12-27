@@ -58,9 +58,7 @@
 (global-set-key [(meta m)] 'jump-char-forward)
 (global-set-key [(shift meta m)] 'jump-char-backward)
 (global-set-key [(meta i)] 'back-to-indentation)
-(global-set-key (kbd "M-#") 'ace-jump-mode)
 
-(global-set-key (kbd "C-=") 'er/expand-region)
 (global-set-key (kbd "M-K")
                 (lambda ()
                   (interactive)
@@ -108,7 +106,7 @@
   (progn
     ;; (setq projectile-keymap-prefix (kbd "C-c p"))
     ;; (setq projectile-completion-system 'default)
-    ;; (setq projectile-enable-caching t)
+    (setq projectile-enable-caching t)
     (projectile-global-mode)))
 
 (use-package helm-projectile
@@ -124,6 +122,33 @@
   :init
   (progn
     (drag-stuff-global-mode)))
+
+(use-package ace-jump-mode
+  :ensure t
+  :bind (("M-#" . ace-jump-mode)))
+
+(use-package expand-region
+  :ensure t
+  :bind (("C-=" . er/expand-region)))
+
+(use-package expand-region
+  :ensure t)
+
+(use-package multiple-cursors
+  :ensure t)
+
+(use-package region-bindings-mode
+  :defer t
+  :config
+  (progn
+    (bind-key "a" #'mc/mark-all-like-this-dwim  region-bindings-mode-map)
+    (bind-key "p" #'mc/mark-previous-like-this  region-bindings-mode-map)
+    (bind-key "n" #'mc/mark-next-like-this  region-bindings-mode-map)
+    (bind-key "m" #'mc/mark-more-like-this-extended  region-bindings-mode-map)
+    (bind-key "s" #'mc/skip-to-next-like-this  region-bindings-mode-map))
+  :init
+  (progn
+    (region-bindings-mode-enable)))
 
 ;; clojure ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
