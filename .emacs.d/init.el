@@ -54,7 +54,6 @@
     jump-char
     expand-region
     flymake-coffee
-    drag-stuff
     smooth-scrolling
     multi-web-mode
     visual-regexp

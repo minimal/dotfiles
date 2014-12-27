@@ -66,6 +66,7 @@
                   (interactive)
                   (join-line -1)))
 
+;; begin use-package ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; helm
 
 ;; more options http://pages.sachachua.com/.emacs.d/Sacha.html#unnumbered-14
@@ -123,6 +124,126 @@
   :init
   (progn
     (drag-stuff-global-mode)))
+
+;; clojure ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+;; Reloaded reset from and clojure buffer
+(defun cider-namespace-refresh ()
+  (interactive)
+  (save-some-buffers)
+  (with-current-buffer (cider-current-repl-buffer)
+    (cider-interactive-eval
+     "(reloaded.repl/reset)")))
+
+;; Use this to define add hoc reset
+;; (define-key clojure-mode-map (kbd "M-r")
+;;   (lambda ()
+;;     (interactive)
+;;     (cider-interactive-eval
+;;       "(require '[clojure.pprint :refer [pprint]])
+;;        (pprint @interesting-atom)")))
+
+(defun cider-eval-expression-at-point-in-repl ()
+  (interactive)
+  (let ((form (cider-sexp-at-point)))
+    ;; Strip excess whitespace
+    (while (string-match "\\`\s+\\|\n+\\'" form)
+      (setq form (replace-match "" t t form)))
+    (with-current-buffer (cider-current-repl-buffer)
+      (goto-char (point-max))
+      (insert form)
+      (cider-repl-return))))
+
+(use-package cider
+  :ensure t
+  :commands (cider-jack-in cider)
+  :config
+  (progn
+    (add-hook #'cider-mode-hook
+              (lambda ()
+                (cider-turn-on-eldoc-mode)
+                (company-mode)
+                (flycheck-mode)))
+    (add-hook #'cider-repl-mode-hook
+              (lambda ()
+                (company-mode)
+                (enable-paredit-mode)
+                (setq cider-stacktrace-fill-column t
+                      cider-repl-print-length 100)))
+    (require 'squiggly-clojure)
+    ;;nrepl-hide-special-buffers t
+    )
+  :bind (("C-x M-r" . cider-namespace-refresh)
+         ("C-`" . cider-eval-expression-at-point-in-repl)))
+
+(use-package clojure-mode
+  :ensure t
+  :config
+  (progn
+    (add-hook #'clojure-mode-hook
+              (lambda ()
+                (auto-complete-mode -1)
+                (clj-refactor-mode)
+                (aggressive-indent-mode)
+                (highlight-indentation-mode)))))
+
+;; indentation tweaks for korma etc
+(add-hook
+ #'clojure-mode-hook
+ (lambda ()
+   (define-clojure-indent
+     (copy 2)
+     (create-table 1)
+     (delete 1)
+     (drop-table 1)
+     (insert 2)
+     (select 1)
+     (truncate 1)
+     (update 2)
+     (dom/div 2)
+     (dom/ 2)
+     (alter-var-root 1)
+     ;; storm
+     (nextTuple 1)
+     ;;cats
+     (mlet 1)
+     ;; manifold
+     (let-flow 1)
+     ;; riemann
+     (tagged 1)
+     (where 1)
+     (rollup 2)
+     (by 1)
+     (with 1)
+     (splitp 2)
+     (percentiles 2)
+     )))
+
+;; (put-clojure-indent 'dom/div 'defun)
+
+;; (add-custom-clojure-indents 'dom 2)
+
+;; compojure
+;; (define-clojure-indent
+;;   (defroutes 'defun)
+;;   (GET 2)
+;;   (POST 2)
+;;   (PUT 2)
+;;   (DELETE 2)
+;;   (HEAD 2)
+;;   (ANY 2)
+;;   (context 2)
+;;   (dom/div 2))
+;;(put-clojure-indent 'match 1) ;; core.match
+
+;; (put-clojure-indent 'dom/div 2)
+
+
+;; end clojure
+
+;; end use-package ;;
+;; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
 
 (defun align-repeat (start end regexp)
   "Repeat alignment with respect to
@@ -387,121 +508,6 @@ sticky."
   '(custom-set-variables
     '(flycheck-display-errors-function #'flycheck-pos-tip-error-messages)))
 
-;; clojure
-
-;; Reloaded reset from and clojure buffer
-(defun cider-namespace-refresh ()
-  (interactive)
-  (save-some-buffers)
-  (with-current-buffer (cider-current-repl-buffer)
-    (cider-interactive-eval
-     "(reloaded.repl/reset)")))
-
-;; Use this to define add hoc reset
-;; (define-key clojure-mode-map (kbd "M-r")
-;;   (lambda ()
-;;     (interactive)
-;;     (cider-interactive-eval
-;;       "(require '[clojure.pprint :refer [pprint]])
-;;        (pprint @interesting-atom)")))
-
-(defun cider-eval-expression-at-point-in-repl ()
-  (interactive)
-  (let ((form (cider-sexp-at-point)))
-    ;; Strip excess whitespace
-    (while (string-match "\\`\s+\\|\n+\\'" form)
-      (setq form (replace-match "" t t form)))
-    (with-current-buffer (cider-current-repl-buffer)
-      (goto-char (point-max))
-      (insert form)
-      (cider-repl-return))))
-
-(use-package cider
-  :ensure t
-  :commands (cider-jack-in cider)
-  :config
-  (progn
-    (add-hook #'cider-mode-hook
-              (lambda ()
-                (cider-turn-on-eldoc-mode)
-                (company-mode)
-                (flycheck-mode)))
-    (add-hook #'cider-repl-mode-hook
-              (lambda ()
-                (company-mode)
-                (enable-paredit-mode)
-                (setq cider-stacktrace-fill-column t
-                      cider-repl-print-length 100)))
-    (require 'squiggly-clojure)
-    ;;nrepl-hide-special-buffers t
-    )
-  :bind (("C-x M-r" . cider-namespace-refresh)
-         ("C-`" . cider-eval-expression-at-point-in-repl)))
-
-(use-package clojure-mode
-  :ensure t
-  :config
-  (progn
-    (add-hook #'clojure-mode-hook
-              (lambda ()
-                (auto-complete-mode -1)
-                (clj-refactor-mode)
-                (aggressive-indent-mode)
-                (highlight-indentation-mode)))))
-
-;; indentation tweaks for korma etc
-(add-hook
- 'clojure-mode-hook
- (lambda ()
-   (define-clojure-indent
-     (copy 2)
-     (create-table 1)
-     (delete 1)
-     (drop-table 1)
-     (insert 2)
-     (select 1)
-     (truncate 1)
-     (update 2)
-     (dom/div 2)
-     (dom/ 2)
-     (alter-var-root 1)
-     ;; storm
-     (nextTuple 1)
-     ;;cats
-     (mlet 1)
-     ;; manifold
-     (let-flow 1)
-     ;; riemann
-     (tagged 1)
-     (where 1)
-     (rollup 2)
-     (by 1)
-     (with 1)
-     (splitp 2)
-     (percentiles 2)
-     )))
-
-;; (put-clojure-indent 'dom/div 'defun)
-
-;; (add-custom-clojure-indents 'dom 2)
-
-;; compojure
-;; (define-clojure-indent
-;;   (defroutes 'defun)
-;;   (GET 2)
-;;   (POST 2)
-;;   (PUT 2)
-;;   (DELETE 2)
-;;   (HEAD 2)
-;;   (ANY 2)
-;;   (context 2)
-;;   (dom/div 2))
-;;(put-clojure-indent 'match 1) ;; core.match
-
-;; (put-clojure-indent 'dom/div 2)
-
-
-;; end clojure
 
 (add-to-list 'dash-at-point-mode-alist '(python-mode . "python2"))
 
