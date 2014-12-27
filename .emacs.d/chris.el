@@ -373,15 +373,20 @@ sticky."
   :commands (cider-jack-in cider)
   :config
   (progn
-    (add-hook 'cider-mode-hook 'cider-turn-on-eldoc-mode)
-    (add-hook 'cider-repl-mode-hook 'enable-paredit-mode)
-    (add-hook 'cider-mode-hook 'company-mode)
-    (add-hook 'cider-repl-mode-hook 'company-mode)
-    (setq nrepl-hide-special-buffers t
-          cider-stacktrace-fill-column t
-          cider-repl-print-length 100)
+    (add-hook #'cider-mode-hook
+              (lambda ()
+                (cider-turn-on-eldoc-mode)
+                (company-mode)
+                (flycheck-mode)))
+    (add-hook #'cider-repl-mode-hook
+              (lambda ()
+                (company-mode)
+                (enable-paredit-mode)
+                (setq cider-stacktrace-fill-column t
+                      cider-repl-print-length 100)))
     (require 'squiggly-clojure)
-    (flycheck-mode 1))
+    ;;nrepl-hide-special-buffers t
+    )
   :bind (("C-x M-r" . cider-namespace-refresh)
          ("C-`" . cider-eval-expression-at-point-in-repl)))
 
@@ -389,11 +394,12 @@ sticky."
   :ensure t
   :config
   (progn
-    (message "Yay, clojure-mode was actually loaded!")
-    (auto-complete-mode -1)
-    (clj-refactor-mode)
-    (aggressive-indent-mode)
-    (highlight-indentation-mode)))
+    (add-hook #'clojure-mode-hook
+              (lambda ()
+                (auto-complete-mode -1)
+                (clj-refactor-mode)
+                (aggressive-indent-mode)
+                (highlight-indentation-mode)))))
 
 ;; indentation tweaks for korma etc
 (add-hook
