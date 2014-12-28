@@ -18,6 +18,9 @@
 (setq kept-old-versions 5)
 
 (menu-bar-mode 1)
+(defmacro comment (&rest body)
+  "Comment out one or more s-expressions."
+  nil)
 ;(cua-mode t nil (cua-base))
 ;(save-place t nil (saveplace))
 
@@ -279,33 +282,29 @@
 
 ;; Notifications
 ;; look at erc-track-exclude-types variable
-
-(require 'todochiku)
-;; (unless (posix-string-match "^\\** *Users on " message))
-(defun my-erc-hook (match-type nick message)
-  "Shows a todochiku notification, when user's nick was
+(comment
+ (require 'todochiku)
+ ;; (unless (posix-string-match "^\\** *Users on " message))
+ (defun my-erc-hook (match-type nick message)
+   "Shows a todochiku notification, when user's nick was
 mentioned. If the buffer is currently not visible, makes it
 sticky."
-  (unless (or (posix-string-match "^\\*** " message)
-              (posix-string-match "localhost has changed mode for " message)
-              (posix-string-match "^<root>" message)
-              (posix-string-match "as changed mode for " message))
-    (todochiku-message
-     (concat "ERC: " nick " mentioned on " (buffer-name (current-buffer)))
-     message
-     (todochiku-icon 'compile)
-     )))
+   (unless (or (posix-string-match "^\\*** " message)
+               (posix-string-match "localhost has changed mode for " message)
+               (posix-string-match "^<root>" message)
+               (posix-string-match "as changed mode for " message))
+     (todochiku-message
+      (concat "ERC: " nick " mentioned on " (buffer-name (current-buffer)))
+      message
+      (todochiku-icon 'compile)
+      )))
 
-(add-hook 'erc-text-matched-hook 'my-erc-hook)
+ (add-hook 'erc-text-matched-hook 'my-erc-hook)
 
-;; (remove-hook 'erc-text-matched-hook  'my-erc-hook)
+ ;; (remove-hook 'erc-text-matched-hook  'my-erc-hook)
 
-(setq erc-dangerous-hosts '("localhost"))
+ (setq erc-dangerous-hosts '("localhost")))
 
-;; Annoying arrows mode <- too annoying!
-;; (add-to-list 'load-path "~/.emacs.d/vendor/annoying-arrows-mode.el/")
-;; (require 'annoying-arrows-mode)
-;; (global-annoying-arrows-mode)
 
 (wrap-region-global-mode t)
 
@@ -323,10 +322,11 @@ sticky."
 ;; (diminish 'yas/minor-mode)
 ;; (diminish 'auto-fill-mode) ;; errors!
 
-(setq erc-autojoin-channels-alist
-      '(;("irc.skimlinks.com" "#dev")
-        ;("localhost")
-        ("irc.freenode.net" "#typed-clojure")))
+(comment
+ (setq erc-autojoin-channels-alist
+       '(;("irc.skimlinks.com" "#dev")
+                                        ;("localhost")
+         ("irc.freenode.net" "#typed-clojure"))))
 
 ;; Keep emacs Custom-settings in separate file
 (setq custom-file (expand-file-name "secret.el" user-emacs-directory))
