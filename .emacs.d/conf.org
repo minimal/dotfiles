@@ -380,6 +380,7 @@ is directly inspired by [[http://sachachua.com/blog/2012/06/literate-programming
     #+end_src
 
 ** Python
+   [[https://www.python.org/static/community_logos/python-logo-generic.svg]]
 
    #+begin_src emacs-lisp :tangle yes
      (use-package python-mode
