@@ -111,7 +111,7 @@
     ;; (setq projectile-completion-system 'default)
     (helm-projectile-command "find-file-and-recent"
                              '(helm-source-projectile-recentf-list
-                               helm-source-projectile-buffers-list)
+                               helm-source-projectile-files-list)
                              "Find file or recent: ")
     (setq projectile-enable-caching t)
     (projectile-global-mode)))
