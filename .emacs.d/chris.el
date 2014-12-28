@@ -25,36 +25,7 @@
 ;;        (pprint @interesting-atom)")))
 
 ;; indentation tweaks for korma etc
-(add-hook
- #'clojure-mode-hook
- (lambda ()
-   (define-clojure-indent
-     (copy 2)
-     (create-table 1)
-     (delete 1)
-     (drop-table 1)
-     (insert 2)
-     (select 1)
-     (truncate 1)
-     (update 2)
-     (dom/div 2)
-     (dom/ 2)
-     (alter-var-root 1)
-     ;; storm
-     (nextTuple 1)
-     ;;cats
-     (mlet 1)
-     ;; manifold
-     (let-flow 1)
-     ;; riemann
-     (tagged 1)
-     (where 1)
-     (rollup 2)
-     (by 1)
-     (with 1)
-     (splitp 2)
-     (percentiles 2)
-     )))
+
 
 ;; (put-clojure-indent 'dom/div 'defun)
 
