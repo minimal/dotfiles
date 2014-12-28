@@ -64,7 +64,13 @@
                   (interactive)
                   (join-line -1)))
 
-;; begin use-package ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; begin use-package
+;; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+;; You should keep :init forms as simple as possible, and put as much
+;; as you can get away with on the :config side. Config doesn't run
+;; till the mode is activated
+
 ;; helm
 
 ;; more options http://pages.sachachua.com/.emacs.d/Sacha.html#unnumbered-14
@@ -282,6 +288,19 @@
 
 
 ;; end clojure
+
+(use-package multi-web-mode
+  :ensure t
+  :init
+  (progn
+    (setq mweb-default-major-mode 'html-mode)
+    (setq mweb-tags
+          '((php-mode "<\\?php\\|<\\? \\|<\\?=" "\\?>")
+            (js-mode  "<script +\\(type=\"text/javascript\"\\|language=\"javascript\"\\)[^>]*>" "</script>")
+            (jsx-mode  "<script +\\(type=\"text/jsx\"\\|language=\"jsx\"\\)[^>]*>" "</script>")
+            (css-mode "<style +type=\"text/css\"[^>]*>" "</style>")))
+    (setq mweb-filename-extensions '("php" "htm" "html" "ctp" "phtml" "php4" "php5"))
+    (multi-web-global-mode 1)))
 
 ;; end use-package ;;
 ;; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
