@@ -50,9 +50,9 @@
     coffee-mode
     gist
     highlight-indentation
-    ace-jump-mode
+
     jump-char
-    expand-region
+
     flymake-coffee
     smooth-scrolling
     multi-web-mode
@@ -152,8 +152,8 @@
 (textmate-mode)
 (require `tramp)
 (require 'jump-char)
-(require 'ace-jump-mode)
-(require 'expand-region)
+
+
 
 (add-to-list 'auto-mode-alist '("\\.markdown\\'" . markdown-mode))
 (add-to-list 'auto-mode-alist '("\\.md\\'" . markdown-mode))
@@ -251,7 +251,6 @@
 ;; (require 'visual-regexp)
 (require 'visual-regexp-steroids)
 
-(require 'multiple-cursors)
 
 (require 'popwin)
 (setq display-buffer-function 'popwin:display-buffer)
