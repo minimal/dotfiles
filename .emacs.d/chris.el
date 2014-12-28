@@ -64,69 +64,10 @@
                   (interactive)
                   (join-line -1)))
 
+(org-babel-load-file "conf.org")
+
 ;; begin use-package
 ;; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-;; You should keep :init forms as simple as possible, and put as much
-;; as you can get away with on the :config side. Config doesn't run
-;; till the mode is activated
-
-(use-package ido-vertical-mode
-  :ensure t
-  :init (ido-vertical-mode 1))
-
-;; helm
-
-;; more options http://pages.sachachua.com/.emacs.d/Sacha.html#unnumbered-14
-(use-package helm
-  :ensure helm
-  :diminish helm-mode
-  :init
-  (progn
-    (setq helm-quick-update t
-          helm-ff-skip-boring-files t)
-    (helm-mode))
-                                        ;:config
-  :bind (("<f9>" . helm-mini)
-         ("M-<f9>" . helm-projectile-find-file-and-recent)
-         ("M-S-<f9>" . helm-projectile)
-         ("<f11>" . helm-semantic-or-imenu)
-         ("M-x" . helm-M-x)))
-
-(use-package helm-swoop
-  :bind
-  (("C-M-s" . helm-swoop)
-   ;; ("C-S-s" . helm-swoop)
-   ;; ("M-i" . helm-swoop)
-   ;; ("M-s s" . helm-swoop)
-   ;; ("M-s M-s" . helm-swoop)
-   ("M-I" . helm-swoop-back-to-last-point)
-   ("C-c M-i" . helm-multi-swoop)
-   ("C-x M-i" . helm-multi-swoop-all)
-   )
-  :config
-  (progn
-    (define-key isearch-mode-map (kbd "M-i") 'helm-swoop-from-isearch)
-    (define-key helm-swoop-map (kbd "M-i") 'helm-multi-swoop-all-from-helm-swoop)))
-
-(use-package helm-projectile
-  :ensure helm-projectile)
-
-(use-package projectile
-  :ensure projectile
-  :diminish projectile-mode
-  :init
-  (progn
-    ;; (setq projectile-keymap-prefix (kbd "C-c p"))
-    ;; (setq projectile-completion-system 'default)
-    (helm-projectile-command "find-file-and-recent"
-                             '(helm-source-projectile-recentf-list
-                               helm-source-projectile-files-list)
-                             "Find file or recent: ")
-    (setq projectile-enable-caching t)
-    (projectile-global-mode)))
-
-;; end helm
 
 (use-package drag-stuff
   :ensure t
