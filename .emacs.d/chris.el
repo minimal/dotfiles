@@ -579,13 +579,6 @@ sticky."
       (narrow-to-region (mark) (point))
       (pop-mark)
       (other-window 1))
-(require 'region-bindings-mode)
-(region-bindings-mode-enable)
-(define-key region-bindings-mode-map "a" 'mc/mark-all-like-this)
-(define-key region-bindings-mode-map "p" 'mc/mark-previous-like-this)
-(define-key region-bindings-mode-map "n" 'mc/mark-next-like-this)
-(define-key region-bindings-mode-map "m" 'mc/mark-more-like-this-extended)
-(define-key region-bindings-mode-map "s" 'mc/skip-to-next-like-this)
 
 ;; (define-key global-map (kbd "C-x 4 n") 'clone-buffer-and-narrow-to-function) ; or whatever key you prefer
 
