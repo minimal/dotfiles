@@ -171,6 +171,9 @@
 (use-package quickrun
   :ensure t)
 
+(use-package visual-regexp-steroids
+  :ensure t)
+
 
 ;; clojure ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 

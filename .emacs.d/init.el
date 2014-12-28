@@ -56,8 +56,6 @@
     flymake-coffee
     smooth-scrolling
     multi-web-mode
-    visual-regexp
-    visual-regexp-steroids
     volatile-highlights
     ag
     auto-complete
@@ -139,7 +137,7 @@
 (setq jedi:setup-keys t)                ;install with: el-get-install
                                     ;jedi
 (require 'jedi)
-(global-auto-complete-mode t)
+
 (add-hook 'python-mode-hook 'jedi:setup)
 
 ;; (require 'ipython)
@@ -258,5 +256,5 @@
 (require 'volatile-highlights)
 (volatile-highlights-mode)
 
-(require 'go-autocomplete)
+;; (require 'go-autocomplete)
 (require 'auto-complete-config)
