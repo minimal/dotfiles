@@ -28,7 +28,6 @@
     textmate
     coffee-mode
     gist
-    highlight-indentation
     jump-char
     flymake-coffee
     smooth-scrolling
@@ -81,7 +80,7 @@
 ;; (require 'epy-python)
 ;; (require 'epy-completion)
 ;; (epy-setup-checker "~/bin/pycheckers %f")
-(require 'highlight-indentation)
+
 
 (add-to-list 'load-path "~/.emacs.d/el-get/el-get")
 (unless (require 'el-get nil 'noerror)
@@ -102,16 +101,6 @@
 (add-to-list 'auto-mode-alist '("\\.md\\'" . markdown-mode))
 
 (yas/load-directory "~/.emacs.d/snippets")
-
-(require 'web-mode)
-(add-to-list 'auto-mode-alist '("\\.phtml\\'" . web-mode))
-(add-to-list 'auto-mode-alist '("\\.tpl\\.php\\'" . web-mode))
-(add-to-list 'auto-mode-alist '("\\.jsp\\'" . web-mode))
-(add-to-list 'auto-mode-alist '("\\.as[cp]x\\'" . web-mode))
-(add-to-list 'auto-mode-alist '("\\.erb\\'" . web-mode))
-(add-to-list 'auto-mode-alist '("\\.mustache\\'" . web-mode))
-(add-to-list 'auto-mode-alist '("\\.djhtml\\'" . web-mode))
-;; (add-to-list 'auto-mode-alist '("\\.html?\\'" . web-mode))
 
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
