@@ -371,6 +371,34 @@ is directly inspired by [[http://sachachua.com/blog/2012/06/literate-programming
            (percentiles 2)
            )))
     #+end_src
+
+** Python
+
+   #+begin_src emacs-lisp :tangle yes
+     (use-package python-mode
+       :ensure t
+       :init
+       (progd ;dont invoke flycheck on temporary buffers for the interpreter
+        (unless (eq buffer-file-name nil) ((forward-line  )ycheck-mode 1))
+        ;; if tabs make sure they are 4 spaces wide
+        (set (make-local-variable 'tab-width) 4)
+        (auto-complete-mode)
+        (jedi:setup)
+        (highlight-indentation-mode)
+        (font-lock-add-keywords
+         nil
+         '(("\\<\\(FIXME\\|TODO\\|BUG\\|XXX\\):" 1 font-lock-warning-face t))
+         (local-set-key (kbd "M-/") 'hippie-expand)
+         (local-set-key (kbd "M-RET") 'newline)))
+       :bind (("<f5>" . #'flycheck-previous-error)
+              ("<f6>" . #'flycheck-next-error)))
+   #+end_src
+
+    To get jedi completion with a venv:
+
+:     M-x venv-workon <env>
+:     M-x jedi:stop-server
+
 ** Web
 
    Multi web mode can detect sublanguages inside html and others

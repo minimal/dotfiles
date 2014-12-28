@@ -82,40 +82,7 @@
 (add-hook 'coffee-mode-hook
   '(lambda() (coffee-custom)))
 (add-hook 'coffee-mode-hook 'flymake-coffee-load)
-(add-hook 'python-mode-hook
-      (lambda ()
-            ;dont invoke flymake on temporary buffers for the interpreter
-            (unless (eq buffer-file-name nil) (flycheck-mode 1))
-            (local-set-key [f5] 'flycheck-previous-error)
-            (local-set-key [f6] 'flycheck-next-error)
-            ;; if tabs make sure they are 4 spaces wide
-            (set (make-local-variable 'tab-width) 4)
-))
 
-;; activate minor whitespace mode when in python mode
-;; (add-hook 'python-mode-hook 'whitespace-mode)
-(add-hook 'python-mode-hook 'auto-complete-mode)
-(add-hook 'python-mode-hook
-          (lambda ()
-            (font-lock-add-keywords
-             nil
-             '(("\\<\\(FIXME\\|TODO\\|BUG\\|XXX\\):" 1 font-lock-warning-face t)))
-            (local-set-key (kbd "M-/") 'hippie-expand)
-            ;; (local-set-key (kbd "M-SPC") 'rope-code-assist)
-            (local-set-key (kbd "M-RET") 'newline)))
-
-;; (add-hook 'python-mode-hook
-;;           (lambda()
-;;             (add-hook 'local-write-file-hooks
-;;                       '(lambda()
-;;                          (save-excursion
-;;                            (whitespace-cleanup))))))
-
-;; To get jedi completion with a venv:
-;; * venv-workon <env>
-;; * jedi:stop-server
-
-(add-hook 'css-mode-hook 'rainbow-mode)
 (add-hook 'js-mode-hook 'flymake-jshint-load)
 
 (add-to-list 'auto-mode-alist '("\\.zsh\\'" . shell-script-mode))

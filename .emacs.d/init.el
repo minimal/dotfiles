@@ -21,7 +21,6 @@
     yaml-mode
     marmalade
     scpaste
-    python-mode
     python-pep8
     python-pylint
     pyflakes
@@ -83,7 +82,6 @@
 ;; (require 'epy-completion)
 ;; (epy-setup-checker "~/bin/pycheckers %f")
 (require 'highlight-indentation)
-(add-hook 'python-mode-hook 'highlight-indentation-mode)
 
 (add-to-list 'load-path "~/.emacs.d/el-get/el-get")
 (unless (require 'el-get nil 'noerror)
@@ -94,10 +92,6 @@
       (goto-char (point-max))
       (eval-print-last-sexp))))
 (el-get 'sync)
-(setq jedi:setup-keys t)                ;install with: el-get-install
-(require 'jedi)
-
-(add-hook 'python-mode-hook 'jedi:setup)
 
 (require 'textmate)
 (textmate-mode)
