@@ -154,6 +154,19 @@
   (progn
     (region-bindings-mode-enable)))
 
+;;http://sachachua.com/blog/2014/12/emacs-kaizen-ace-jump-zap-lets-use-c-u-zap-character/
+(use-package ace-jump-zap
+  :ensure ace-jump-zap
+  :bind
+  (("M-z" . ace-jump-zap-up-to-char-dwim)
+   ("C-M-z" . ace-jump-zap-to-char-dwim)))
+
+;; http://ericjmritz.name/2014/12/23/using-quickrun-in-emacs/
+;; try quickrun-region, quickrun-replace-region
+(use-package quickrun
+  :ensure t)
+
+
 ;; clojure ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ;; Reloaded reset from and clojure buffer
@@ -689,16 +702,4 @@ If inside a code-block, simply calls `self-insert-command'."
     (setq org-projectile:projects-file
           "~/Dropbox/code/projects.org")
     (add-to-list 'org-capture-templates (org-projectile:project-todo-entry "p")))
-  :ensure t)
-
-;;http://sachachua.com/blog/2014/12/emacs-kaizen-ace-jump-zap-lets-use-c-u-zap-character/
-(use-package ace-jump-zap
-  :ensure ace-jump-zap
-  :bind
-  (("M-z" . ace-jump-zap-up-to-char-dwim)
-   ("C-M-z" . ace-jump-zap-to-char-dwim)))
-
-;; http://ericjmritz.name/2014/12/23/using-quickrun-in-emacs/
-;; try quickrun-region, quickrun-replace-region
-(use-package quickrun
   :ensure t)
