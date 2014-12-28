@@ -64,87 +64,16 @@
                   (interactive)
                   (join-line -1)))
 
-(org-babel-load-file "conf.org")
+
+;; (setq debug-on-error t)
+(org-babel-load-file "/Users/chris/code/dotfiles/.emacs.d/conf.org")
 
 ;; begin use-package
 ;; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(use-package drag-stuff
-  :ensure t
-  :bind
-  (("M-n" . drag-stuff-down)
-   ("M-p" . drag-stuff-up))
-  :init
-  (progn
-    (drag-stuff-global-mode)))
 
-(use-package ace-jump-mode
-  :ensure t
-  :bind (("M-#" . ace-jump-mode)))
-
-(use-package expand-region
-  :ensure t
-  :bind (("C-=" . er/expand-region)))
-
-(use-package expand-region
-  :ensure t)
-
-(use-package multiple-cursors
-  :ensure t)
-
-(use-package region-bindings-mode
-  :config
-  (progn
-    (bind-key "a" #'mc/mark-all-like-this-dwim  region-bindings-mode-map)
-    (bind-key "p" #'mc/mark-previous-like-this  region-bindings-mode-map)
-    (bind-key "n" #'mc/mark-next-like-this  region-bindings-mode-map)
-    (bind-key "m" #'mc/mark-more-like-this-extended  region-bindings-mode-map)
-    (bind-key "s" #'mc/skip-to-next-like-this  region-bindings-mode-map))
-  :init
-  (progn
-    (region-bindings-mode-enable)))
-
-;;http://sachachua.com/blog/2014/12/emacs-kaizen-ace-jump-zap-lets-use-c-u-zap-character/
-(use-package ace-jump-zap
-  :ensure ace-jump-zap
-  :bind
-  (("M-z" . ace-jump-zap-up-to-char-dwim)
-   ("C-M-z" . ace-jump-zap-to-char-dwim)))
-
-;; http://ericjmritz.name/2014/12/23/using-quickrun-in-emacs/
-;; try quickrun-region, quickrun-replace-region
-(use-package quickrun
-  :ensure t)
-
-(use-package visual-regexp-steroids
-  :ensure t)
-
-(use-package ethan-wspace
-  :ensure t
-  :init (global-ethan-wspace-mode 1))
-
-(use-package volatile-highlights
-  :ensure t
-  :init (volatile-highlights-mode))
-
-(use-package popwin
-  :ensure t
-  :init
-  (progn
-    (setq display-buffer-function 'popwin:display-buffer)
-    (push "*undo-tree*" popwin:special-display-config)
-    ;; (push '("*Ack-and-a-half*" :height 20) popwin:special-display-config)
-    (push "*vc-diff*" popwin:special-display-config)))
 
 ;; clojure ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-;; Reloaded reset from and clojure buffer
-(defun cider-namespace-refresh ()
-  (interactive)
-  (save-some-buffers)
-  (with-current-buffer (cider-current-repl-buffer)
-    (cider-interactive-eval
-     "(reloaded.repl/reset)")))
 
 ;; Use this to define add hoc reset
 ;; (define-key clojure-mode-map (kbd "M-r")
@@ -153,50 +82,6 @@
 ;;     (cider-interactive-eval
 ;;       "(require '[clojure.pprint :refer [pprint]])
 ;;        (pprint @interesting-atom)")))
-
-(defun cider-eval-expression-at-point-in-repl ()
-  (interactive)
-  (let ((form (cider-sexp-at-point)))
-    ;; Strip excess whitespace
-    (while (string-match "\\`\s+\\|\n+\\'" form)
-      (setq form (replace-match "" t t form)))
-    (with-current-buffer (cider-current-repl-buffer)
-      (goto-char (point-max))
-      (insert form)
-      (cider-repl-return))))
-
-(use-package cider
-  :ensure t
-  :commands (cider-jack-in cider)
-  :config
-  (progn
-    (add-hook #'cider-mode-hook
-              (lambda ()
-                (cider-turn-on-eldoc-mode)
-                (company-mode)
-                (flycheck-mode)))
-    (add-hook #'cider-repl-mode-hook
-              (lambda ()
-                (company-mode)
-                (enable-paredit-mode)
-                (setq cider-stacktrace-fill-column t
-                      cider-repl-print-length 100)))
-    (require 'squiggly-clojure)
-    ;;nrepl-hide-special-buffers t
-    )
-  :bind (("C-x M-r" . cider-namespace-refresh)
-         ("C-`" . cider-eval-expression-at-point-in-repl)))
-
-(use-package clojure-mode
-  :ensure t
-  :config
-  (progn
-    (add-hook #'clojure-mode-hook
-              (lambda ()
-                (auto-complete-mode -1)
-                (clj-refactor-mode)
-                (aggressive-indent-mode)
-                (highlight-indentation-mode)))))
 
 ;; indentation tweaks for korma etc
 (add-hook
@@ -432,12 +317,6 @@ sticky."
             (unless (eq ibuffer-sorting-mode 'alphabetic)
               (ibuffer-do-sort-by-alphabetic))))
 
-;; (add-hook 'nrepl-interaction-mode-hook
-;;           'nrepl-turn-on-eldoc-mode)
-;; (setq nrepl-popup-stacktraces nil)
-;; (add-to-list 'same-window-buffer-names "*nrepl*")
-
-
 ;; Diminish modeline clutter
 (require 'diminish)
 (diminish 'wrap-region-mode)
@@ -452,9 +331,6 @@ sticky."
 ;; Keep emacs Custom-settings in separate file
 (setq custom-file (expand-file-name "secret.el" user-emacs-directory))
 (load custom-file)
-
-
-(ethan-wspace-mode)
 
 (defun toggle-window-split ()
   (interactive)
