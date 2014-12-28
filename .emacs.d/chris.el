@@ -78,7 +78,7 @@
     (helm-mode))
                                         ;:config
   :bind (("<f9>" . helm-mini)
-         ("M-<f9>" . helm-projectile-find-file)
+         ("M-<f9>" . helm-projectile-find-file-and-recent)
          ("M-S-<f9>" . helm-projectile)
          ("<f11>" . helm-semantic-or-imenu)
          ("M-x" . helm-M-x)))
@@ -99,6 +99,9 @@
     (define-key isearch-mode-map (kbd "M-i") 'helm-swoop-from-isearch)
     (define-key helm-swoop-map (kbd "M-i") 'helm-multi-swoop-all-from-helm-swoop)))
 
+(use-package helm-projectile
+  :ensure helm-projectile)
+
 (use-package projectile
   :ensure projectile
   :diminish projectile-mode
@@ -106,11 +109,12 @@
   (progn
     ;; (setq projectile-keymap-prefix (kbd "C-c p"))
     ;; (setq projectile-completion-system 'default)
+    (helm-projectile-command "find-file-and-recent"
+                             '(helm-source-projectile-recentf-list
+                               helm-source-projectile-buffers-list)
+                             "Find file or recent: ")
     (setq projectile-enable-caching t)
     (projectile-global-mode)))
-
-(use-package helm-projectile
-  :ensure helm-projectile)
 
 ;; end helm
 
