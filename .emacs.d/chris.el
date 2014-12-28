@@ -148,7 +148,6 @@
   :ensure t)
 
 (use-package region-bindings-mode
-  :defer t
   :config
   (progn
     (bind-key "a" #'mc/mark-all-like-this-dwim  region-bindings-mode-map)
@@ -533,7 +532,7 @@ sticky."
     ad-do-it))
 (ad-activate 'yank-pop)
 
-(global-rainbow-delimiters-mode t)
+(add-hook #'prog-mode-hook #'rainbow-delimiters-mode)
 
 ;; Ido-mode customizations
 (setq ido-decorations                                                      ; Make ido-mode display vertically
