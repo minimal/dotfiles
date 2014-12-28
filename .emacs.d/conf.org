@@ -9,6 +9,75 @@ is directly inspired by [[http://sachachua.com/blog/2012/06/literate-programming
 * General
   helm, ido etc
 
+** Settings
+   Tab widths, recentf etc
+
+   #+begin_src emacs-lisp :tangle yes
+     (setq-default tab-width 4)
+     (setq-default whitespace-tab-width 4)
+     (setq column-number-mode t)
+     (setq js-indent-level 4)
+     (setq recentf-max-menu-items 50)
+     (setq recentf-auto-cleanup 'never) ;; disable before we start recentf!
+     (global-linum-mode 1)
+     (setq linum-format " %d  ")  ;; reduce glitching with fring
+     (menu-bar-mode 1)
+     (setq-default cursor-type 't)
+     (winner-mode 1) ;; C-c left => undo window layout change, C-c right => undo
+   #+end_src
+
+   Backup
+   See http://pejusdas.com/content/emacs-backup-files and
+   http://amitp.blogspot.com/2007/03/emacs-move-autosave-and-backup-files.html
+
+
+   #+begin_src emacs-lisp :tangle yes
+     (setq kept-new-versions 5)
+     (setq kept-old-versions 5)
+
+   #+end_src
+
+*** Global bindings
+    On osx set command to meta
+    #+begin_src emacs-lisp :tangle yes
+      (setq mac-command-modifier 'meta)
+    #+end_src
+
+    #+begin_src emacs-lisp :tangle yes
+      ;; To unset a key e.g:
+      ;; (global-unset-key (kbd "C-_"))
+      ;; f1 is help prefix, press twice for help-for-help
+      (global-set-key [f2] 'goto-line)
+      ;; f3 is start record macro
+      ;; f4 is stop record macro / execute macro
+      (global-set-key [f5] 'previous-multiframe-window)
+      (global-set-key [f6] 'next-multiframe-window)
+      (global-set-key [f7] 'kill-buffer)
+      (global-set-key [f8] 'dired-jump)
+      (global-set-key (kbd "<M-f8>") 'ido-find-file)
+      (global-set-key [(shift f8)] 'ido-find-file-other-window)
+      ;; f10 is menu-bar-open
+      (global-set-key (kbd "<S-f9>") 'ido-switch-buffer-other-window)
+      (set-register ?e '(file . "~/.emacs.d/chris.el")) ; 'C-x r j e' opens this file
+      (define-key global-map (kbd "C-;") 'iedit-mode)
+      (define-key global-map (kbd "C-3") 'comment-or-uncomment-region-or-line)
+      (define-key global-map (kbd "M-3") 'comment-or-uncomment-region-or-line)
+      (global-set-key [(meta \])] 'textmate-shift-right)
+      (global-set-key [(meta \[)] 'textmate-shift-left)
+      ;; (global-set-key [(control q)] 'fill-paragraph) ;; virtual box
+      ;; overrides meta-q
+
+
+      (global-set-key [(meta m)] 'jump-char-forward)
+      (global-set-key [(shift meta m)] 'jump-char-backward)
+      (global-set-key [(meta i)] 'back-to-indentation)
+
+      (global-set-key (kbd "M-K")
+                      (lambda ()
+                        (interactive)
+                        (join-line -1)))
+
+    #+end_src
 ** Use package
    This is a better way to fetch and load packages
    You should keep :init forms as simple as possible, and put as much as
@@ -54,6 +123,7 @@ is directly inspired by [[http://sachachua.com/blog/2012/06/literate-programming
 
     #+begin_src emacs-lisp
       (use-package helm-swoop
+        :ensure t
         :bind
         (("C-M-s" . helm-swoop)
          ;; ("C-S-s" . helm-swoop)
@@ -62,12 +132,12 @@ is directly inspired by [[http://sachachua.com/blog/2012/06/literate-programming
          ;; ("M-s M-s" . helm-swoop)
          ("M-I" . helm-swoop-back-to-last-point)
          ("C-c M-i" . helm-multi-swoop)
-         ("C-x M-i" . helm-multi-swoop-all)
-         )
+         ("C-x M-i" . helm-multi-swoop-all))
+        :init
+        (define-key isearch-mode-map (kbd "M-i") #'helm-swoop-from-isearch)
         :config
         (progn
-          (define-key isearch-mode-map (kbd "M-i") 'helm-swoop-from-isearch)
-          (define-key helm-swoop-map (kbd "M-i") 'helm-multi-swoop-all-from-helm-swoop)))
+          (define-key helm-swoop-map (kbd "M-i") #'helm-multi-swoop-all-from-helm-swoop)))
     #+end_src
 
 *** projectile
@@ -266,4 +336,22 @@ is directly inspired by [[http://sachachua.com/blog/2012/06/literate-programming
                      (clj-refactor-mode)
                      (aggressive-indent-mode)
                      (highlight-indentation-mode)))))
+   #+end_src
+
+** Web
+
+   Multi web mode can detect sublanguages inside html and others
+   #+begin_src emacs-lisp :tangle yes
+     (use-package multi-web-mode
+       :ensure t
+       :init
+       (progn
+         (setq mweb-default-major-mode 'html-mode)
+         (setq mweb-tags
+               '((php-mode "<\\?php\\|<\\? \\|<\\?=" "\\?>")
+                 (js-mode  "<script +\\(type=\"text/javascript\"\\|language=\"javascript\"\\)[^>]*>" "</script>")
+                 (jsx-mode  "<script +\\(type=\"text/jsx\"\\|language=\"jsx\"\\)[^>]*>" "</script>")
+                 (css-mode "<style +type=\"text/css\"[^>]*>" "</style>")))
+         (setq mweb-filename-extensions '("php" "htm" "html" "ctp" "phtml" "php4" "php5"))
+         (multi-web-global-mode 1)))
    #+end_src
