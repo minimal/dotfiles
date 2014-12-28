@@ -277,6 +277,7 @@ is directly inspired by [[http://sachachua.com/blog/2012/06/literate-programming
 
 * Languages
 ** Clojure
+   [[http://clojure.org/space/showimage/clojure-icon.gif]]
 
    Reset from any buffer and return to buffer
    #+begin_src emacs-lisp :tangle yes
