@@ -1,30 +1,15 @@
 (setq visible-bell t)
 
-;; adjust this path:
-;(add-to-list 'load-path "~/.emacs.d/emacs-jabber-0.8.90")
-;; For 0.7.90 and above:
-;;(require 'jabber-autoloads)
-
-;; (setq jabber-account-list
-;;       '(("<ME>@gmail.com" 
-;; 	 (:network-server . "talk.google.com")
-;; 	 (:connection-type . ssl))))
-
-;;(add-to-list 'load-path "~/.emacs.d/vendor/emacs-skype")
-;; (require 'skype)
-;; (setq skype--my-user-handle "ME")
-
 (add-to-list 'load-path "~/.emacs.d/vendor/")
 
-
 (require 'package)
-;(add-to-list 'package-archives
-;             '("marmalade" . "http://marmalade-repo.org/packages/") t)
+                                        ;            t)
 (add-to-list 'package-archives
-             '("melpa" . "http://melpa.milkbox.net/packages/") t)
+             '("melpa-stable" . "http://stable.melpa.org/packages/") t)
+(add-to-list 'package-archives
+             '("melpa" . "http://melpa.org/packages/") t)
+
 (package-initialize)
-
-
 (when (not package-archive-contents)
   (package-refresh-contents))
 
@@ -41,7 +26,6 @@
     marmalade
     scpaste
     python-mode
-    ack-and-a-half
     python-pep8
     python-pylint
     pyflakes
@@ -50,9 +34,7 @@
     coffee-mode
     gist
     highlight-indentation
-
     jump-char
-
     flymake-coffee
     smooth-scrolling
     multi-web-mode
@@ -68,7 +50,6 @@
     rainbow-mode)  ;; colours css colours
 )
 
-
 (dolist (p my-packages)
   (when (not (package-installed-p p))
     (package-install p)))
@@ -77,25 +58,10 @@
 (setq is-mac (equal system-type 'darwin))
 
 (require 'use-package)
-;; (require 'anything-show-completion)
 (require 'yaml-mode)
 (require 'smooth-scrolling)
 
 (require 'ag)
-;;;; Now overriden by emacs for python
-;; (require 'python-mode)
-;; (add-to-list 'auto-mode-alist '("\\.py\\'" . python-mode))
-;; (require 'flymake-cursor)
-;; (when (load "flymake" t)
-;;   (defun flymake-pyflakes-init ()
-;;     (let* ((temp-file (flymake-init-create-temp-buffer-copy
-;;                'flymake-create-temp-inplace))
-;;        (local-file (file-relative-name
-;;             temp-file
-;;             (file-name-directory buffer-file-name))))
-;;       (list "pycheckers"  (list local-file))))
-;;    (add-to-list 'flymake-allowed-file-name-masks
-;;                 '("\\.py\\'" flymake-pyflakes-init)))
 
 (setq ipython-command "/usr/local/bin/ipython")
 (setq py-python-command "/usr/local/bin/ipython")
@@ -135,62 +101,56 @@
       (eval-print-last-sexp))))
 (el-get 'sync)
 (setq jedi:setup-keys t)                ;install with: el-get-install
-                                    ;jedi
 (require 'jedi)
 
 (add-hook 'python-mode-hook 'jedi:setup)
 
-;; (require 'ipython)
-;; (require 'anything)
-;; (require 'anything-ipython)
-;; (when (require 'anything-show-completion nil t)
-;;    (use-anything-show-completion 'anything-ipython-complete
-;;                                  '(length initial-pattern)))
 (require 'textmate)
 (textmate-mode)
 (require `tramp)
 (require 'jump-char)
 
-
-
 (add-to-list 'auto-mode-alist '("\\.markdown\\'" . markdown-mode))
 (add-to-list 'auto-mode-alist '("\\.md\\'" . markdown-mode))
-;; new
 
 (yas/load-directory "~/.emacs.d/snippets")
-;; (require 'ecb)
-;; (require 'ecb-autoloads)
-;; following command allows ecb to start
-;; (setq stack-trace-on-error t)
-;; (ecb-activate)
-;; (ecb-byte-compile)
 
+(require 'web-mode)
+(add-to-list 'auto-mode-alist '("\\.phtml\\'" . web-mode))
+(add-to-list 'auto-mode-alist '("\\.tpl\\.php\\'" . web-mode))
+(add-to-list 'auto-mode-alist '("\\.jsp\\'" . web-mode))
+(add-to-list 'auto-mode-alist '("\\.as[cp]x\\'" . web-mode))
+(add-to-list 'auto-mode-alist '("\\.erb\\'" . web-mode))
+(add-to-list 'auto-mode-alist '("\\.mustache\\'" . web-mode))
+(add-to-list 'auto-mode-alist '("\\.djhtml\\'" . web-mode))
+;; (add-to-list 'auto-mode-alist '("\\.html?\\'" . web-mode))
 
- 
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(blink-cursor-mode nil)
+ '(ack-and-a-half-executable "/usr/local/bin/ack")
+ '(coffee-command "/usr/local/bin/coffee")
  '(column-number-mode t)
  '(cua-mode t nil (cua-base))
- '(electric-indent-mode t)
+ '(custom-safe-themes (quote ("71efabb175ea1cf5c9768f10dad62bb2606f41d110152f4ace675325d28df8bd" "628278136f88aa1a151bb2d6c8a86bf2b7631fbea5f0f76cba2a0079cd910f7d" "bb08c73af94ee74453c90422485b29e5643b73b05e8de029a6909af6a3fb3f58" "1b8d67b43ff1723960eb5e0cba512a2c7a2ad544ddb2533a90101fd1852b426e" "82d2cac368ccdec2fcc7573f24c3f79654b78bf133096f9b40c20d97ec1d8016" "3580fb8e37ee9e0bcb60762b81260290329a97f3ca19249569d404fce422342f" "d677ef584c6dfc0697901a44b885cc18e206f05114c8a3b7fde674fce6180879" "8aebf25556399b58091e533e455dd50a6a9cba958cc4ebb0aab175863c25b9a4" "bf9d5728e674bde6a112979bd830cc90327850aaaf2e6f3cc4654f077146b406" "5e1d1564b6a2435a2054aa345e81c89539a72c4cad8536cfe02583e0b7d5e2fa" "d2622a2a2966905a5237b54f35996ca6fda2f79a9253d44793cfe31079e3c92b" "501caa208affa1145ccbb4b74b6cd66c3091e41c5bb66c677feda9def5eab19c" default)))
+ '(electric-indent-mode nil)
  '(electric-layout-mode t)
  '(electric-pair-mode t)
- '(hl-line-mode nil)
+ '(erc-dangerous-hosts nil)
+ '(erc-pals (quote ("catherine" "tomk" "stuart" "emilbielksi" "jurg" "phil" "tomjoy" "robcowie")))
+ '(erc-track-exclude-types (quote ("JOIN" "KICK" "NICK" "PART" "QUIT" "MODE" "333" "353")))
+ '(fill-column 70)
+ '(hl-line-mode nil t)
+ '(ibuffer-saved-filter-groups nil)
+ '(ibuffer-saved-filters (quote (("realfiles" ((filename . ".*\\w.*"))) ("gnus" ((or (mode . message-mode) (mode . mail-mode) (mode . gnus-group-mode) (mode . gnus-summary-mode) (mode . gnus-article-mode)))) ("programming" ((or (mode . emacs-lisp-mode) (mode . cperl-mode) (mode . c-mode) (mode . java-mode) (mode . idl-mode) (mode . lisp-mode)))))))
  '(jabber-chat-buffer-show-avatar nil)
+ '(jedi:complete-on-dot (quote on))
+ '(line-move-visual nil)
  '(show-paren-mode t)
+ '(sql-mysql-program "/usr/local/bin/mysql")
  '(tool-bar-mode nil))
- 
-(custom-set-faces
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(default ((t (:family "Droid Sans Mono Dotted"))))
- '(jabber-chat-prompt-foreign ((t (:foreground "firebrick" :weight bold))))
- '(jabber-chat-prompt-local ((t (:foreground "deep sky blue" :weight bold)))))
 
 (server-start)
 ;;; edit server for editing from chrome
@@ -221,26 +181,6 @@
 
 ;; Fontify org-mode code blocks
 (setq org-src-fontify-natively t)
-;; ack-and-a-half
-(autoload 'ack-and-a-half-same "ack-and-a-half" nil t)
-(autoload 'ack-and-a-half "ack-and-a-half" nil t)
-(autoload 'ack-and-a-half-find-file-samee "ack-and-a-half" nil t)
-(autoload 'ack-and-a-half-find-file "ack-and-a-half" nil t)
-;; Create shorter aliases
-(defalias 'ack 'ack-and-a-half)
-(defalias 'ack-same 'ack-and-a-half-same)
-(defalias 'ack-find-file 'ack-and-a-half-find-file)
-(defalias 'ack-find-file-same 'ack-and-a-half-find-file-same)
-
-;; awesome!
-;; (define-key global-map (kbd "C-c r") 'pyregexp-replace)
-;; (define-key global-map (kbd "C-c q") 'pyregexp-query-replace)
-;; to use pyregexp isearch instead of the built-in regexp isearch, also include the following lines:
-;; (define-key esc-map (kbd "C-r") 'pyregexp-isearch-backward)
-;; (define-key esc-map (kbd "C-s") 'pyregexp-isearch-forward)
-;; (require 'visual-regexp)
-(require 'visual-regexp-steroids)
-
 
 (require 'popwin)
 (setq display-buffer-function 'popwin:display-buffer)
@@ -255,6 +195,3 @@
 
 (require 'volatile-highlights)
 (volatile-highlights-mode)
-
-;; (require 'go-autocomplete)
-(require 'auto-complete-config)
