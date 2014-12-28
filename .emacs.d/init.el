@@ -1,14 +1,10 @@
 (setq visible-bell t)
-
 (add-to-list 'load-path "~/.emacs.d/vendor/")
-
 (require 'package)
-                                        ;            t)
 (add-to-list 'package-archives
              '("melpa-stable" . "http://stable.melpa.org/packages/") t)
 (add-to-list 'package-archives
              '("melpa" . "http://melpa.org/packages/") t)
-
 (package-initialize)
 (when (not package-archive-contents)
   (package-refresh-contents))
@@ -38,7 +34,6 @@
     flymake-coffee
     smooth-scrolling
     multi-web-mode
-    volatile-highlights
     ag
     auto-complete
     flycheck
@@ -60,7 +55,6 @@
 (require 'use-package)
 (require 'yaml-mode)
 (require 'smooth-scrolling)
-
 (require 'ag)
 
 (setq ipython-command "/usr/local/bin/ipython")
@@ -89,7 +83,7 @@
 ;; (require 'epy-completion)
 ;; (epy-setup-checker "~/bin/pycheckers %f")
 (require 'highlight-indentation)
-(add-hook 'python-mode-hook 'highlight-indentation)
+(add-hook 'python-mode-hook 'highlight-indentation-mode)
 
 (add-to-list 'load-path "~/.emacs.d/el-get/el-get")
 (unless (require 'el-get nil 'noerror)
@@ -182,16 +176,5 @@
 ;; Fontify org-mode code blocks
 (setq org-src-fontify-natively t)
 
-(require 'popwin)
-(setq display-buffer-function 'popwin:display-buffer)
-;; (push '("*Ack-and-a-half*" :height 20) popwin:special-display-config)
-(push "*vc-diff*" popwin:special-display-config)
-(push "*undo-tree*" popwin:special-display-config)
-
-(global-ethan-wspace-mode 1)
-
 (when (memq window-system '(mac ns))
   (exec-path-from-shell-initialize))
-
-(require 'volatile-highlights)
-(volatile-highlights-mode)

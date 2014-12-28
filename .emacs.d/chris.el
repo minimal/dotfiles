@@ -178,6 +178,22 @@
 (use-package visual-regexp-steroids
   :ensure t)
 
+(use-package ethan-wspace
+  :ensure t
+  :init (global-ethan-wspace-mode 1))
+
+(use-package volatile-highlights
+  :ensure t
+  :init (volatile-highlights-mode))
+
+(use-package popwin
+  :ensure t
+  :init
+  (progn
+    (setq display-buffer-function 'popwin:display-buffer)
+    (push "*undo-tree*" popwin:special-display-config)
+    ;; (push '("*Ack-and-a-half*" :height 20) popwin:special-display-config)
+    (push "*vc-diff*" popwin:special-display-config)))
 
 ;; clojure ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -557,12 +573,12 @@ sticky."
 (add-to-list 'dash-at-point-mode-alist '(python-mode . "python2"))
 
 (defun clone-buffer-and-narrow-to-function ()
-      (interactive)
-      (clone-indirect-buffer-other-window (which-function) 'pop-to-buffer)
-      (mark-defun) ; works not only in emacs-lisp, but C++, Python, ...
-      (narrow-to-region (mark) (point))
-      (pop-mark)
-      (other-window 1))
+  (interactive)
+  (clone-indirect-buffer-other-window (which-function) 'pop-to-buffer)
+  (mark-defun) ; works not only in emacs-lisp, but C++, Python, ...
+  (narrow-to-region (mark) (point))
+  (pop-mark)
+  (other-window 1))
 
 ;; (define-key global-map (kbd "C-x 4 n") 'clone-buffer-and-narrow-to-function) ; or whatever key you prefer
 
@@ -570,14 +586,6 @@ sticky."
 ;; sudo stuff
 
 ;; (set-default 'tramp-default-proxies-alist (quote (("my-sudo-alias" nil "/ssh:chris@rogervm.skimlinks.com#17555:"))))
-
-;; (require 'flx-ido)
-;; (ido-mode 1)
-;; (ido-everywhere 1)
-;; (flx-ido-mode 1)
-;; disable ido faces to see flx highlights.
-;; (setq ido-use-faces nil)
-
 
 ;; Haskell WIP
 ;; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
