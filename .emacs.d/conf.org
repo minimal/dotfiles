@@ -362,6 +362,9 @@ is directly inspired by [[http://sachachua.com/blog/2012/06/literate-programming
            (cider-repl-return))))
    #+end_src
 
+
+   Load cider with customisations, custom test error reporting
+
    #+begin_src emacs-lisp :tangle yes
      (use-package cider
        :ensure t
@@ -381,6 +384,36 @@ is directly inspired by [[http://sachachua.com/blog/2012/06/literate-programming
                            cider-repl-print-length 100)))
          (require 'squiggly-clojure)
          ;;nrepl-hide-special-buffers t
+
+         ;; Custom error rendering to show diffs and form from my humane-test mods
+         (defun cider-test-render-assertion (buffer test)
+           "Emit into BUFFER report detail for the TEST assertion."
+           (with-current-buffer buffer
+             (nrepl-dbind-response test (var context type message expected actual diffstrs test-form error)
+
+               (cider-propertize-region (cider-intern-keys (cdr test))
+                 (cider-insert (capitalize type) (cider-test-type-face type) nil " in ")
+                 (cider-insert var 'font-lock-function-name-face t)
+                 (when context  (cider-insert context 'font-lock-doc-face t))
+                 (when message  (cider-insert message 'font-lock-doc-string-face t))
+                 (when test-form (cider-insert (cider-font-lock-as-clojure test-form) nil t "\n"))
+                 (when expected (cider-insert "expected: " 'font-lock-comment-face nil
+                                          (cider-font-lock-as-clojure expected)))
+
+                 (when actual   (cider-insert "  actual: " 'font-lock-comment-face)
+                   (if error
+                       (progn (insert-text-button
+                               error
+                               'follow-link t
+                               'action 'cider-test-stacktrace
+                               'help-echo "View causes and stacktrace")
+                              (newline))
+                     (insert (cider-font-lock-as-clojure actual))))
+
+                 (when diffstrs
+                   (cider-insert "    diff: " 'font-lock-comment-face nil
+                             (cider-font-lock-as-clojure diffstrs))))
+               (newline))))
          )
        :bind (("C-x M-r" . cider-namespace-refresh)
               ("C-`" . cider-eval-expression-at-point-in-repl)))
