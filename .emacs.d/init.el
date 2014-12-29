@@ -25,7 +25,6 @@
     python-pylint
     pyflakes
     ipython
-    textmate
     coffee-mode
     gist
     jump-char
@@ -35,7 +34,6 @@
     ag
     auto-complete
     flycheck
-    exec-path-from-shell
     ;;yasnippet-bundle
     use-package
     yasnippet
@@ -47,16 +45,11 @@
   (when (not (package-installed-p p))
     (package-install p)))
 
-;; Are we on a mac?
-(setq is-mac (equal system-type 'darwin))
 
 (require 'use-package)
 (require 'yaml-mode)
 (require 'smooth-scrolling)
 (require 'ag)
-
-(setq ipython-command "/usr/local/bin/ipython")
-(setq py-python-command "/usr/local/bin/ipython")
 
 ;;; yasnippet
 ;;; should be loaded before auto complete so that they can work together
@@ -92,8 +85,7 @@
       (eval-print-last-sexp))))
 (el-get 'sync)
 
-(require 'textmate)
-(textmate-mode)
+
 (require `tramp)
 (require 'jump-char)
 
@@ -135,29 +127,3 @@
   (setq edit-server-new-frame nil)
   (edit-server-start))
 
-
-;; magnars stuff
-(when is-mac
-  ;; mac friendly font
-  (set-face-attribute 'default nil :font "Monaco-12")
-  ;; Ignore .DS_Store files with ido mode
-  (add-to-list 'ido-ignore-files "\\.DS_Store")
-  ;; Don't open files from the workspace in a new frame
-  (setq ns-pop-up-frames nil)
-  ;; Use aspell for spell checking: brew install aspell --lang=en
-  (setq ispell-program-name "/usr/local/bin/aspell")
-  ;; (global-set-key (kbd "<kp-delete>") 'delete)
-  (global-set-key '[(control kp-delete)] 'kill-word)
-  (global-set-key (kbd "¦") "|")  ;; I use uk layout which hides pipe key
-  )
-
-;; magnars sane defaults
-
-;; org-mode: Don't ruin S-arrow to switch windows please (use M-+ and M-- instead to toggle)
-(setq org-replace-disputed-keys t)
-
-;; Fontify org-mode code blocks
-(setq org-src-fontify-natively t)
-
-(when (memq window-system '(mac ns))
-  (exec-path-from-shell-initialize))

@@ -6,11 +6,40 @@ This document is the result of me wanting to test literate programming
 and thinking that my emacs configuration was the perfect candidate. It
 is directly inspired by [[http://sachachua.com/blog/2012/06/literate-programming-emacs-configuration-file/][a blog post]] by Sacha Chua and others.
 
+“C-'” in a source block runs org-edit-special
+
 * General
   helm, ido etc
 
 ** Settings
-   Tab widths, recentf etc
+
+***   Mac specific.
+
+   https://github.com/purcell/exec-path-from-shell is essential
+
+   #+begin_src emacs-lisp :tangle yes
+     ;; Are we on a mac?
+     (setq is-mac (equal system-type 'darwin))
+
+     ;; magnars stuff
+     (when is-mac
+       ;; mac friendly font
+       (set-face-attribute 'default nil :font "Monaco-12")
+       ;; Ignore .DS_Store files with ido mode
+       (add-to-list 'ido-ignore-files "\\.DS_Store")
+       ;; Don't open files from the workspace in a new frame
+       (setq ns-pop-up-frames nil)
+       ;; Use aspell for spell checking: brew install aspell --lang=en
+       (setq ispell-program-name "/usr/local/bin/aspell")
+       ;; (global-set-key (kbd "<kp-delete>") 'delete)
+       (global-set-key '[(control kp-delete)] 'kill-word)
+
+       (use-package exec-path-from-shell
+         :ensure t
+         :init (exec-path-from-shell-initialize)))
+   #+end_src
+
+***  Tab widths, recentf etc
 
    #+begin_src emacs-lisp :tangle yes
      (setq-default tab-width 4)
@@ -78,6 +107,7 @@ is directly inspired by [[http://sachachua.com/blog/2012/06/literate-programming
                         (join-line -1)))
 
     #+end_src
+
 ** Use package
    This is a better way to fetch and load packages
    You should keep :init forms as simple as possible, and put as much as
@@ -101,7 +131,6 @@ is directly inspired by [[http://sachachua.com/blog/2012/06/literate-programming
    More options at http://pages.sachachua.com/.emacs.d/Sacha.html#unnumbered-14
 
    #+BEGIN_SRC emacs-lisp
-     (message "hi there from org")
      (use-package helm
        :ensure helm
        :diminish helm-mode
@@ -168,6 +197,15 @@ is directly inspired by [[http://sachachua.com/blog/2012/06/literate-programming
 
     #+end_src
 
+*** org mode
+
+    #+begin_src emacs-lisp :tangle yes
+      ;; Don't ruin S-arrow to switch windows please (use M-+ and M-- instead to toggle)
+      (setq org-replace-disputed-keys t)
+
+      ;; Fontify org-mode code blocks
+      (setq org-src-fontify-natively t)
+    #+end_src
 
 ** Small utils
 *** Drag stuff
@@ -190,8 +228,6 @@ is directly inspired by [[http://sachachua.com/blog/2012/06/literate-programming
       (use-package ace-jump-mode
         :ensure t
         :bind (("M-#" . ace-jump-mode)))
-
-
     #+end_src
 
     Zap is useful
@@ -202,7 +238,6 @@ is directly inspired by [[http://sachachua.com/blog/2012/06/literate-programming
         :bind
         (("M-z" . ace-jump-zap-up-to-char-dwim)
          ("C-M-z" . ace-jump-zap-to-char-dwim)))
-
     #+end_src
 
 *** Expand region
@@ -215,6 +250,9 @@ is directly inspired by [[http://sachachua.com/blog/2012/06/literate-programming
     #+end_src
 
 *** Multiple cursors
+
+    Region bindings mode with single key maps makes multiple cursors
+    much better.
 
    #+begin_src emacs-lisp :tangle yes
      (use-package multiple-cursors
@@ -235,8 +273,21 @@ is directly inspired by [[http://sachachua.com/blog/2012/06/literate-programming
    #+end_src
 
 
+*** Guide Key
+
+    #+begin_src emacs-lisp :tangle yes
+      (use-package guide-key
+        :ensure guide-key-tip
+        :diminish guide-key-mode
+        :init
+        (progn
+        (setq guide-key/guide-key-sequence '("C-x r" "C-x 4" "C-c"))
+        (guide-key-mode 1)))
+    #+end_src
+
 *** Quickrun
     http://ericjmritz.name/2014/12/23/using-quickrun-in-emacs/
+
     Try quickrun-region, quickrun-replace-region
 
     #+begin_src emacs-lisp :tangle yes
@@ -273,6 +324,10 @@ is directly inspired by [[http://sachachua.com/blog/2012/06/literate-programming
           (push "*undo-tree*" popwin:special-display-config)
           ;; (push '("*Ack-and-a-half*" :height 20) popwin:special-display-config)
           (push "*vc-diff*" popwin:special-display-config)))
+
+      (use-package textmate
+        :ensure t
+        :init (textmate-mode))
     #+end_src
 
 * Languages
@@ -386,20 +441,23 @@ is directly inspired by [[http://sachachua.com/blog/2012/06/literate-programming
      (use-package python-mode
        :ensure t
        :init
-       (progd ;dont invoke flycheck on temporary buffers for the interpreter
-        (unless (eq buffer-file-name nil) ((forward-line  )ycheck-mode 1))
+       (progn ;dont invoke flycheck on temporary buffers for the interpreter
+        (unless (eq buffer-file-name nil) (flycheck-mode 1))
         ;; if tabs make sure they are 4 spaces wide
+
         (set (make-local-variable 'tab-width) 4)
         (auto-complete-mode)
         (jedi:setup)
         (highlight-indentation-mode)
+        (setq ipython-command "/usr/local/bin/ipython")
+        (setq py-python-command "/usr/local/bin/ipython")
         (font-lock-add-keywords
          nil
-         '(("\\<\\(FIXME\\|TODO\\|BUG\\|XXX\\):" 1 font-lock-warning-face t))
-         (local-set-key (kbd "M-/") 'hippie-expand)
-         (local-set-key (kbd "M-RET") 'newline)))
-       :bind (("<f5>" . #'flycheck-previous-error)
-              ("<f6>" . #'flycheck-next-error)))
+         '(("\\<\\(FIXME\\|TODO\\|BUG\\|XXX\\):" 1 font-lock-warning-face t)))
+        (local-set-key (kbd "M-/") 'hippie-expand)
+        (local-set-key (kbd "M-RET") 'newline))
+       :bind (("<f5>" . flycheck-previous-error)
+              ("<f6>" . flycheck-next-error)))
    #+end_src
 
     To get jedi completion with a venv:
