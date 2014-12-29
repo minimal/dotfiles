@@ -1,0 +1,426 @@
+#+STARTUP: content
+#+OPTIONS: toc:4 h:4
+#+TITLE: Emacs configuration
+
+This document is the result of me wanting to test literate programming
+and thinking that my emacs configuration was the perfect candidate. It
+is directly inspired by [[http://sachachua.com/blog/2012/06/literate-programming-emacs-configuration-file/][a blog post]] by Sacha Chua and others.
+
+* General
+  helm, ido etc
+
+** Settings
+   Tab widths, recentf etc
+
+   #+begin_src emacs-lisp :tangle yes
+     (setq-default tab-width 4)
+     (setq-default whitespace-tab-width 4)
+     (setq column-number-mode t)
+     (setq js-indent-level 4)
+     (setq recentf-max-menu-items 50)
+     (setq recentf-auto-cleanup 'never) ;; disable before we start recentf!
+     (global-linum-mode 1)
+     (setq linum-format " %d  ")  ;; reduce glitching with fring
+     (menu-bar-mode 1)
+     (setq-default cursor-type 't)
+     (winner-mode 1) ;; C-c left => undo window layout change, C-c right => undo
+   #+end_src
+
+   Backup
+   See http://pejusdas.com/content/emacs-backup-files and
+   http://amitp.blogspot.com/2007/03/emacs-move-autosave-and-backup-files.html
+
+
+   #+begin_src emacs-lisp :tangle yes
+     (setq kept-new-versions 5)
+     (setq kept-old-versions 5)
+
+   #+end_src
+
+*** Global bindings
+    On osx set command to meta
+    #+begin_src emacs-lisp :tangle yes
+      (setq mac-command-modifier 'meta)
+    #+end_src
+
+    #+begin_src emacs-lisp :tangle yes
+      ;; To unset a key e.g:
+      ;; (global-unset-key (kbd "C-_"))
+      ;; f1 is help prefix, press twice for help-for-help
+      (global-set-key [f2] 'goto-line)
+      ;; f3 is start record macro
+      ;; f4 is stop record macro / execute macro
+      (global-set-key [f5] 'previous-multiframe-window)
+      (global-set-key [f6] 'next-multiframe-window)
+      (global-set-key [f7] 'kill-buffer)
+      (global-set-key [f8] 'dired-jump)
+      (global-set-key (kbd "<M-f8>") 'ido-find-file)
+      (global-set-key [(shift f8)] 'ido-find-file-other-window)
+      ;; f10 is menu-bar-open
+      (global-set-key (kbd "<S-f9>") 'ido-switch-buffer-other-window)
+      (set-register ?e '(file . "~/.emacs.d/chris.el")) ; 'C-x r j e' opens this file
+      (define-key global-map (kbd "C-;") 'iedit-mode)
+      (define-key global-map (kbd "C-3") 'comment-or-uncomment-region-or-line)
+      (define-key global-map (kbd "M-3") 'comment-or-uncomment-region-or-line)
+      (global-set-key [(meta \])] 'textmate-shift-right)
+      (global-set-key [(meta \[)] 'textmate-shift-left)
+      ;; (global-set-key [(control q)] 'fill-paragraph) ;; virtual box
+      ;; overrides meta-q
+
+
+      (global-set-key [(meta m)] 'jump-char-forward)
+      (global-set-key [(shift meta m)] 'jump-char-backward)
+      (global-set-key [(meta i)] 'back-to-indentation)
+
+      (global-set-key (kbd "M-K")
+                      (lambda ()
+                        (interactive)
+                        (join-line -1)))
+
+    #+end_src
+** Use package
+   This is a better way to fetch and load packages
+   You should keep :init forms as simple as possible, and put as much as
+ you can get away with on the :config side. Config doesn't run till
+ the mode is activated.
+
+** ido
+   Not used much now after helm but make sure it is vertical
+
+   #+BEGIN_SRC emacs-lisp
+     (use-package ido-vertical-mode
+       :ensure t
+       :init (ido-vertical-mode 1))
+
+   #+END_SRC
+
+** helm
+   Use for a lot of things, buffer swithing, finding files, searching
+   for words.
+
+   More options at http://pages.sachachua.com/.emacs.d/Sacha.html#unnumbered-14
+
+   #+BEGIN_SRC emacs-lisp
+     (message "hi there from org")
+     (use-package helm
+       :ensure helm
+       :diminish helm-mode
+       :init
+       (progn
+         (setq helm-quick-update t
+               helm-ff-skip-boring-files t)
+         (helm-mode))
+       :bind (("<f9>" . helm-mini)
+              ("M-<f9>" . helm-projectile-find-file-and-recent)
+              ("M-S-<f9>" . helm-projectile)
+              ("<f11>" . helm-semantic-or-imenu)
+              ("M-x" . helm-M-x)))
+   #+END_SRC
+
+*** helm-swoop
+
+    Very good in-buffer searching
+
+    #+begin_src emacs-lisp
+      (use-package helm-swoop
+        :ensure t
+        :bind
+        (("C-M-s" . helm-swoop)
+         ;; ("C-S-s" . helm-swoop)
+         ;; ("M-i" . helm-swoop)
+         ;; ("M-s s" . helm-swoop)
+         ;; ("M-s M-s" . helm-swoop)
+         ("M-I" . helm-swoop-back-to-last-point)
+         ("C-c M-i" . helm-multi-swoop)
+         ("C-x M-i" . helm-multi-swoop-all))
+        :init
+        (define-key isearch-mode-map (kbd "M-i") #'helm-swoop-from-isearch)
+        :config
+        (progn
+          (define-key helm-swoop-map (kbd "M-i") #'helm-multi-swoop-all-from-helm-swoop)))
+    #+end_src
+
+*** projectile
+
+    Allows operations within projects (e.g. git repo). Good
+    integration with helm.
+
+    Use custom command for recent files in project and then all files
+    in project.
+
+    #+begin_src emacs-lisp :tangle yes
+      (use-package helm-projectile
+        :ensure helm-projectile)
+
+      (use-package projectile
+        :ensure projectile
+        :diminish projectile-mode
+        :init
+        (progn
+          ;; (setq projectile-keymap-prefix (kbd "C-c p"))
+          ;; (setq projectile-completion-system 'default)
+          (helm-projectile-command "find-file-and-recent"
+                                   '(helm-source-projectile-recentf-list
+                                     helm-source-projectile-files-list)
+                                   "Find file or recent: ")
+          (setq projectile-enable-caching t)
+          (projectile-global-mode)))
+
+    #+end_src
+
+
+** Small utils
+*** Drag stuff
+    Move region up or down
+
+    #+begin_src emacs-lisp :tangle yes
+      (use-package drag-stuff
+        :ensure t
+        :bind
+        (("M-n" . drag-stuff-down)
+         ("M-p" . drag-stuff-up))
+        :init
+        (progn
+          (drag-stuff-global-mode)))
+    #+end_src
+
+*** Ace jump mode
+
+    #+begin_src emacs-lisp :tangle yes
+      (use-package ace-jump-mode
+        :ensure t
+        :bind (("M-#" . ace-jump-mode)))
+
+
+    #+end_src
+
+    Zap is useful
+    http://sachachua.com/blog/2014/12/emacs-kaizen-ace-jump-zap-lets-use-c-u-zap-character/
+    #+begin_src emacs-lisp :tangle yes
+      (use-package ace-jump-zap
+        :ensure ace-jump-zap
+        :bind
+        (("M-z" . ace-jump-zap-up-to-char-dwim)
+         ("C-M-z" . ace-jump-zap-to-char-dwim)))
+
+    #+end_src
+
+*** Expand region
+    Semantically expand and contract region
+
+    #+begin_src emacs-lisp :tangle yes
+      (use-package expand-region
+        :ensure t
+        :bind (("C-=" . er/expand-region)))
+    #+end_src
+
+*** Multiple cursors
+
+   #+begin_src emacs-lisp :tangle yes
+     (use-package multiple-cursors
+       :ensure t)
+
+     (use-package region-bindings-mode
+       :config
+       (progn
+         (bind-key "a" #'mc/mark-all-like-this-dwim  region-bindings-mode-map)
+         (bind-key "p" #'mc/mark-previous-like-this  region-bindings-mode-map)
+         (bind-key "n" #'mc/mark-next-like-this  region-bindings-mode-map)
+         (bind-key "m" #'mc/mark-more-like-this-extended  region-bindings-mode-map)
+         (bind-key "s" #'mc/skip-to-next-like-this  region-bindings-mode-map))
+       :init
+       (progn
+         (region-bindings-mode-enable)))
+
+   #+end_src
+
+
+*** Quickrun
+    http://ericjmritz.name/2014/12/23/using-quickrun-in-emacs/
+    Try quickrun-region, quickrun-replace-region
+
+    #+begin_src emacs-lisp :tangle yes
+      (use-package quickrun
+;;        :defer t
+        :ensure t)
+    #+end_src
+
+*** Others
+
+    #+begin_src emacs-lisp :tangle yes
+      (use-package visual-regexp-steroids
+        :ensure t)
+
+      (use-package ethan-wspace
+        :ensure t
+        :init (global-ethan-wspace-mode 1))
+
+      (use-package volatile-highlights
+        :ensure t
+        :init (volatile-highlights-mode))
+
+      (use-package highlight-indentation
+        :ensure t)
+
+      (use-package color-identifiers-mode
+        :ensure t)
+
+      (use-package popwin
+        :ensure t
+        :init
+        (progn
+          (setq display-buffer-function 'popwin:display-buffer)
+          (push "*undo-tree*" popwin:special-display-config)
+          ;; (push '("*Ack-and-a-half*" :height 20) popwin:special-display-config)
+          (push "*vc-diff*" popwin:special-display-config)))
+    #+end_src
+
+* Languages
+** Clojure
+   [[http://clojure.org/space/showimage/clojure-icon.gif]]
+
+   Reset from any buffer and return to buffer
+   #+begin_src emacs-lisp :tangle yes
+     ;; Reloaded reset from any clojure buffer
+     (defun cider-namespace-refresh ()
+       (interactive)
+       (save-some-buffers)
+       (with-current-buffer (cider-current-repl-buffer)
+         (cider-interactive-eval
+          "(reloaded.repl/reset)")))
+
+   #+end_src
+
+   Put source in repl and run. Good for documenting repl session that
+   runs code from a buffer.
+
+   #+begin_src emacs-lisp :tangle yes
+     (defun cider-eval-expression-at-point-in-repl ()
+       (interactive)
+       (let ((form (cider-sexp-at-point)))
+         ;; Strip excess whitespace
+         (while (string-match "\\`\s+\\|\n+\\'" form)
+           (setq form (replace-match "" t t form)))
+         (with-current-buffer (cider-current-repl-buffer)
+           (goto-char (point-max))
+           (insert form)
+           (cider-repl-return))))
+   #+end_src
+
+   #+begin_src emacs-lisp :tangle yes
+     (use-package cider
+       :ensure t
+       :commands (cider-jack-in cider)
+       :config
+       (progn
+         (add-hook #'cider-mode-hook
+                   (lambda ()
+                     (cider-turn-on-eldoc-mode)
+                     (company-mode)
+                     (flycheck-mode)))
+         (add-hook #'cider-repl-mode-hook
+                   (lambda ()
+                     (company-mode)
+                     (enable-paredit-mode)
+                     (setq cider-stacktrace-fill-column t
+                           cider-repl-print-length 100)))
+         (require 'squiggly-clojure)
+         ;;nrepl-hide-special-buffers t
+         )
+       :bind (("C-x M-r" . cider-namespace-refresh)
+              ("C-`" . cider-eval-expression-at-point-in-repl)))
+   #+end_src
+
+
+   #+begin_src emacs-lisp :tangle yes
+     (use-package clojure-mode
+       :ensure t
+       :config
+       (progn
+         (add-hook #'clojure-mode-hook
+                   (lambda ()
+                     (auto-complete-mode -1)
+                     (clj-refactor-mode)
+                     (aggressive-indent-mode)
+                     (highlight-indentation-mode)))))
+   #+end_src
+
+*** Clojure mode indents
+    #+begin_src emacs-lisp :tangle yes
+      (add-hook
+       #'clojure-mode-hook
+       (lambda ()
+         (define-clojure-indent
+           (copy 2)
+           (create-table 1)
+           (delete 1)
+           (drop-table 1)
+           (insert 2)
+           (select 1)
+           (truncate 1)
+           (update 2)
+           (dom/div 2)
+           (dom/ 2)
+           (alter-var-root 1)
+           ;; storm
+           (nextTuple 1)
+           ;; cats
+           (mlet 1)
+           ;; manifold
+           (let-flow 1)
+           ;; riemann
+           (tagged 1)
+           (where 1)
+           (rollup 2)
+           (by 1)
+           (with 1)
+           (splitp 2)
+           (percentiles 2)
+           )))
+    #+end_src
+
+** Python
+   [[https://www.python.org/static/community_logos/python-logo-generic.svg]]
+
+   #+begin_src emacs-lisp :tangle yes
+     (use-package python-mode
+       :ensure t
+       :init
+       (progd ;dont invoke flycheck on temporary buffers for the interpreter
+        (unless (eq buffer-file-name nil) ((forward-line  )ycheck-mode 1))
+        ;; if tabs make sure they are 4 spaces wide
+        (set (make-local-variable 'tab-width) 4)
+        (auto-complete-mode)
+        (jedi:setup)
+        (highlight-indentation-mode)
+        (font-lock-add-keywords
+         nil
+         '(("\\<\\(FIXME\\|TODO\\|BUG\\|XXX\\):" 1 font-lock-warning-face t))
+         (local-set-key (kbd "M-/") 'hippie-expand)
+         (local-set-key (kbd "M-RET") 'newline)))
+       :bind (("<f5>" . #'flycheck-previous-error)
+              ("<f6>" . #'flycheck-next-error)))
+   #+end_src
+
+    To get jedi completion with a venv:
+
+:     M-x venv-workon <env>
+:     M-x jedi:stop-server
+
+** Web
+
+   Multi web mode can detect sublanguages inside html and others
+   #+begin_src emacs-lisp :tangle yes
+     (use-package multi-web-mode
+       :ensure t
+       :init
+       (progn
+         (setq mweb-default-major-mode 'html-mode)
+         (setq mweb-tags
+               '((php-mode "<\\?php\\|<\\? \\|<\\?=" "\\?>")
+                 (js-mode  "<script +\\(type=\"text/javascript\"\\|language=\"javascript\"\\)[^>]*>" "</script>")
+                 (jsx-mode  "<script +\\(type=\"text/jsx\"\\|language=\"jsx\"\\)[^>]*>" "</script>")
+                 (css-mode "<style +type=\"text/css\"[^>]*>" "</style>")))
+         (setq mweb-filename-extensions '("php" "htm" "html" "ctp" "phtml" "php4" "php5"))
+         (multi-web-global-mode 1)))
+   #+end_src
