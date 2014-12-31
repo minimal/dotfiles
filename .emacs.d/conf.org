@@ -109,10 +109,21 @@ is directly inspired by [[http://sachachua.com/blog/2012/06/literate-programming
     #+end_src
 
 ** Use package
-   This is a better way to fetch and load packages
-   You should keep :init forms as simple as possible, and put as much as
- you can get away with on the :config side. Config doesn't run till
- the mode is activated.
+   This is a better way to fetch and load packages You should
+   keep :init forms as simple as possible, and put as much as you can
+   get away with on the :config side. Config doesn't run till the mode
+   is activated.
+
+
+** Paradox
+   Better package menu.
+
+   #+begin_src emacs-lisp :tangle yes
+     (use-package
+       :ensure t
+       :commands (paradox-list-packages)
+       :config (paradox-enable))
+   #+end_src
 
 ** ido
    Not used much now after helm but make sure it is vertical
@@ -130,7 +141,7 @@ is directly inspired by [[http://sachachua.com/blog/2012/06/literate-programming
 
    More options at http://pages.sachachua.com/.emacs.d/Sacha.html#unnumbered-14
 
-   #+BEGIN_SRC emacs-lisp
+   #+BEGIN_SRC emacs-lisp :tangle yes
      (use-package helm
        :ensure helm
        :diminish helm-mode
@@ -150,7 +161,7 @@ is directly inspired by [[http://sachachua.com/blog/2012/06/literate-programming
 
     Very good in-buffer searching
 
-    #+begin_src emacs-lisp
+    #+begin_src emacs-lisp :tangle yes
       (use-package helm-swoop
         :ensure t
         :bind
@@ -199,6 +210,8 @@ is directly inspired by [[http://sachachua.com/blog/2012/06/literate-programming
 
 *** org mode
 
+    org-replace-disputed-keys has to actually run before org.el is
+    loaded. So it is also before this file.
     #+begin_src emacs-lisp :tangle yes
       ;; Don't ruin S-arrow to switch windows please (use M-+ and M-- instead to toggle)
       (setq org-replace-disputed-keys t)
@@ -371,12 +384,17 @@ is directly inspired by [[http://sachachua.com/blog/2012/06/literate-programming
        :commands (cider-jack-in cider)
        :config
        (progn
-         (add-hook #'cider-mode-hook
+         (add-hook 'cider-mode-hook
                    (lambda ()
                      (cider-turn-on-eldoc-mode)
                      (company-mode)
+                     (bind-keys :map clojure-mode-map
+                                ("C-x M-r" . cider-namespace-refresh)
+                                ("C-`" . cider-eval-expression-at-point-in-repl)
+                                ("<f5>" . flycheck-previous-error)
+                                ("<f6>" . flycheck-next-error))
                      (flycheck-mode)))
-         (add-hook #'cider-repl-mode-hook
+         (add-hook 'cider-repl-mode-hook
                    (lambda ()
                      (company-mode)
                      (enable-paredit-mode)
@@ -414,9 +432,7 @@ is directly inspired by [[http://sachachua.com/blog/2012/06/literate-programming
                    (cider-insert "    diff: " 'font-lock-comment-face nil
                              (cider-font-lock-as-clojure diffstrs))))
                (newline))))
-         )
-       :bind (("C-x M-r" . cider-namespace-refresh)
-              ("C-`" . cider-eval-expression-at-point-in-repl)))
+         ))
    #+end_src
 
 
@@ -471,26 +487,39 @@ is directly inspired by [[http://sachachua.com/blog/2012/06/literate-programming
    [[https://www.python.org/static/community_logos/python-logo-generic.svg]]
 
    #+begin_src emacs-lisp :tangle yes
-     (use-package python-mode
+     (use-package python
+       :mode ("\\.py\\'" . python-mode)
        :ensure t
-       :init
+       :config
        (progn ;dont invoke flycheck on temporary buffers for the interpreter
-        (unless (eq buffer-file-name nil) (flycheck-mode 1))
-        ;; if tabs make sure they are 4 spaces wide
+         (add-hook 'python-mode-hook
+                   (lambda ()
+                     (unless (eq buffer-file-name nil) (flycheck-mode 1))
+                     ;; if tabs make sure they are 4 spaces wide
+                     (set (make-local-variable 'tab-width) 4)
+                     (jedi:setup)
+                     (auto-complete-mode)
+                     (highlight-indentation-mode)
+                     (bind-keys :map python-mode-map
+                                ("<f5>" . flycheck-previous-error)
+                                ("<f6>" . flycheck-next-error)
+                                ("M-/" . hippie-expand)
+                                ("M-RET" . newline))
+                     (font-lock-add-keywords
+                      nil
+                      '(("\\<\\(FIXME\\|TODO\\|BUG\\|XXX\\):" 1 font-lock-warning-face t)))))
 
-        (set (make-local-variable 'tab-width) 4)
-        (auto-complete-mode)
-        (jedi:setup)
-        (highlight-indentation-mode)
         (setq ipython-command "/usr/local/bin/ipython")
-        (setq py-python-command "/usr/local/bin/ipython")
-        (font-lock-add-keywords
-         nil
-         '(("\\<\\(FIXME\\|TODO\\|BUG\\|XXX\\):" 1 font-lock-warning-face t)))
-        (local-set-key (kbd "M-/") 'hippie-expand)
-        (local-set-key (kbd "M-RET") 'newline))
-       :bind (("<f5>" . flycheck-previous-error)
-              ("<f6>" . flycheck-next-error)))
+        (setq py-python-command "/usr/local/bin/ipython")))
+
+     (use-package jedi
+       :ensure t
+       :commands (jedi:setup))
+
+     (use-package jedi-direx
+       :ensure t
+       :commands (jedi-direx:setup)
+       :config (jedi-direx:setup))
    #+end_src
 
     To get jedi completion with a venv:

@@ -127,3 +127,6 @@
   (setq edit-server-new-frame nil)
   (edit-server-start))
 
+;; Don't ruin S-arrow to switch windows please (use M-+ and M-- instead to toggle)
+(setq org-replace-disputed-keys t)
+
