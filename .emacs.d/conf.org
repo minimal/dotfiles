@@ -153,6 +153,7 @@ is directly inspired by [[http://sachachua.com/blog/2012/06/literate-programming
        :bind (("<f9>" . helm-mini)
               ("M-<f9>" . helm-projectile-find-file-and-recent)
               ("M-S-<f9>" . helm-projectile)
+              ("C-x a g" . helm-projectile-ag)
               ("<f11>" . helm-semantic-or-imenu)
               ("M-x" . helm-M-x)))
    #+END_SRC
@@ -180,6 +181,18 @@ is directly inspired by [[http://sachachua.com/blog/2012/06/literate-programming
           (define-key helm-swoop-map (kbd "M-i") #'helm-multi-swoop-all-from-helm-swoop)))
     #+end_src
 
+    Ag for helm
+
+    #+begin_src emacs-lisp :tangle yes
+      (use-package helm-ag
+        :ensure t
+        :commands (helm-ag))
+
+      ;; realtime
+      (use-package helm-ag-r
+        :ensure t
+        :commands (helm-ag-r))
+    #+end_src
 *** projectile
 
     Allows operations within projects (e.g. git repo). Good
