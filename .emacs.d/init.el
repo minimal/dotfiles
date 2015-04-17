@@ -20,26 +20,26 @@
     markdown-mode
     yaml-mode
     marmalade
-    scpaste
-    python-pep8
-    python-pylint
-    pyflakes
-    ipython
-    coffee-mode
+    ;;  scpaste
+    ;; python-pep8
+    ;; python-pylint
+    ;; pyflakes
+    ;; ipython
+    ;; coffee-mode
     gist
     jump-char
-    flymake-coffee
+    ;flymake-coffee
     smooth-scrolling
-    multi-web-mode
+    ;multi-web-mode
     ag
     auto-complete
     flycheck
     ;;yasnippet-bundle
     use-package
     yasnippet
-    flymake-cursor
-    rainbow-mode)  ;; colours css colours
-)
+    ;flymake-cursor
+    ;rainbow-mode)  ;; colours css colours
+))
 
 (dolist (p my-packages)
   (when (not (package-installed-p p))
@@ -92,7 +92,8 @@
 (add-to-list 'auto-mode-alist '("\\.markdown\\'" . markdown-mode))
 (add-to-list 'auto-mode-alist '("\\.md\\'" . markdown-mode))
 
-(yas/load-directory "~/.emacs.d/snippets")
+(if (file-exists-p "~/.emacs.d/snippets")
+    (yas/load-directory "~/.emacs.d/snippets"))
 
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
@@ -130,3 +131,4 @@
 ;; Don't ruin S-arrow to switch windows please (use M-+ and M-- instead to toggle)
 (setq org-replace-disputed-keys t)
 
+(windmove-default-keybindings)

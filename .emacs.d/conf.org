@@ -119,7 +119,7 @@ is directly inspired by [[http://sachachua.com/blog/2012/06/literate-programming
    Better package menu.
 
    #+begin_src emacs-lisp :tangle yes
-     (use-package
+     (use-package paradox
        :ensure t
        :commands (paradox-list-packages)
        :config (paradox-enable))
@@ -288,16 +288,16 @@ is directly inspired by [[http://sachachua.com/blog/2012/06/literate-programming
        :ensure t)
 
      (use-package region-bindings-mode
+       :ensure t
        :config
        (progn
+         (region-bindings-mode-enable)
          (bind-key "a" #'mc/mark-all-like-this-dwim  region-bindings-mode-map)
          (bind-key "p" #'mc/mark-previous-like-this  region-bindings-mode-map)
          (bind-key "n" #'mc/mark-next-like-this  region-bindings-mode-map)
          (bind-key "m" #'mc/mark-more-like-this-extended  region-bindings-mode-map)
          (bind-key "s" #'mc/skip-to-next-like-this  region-bindings-mode-map))
-       :init
-       (progn
-         (region-bindings-mode-enable)))
+     )
 
    #+end_src
 
@@ -337,7 +337,7 @@ is directly inspired by [[http://sachachua.com/blog/2012/06/literate-programming
 
       (use-package volatile-highlights
         :ensure t
-        :init (volatile-highlights-mode))
+        :config (volatile-highlights-mode))
 
       (use-package highlight-indentation
         :ensure t)

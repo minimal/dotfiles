@@ -1,7 +1,9 @@
 (defmacro comment (&rest body)
   "Comment out one or more s-expressions."
   nil)
-;(cua-mode t nil (cua-base))
+;; (cua-mode t nil (cua-base))
+(cua-mode)
+
 ;(save-place t nil (saveplace))
 
 ;; bindings
@@ -177,8 +179,10 @@ sticky."
 
  (setq erc-dangerous-hosts '("localhost")))
 
+(use-package wrap-region
+  :ensure t
+  :config (wrap-region-global-mode t))
 
-(wrap-region-global-mode t)
 
 ;; (setq line-move-visual 'nil)
 
@@ -202,7 +206,8 @@ sticky."
 
 ;; Keep emacs Custom-settings in separate file
 (setq custom-file (expand-file-name "secret.el" user-emacs-directory))
-(load custom-file)
+(if (file-exists-p abbrev-file-name)
+    (load custom-file))
 
 (defun toggle-window-split ()
   (interactive)
@@ -244,6 +249,9 @@ sticky."
     ad-do-it))
 (ad-activate 'yank-pop)
 
+(use-package rainbow-delimiters
+  :ensure t)
+
 (add-hook #'prog-mode-hook #'rainbow-delimiters-mode)
 
 ;; go
@@ -259,7 +267,7 @@ sticky."
     '(flycheck-display-errors-function #'flycheck-pos-tip-error-messages)))
 
 
-(add-to-list 'dash-at-point-mode-alist '(python-mode . "python2"))
+;;(add-to-list 'dash-at-point-mode-alist '(python-mode . "python2")) ;; errors 2015-04-02
 
 (defun clone-buffer-and-narrow-to-function ()
   (interactive)
