@@ -1,0 +1,25 @@
+---
+- hosts: all
+  tasks:
+    - name: Install libraries with homebrew
+      homebrew: name={{ item }} state=present
+      with_items:
+        - wget
+        - python
+        # - apple-gcc42
+        # - vim
+        - the_silver_searcher
+        - git
+        # - rbenv
+        # - ruby-build
+        # - elasticsearch
+        # - mysql
+        - tmux
+        - zsh
+    - name: Emacs
+      homebrew: name=emacs state=present install_options=with-cocoa,with-glib,with-gnutls,HEAD
+    - name: Install homebrew cask apps
+      homebrew_cask: name={{ item }} state=present
+      with_items:
+        - amethyst
+        - quicksilver
