@@ -1,23 +1,45 @@
 ---
 - hosts: all
+  vars:
+    home: "{{ lookup('env','HOME') }}"
+    code_home: code
+    # applications: # .dmg, .app, .zip type applications via brew-cask
+    #   - google-chrome
+    #   - firefox
+
   tasks:
     - name: Install libraries with homebrew
       homebrew: name={{ item }} state=present
       with_items:
         - wget
         - python
+        - leiningen
+        - htop
+        - zsh
+        - tmux
+        - brew-cask
         # - apple-gcc42
         # - vim
         - the_silver_searcher
         - git
+        - coreutils
+        - findutils
+        - gnu-tar
+        - gnu-sed
+        - gawk
+        - gnutls
+        - gnu-indent
+        - gnu-getopt
         # - rbenv
         # - ruby-build
         # - elasticsearch
-        # - mysql
-        - tmux
-        - zsh
+        - mysql
+        - apache-spark
+        - rust
+
     - name: Emacs
       homebrew: name=emacs state=present install_options=with-cocoa,with-glib,with-gnutls,HEAD
+
     - name: Install homebrew cask apps
       homebrew_cask: name={{ item }} state=present
       with_items:
@@ -29,7 +51,31 @@
         - istat-menus
         - menumeters
         - sequel-pro
+        # - spotify
+        # - skype
 
+    - name: Clone dotfiles
+      # I set force and update to no so that if I have any working
+      # changes or changes that I haven't pushed up it doesn't reset
+      # my local history.
+      git: repo=git@github.com:minimal/{{ item }}.git dest={{ home }}/{{ code_home }}/{{ item }} force=no update=no recursive=yes
+      with_items:
+        - dotfiles
+        - prezto
+
+    - name: Symlink dotfiles
+      file: path={{ home }}/{{ item }} src={{ home }}/{{ code_home }}/dotfiles/{{ item }} state=link
+      with_items:
+        - .gitconfig
+        - .tmux.conf
+        - .amethyst
+        - .sshrc
+        - .tmux.conf
+        - .lein
+        - .ansible
+
+    - name: Setup prezto # TODO: the symlinks as well
+      file: path={{ home }}/.zprezto src={{ home }}/{{ code_home }}/prezto state=link
 
     - name: Pip python packages
       pip: name={{ item }}
@@ -38,4 +84,3 @@
         - virtualenvwrapper
         - flake8
         - ipython
-
