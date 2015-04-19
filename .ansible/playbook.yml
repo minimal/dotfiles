@@ -23,3 +23,19 @@
       with_items:
         - amethyst
         - quicksilver
+        - diffmerge
+        - intellij-idea
+        - iterm2
+        - istat-menus
+        - menumeters
+        - sequel-pro
+
+
+    - name: Pip python packages
+      pip: name={{ item }}
+      with_items:
+        - virtualenv
+        - virtualenvwrapper
+        - flake8
+        - ipython
+
