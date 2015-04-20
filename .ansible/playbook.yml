@@ -2,7 +2,8 @@
 - hosts: all
   vars:
     home: "{{ lookup('env','HOME') }}"
-    code_home: code
+    code_home: "{{ home }}/code"
+    vendor_code:  "{{ code_home }}/vendor"
     # applications: # .dmg, .app, .zip type applications via brew-cask
     #   - google-chrome
     #   - firefox
@@ -13,6 +14,7 @@
       with_items:
         - wget
         - python
+        - python3
         - leiningen
         - htop
         - zsh
@@ -30,6 +32,7 @@
         - gnutls
         - gnu-indent
         - gnu-getopt
+        - sshfs
         # - rbenv
         # - ruby-build
         # - elasticsearch
@@ -50,6 +53,7 @@
         - iterm2
         - istat-menus
         - menumeters
+        - trailer
         - sequel-pro
         # - spotify
         # - skype
@@ -58,13 +62,13 @@
       # I set force and update to no so that if I have any working
       # changes or changes that I haven't pushed up it doesn't reset
       # my local history.
-      git: repo=git@github.com:minimal/{{ item }}.git dest={{ home }}/{{ code_home }}/{{ item }} force=no update=no recursive=yes
+      git: repo=git@github.com:minimal/{{ item }}.git dest={{ code_home }}/{{ item }} force=no update=no recursive=yes
       with_items:
         - dotfiles
         - prezto
 
     - name: Symlink dotfiles
-      file: path={{ home }}/{{ item }} src={{ home }}/{{ code_home }}/dotfiles/{{ item }} state=link
+      file: path={{ home }}/{{ item }} src={{ code_home }}/dotfiles/{{ item }} state=link
       with_items:
         - .gitconfig
         - .tmux.conf
@@ -75,7 +79,7 @@
         - .ansible
 
     - name: Setup prezto # TODO: the symlinks as well
-      file: path={{ home }}/.zprezto src={{ home }}/{{ code_home }}/prezto state=link
+      file: path={{ home }}/.zprezto src={{ code_home }}/prezto state=link
 
     - name: Pip python packages
       pip: name={{ item }}
@@ -84,3 +88,14 @@
         - virtualenvwrapper
         - flake8
         - ipython
+
+    - name: Check if ls++ is installed
+      stat: path={{ home }}/perl5/bin/ls++
+      register: lspp_installed
+
+    - name: Get ls++
+      git: repo=git@github.com:trapd00r/ls--.git dest={{ vendor_code }}/ls--
+
+    - name: Install ls++
+      shell: cd {{ vendor_code }}/ls-- &&  cpan Term::ExtendedColor && perl Makefile.PL && make && make install && cp ls++.conf {{ home }}/.ls++.conf
+      when: lspp_installed.stat.exists == false
