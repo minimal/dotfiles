@@ -292,6 +292,7 @@ is directly inspired by [[http://sachachua.com/blog/2012/06/literate-programming
        :config
        (progn
          (region-bindings-mode-enable)
+         (setq region-bindings-mode-disable-predicates (quote ((lambda nil buffer-read-only))))
          (bind-key "a" #'mc/mark-all-like-this-dwim  region-bindings-mode-map)
          (bind-key "p" #'mc/mark-previous-like-this  region-bindings-mode-map)
          (bind-key "n" #'mc/mark-next-like-this  region-bindings-mode-map)
