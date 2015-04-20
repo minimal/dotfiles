@@ -1,0 +1,8 @@
+# -*- mode: snippet; require-final-newline: nil -*-
+# name: notes
+# key: notes
+# binding: direct-keybinding
+# --
+#+BEGIN_NOTES
+${}
+#+END_NOTES

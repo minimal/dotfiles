@@ -1,5 +1,11 @@
 #! /usr/local/bin/zsh
-services=(redis-server mongod mysqld git-dude cmd-key-happy bitlbee)
+
+# for COLOR in RED GREEN YELLOW WHITE BLACK CYAN; do
+# eval PR_$COLOR='%{$fg[${(L)COLOR}]%}'
+#     eval PR_BRIGHT_$COLOR='%{$fg_bold[${(L)COLOR}]%}'
+# done
+
+services=(redis-server mongod mysqld git-dude cmd-key-happy bitlbee solr)
 
 for serv in $services
 do
@@ -9,4 +15,3 @@ do
         echo $serv is down
     fi
 done
-    

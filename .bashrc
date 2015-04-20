@@ -26,9 +26,11 @@
 #export PILOTRATE=115200
 
 test -s ~/.alias && . ~/.alias || true
-
+export GIT_PS1_SHOWDIRTYSTATE=1
 [ -s "/home/chris/.scm_breeze/scm_breeze.sh" ] && source "/home/chris/.scm_breeze/scm_breeze.sh"
+source $SSHHOME/.sshrc.d/git-completion.bash
+source $SSHHOME/.sshrc.d/git-prompt.sh
+ps_git='$(__git_ps1 "(%s)")'
 
-PS1="\[\e[32;1m\]\[\e[37;1m\]\`if [ \$? = 0 ]; then echo \[\e[33m\] :\)\[\e[0m\]; else echo \[\e[31m\] X\(\[\e[0m\]; fi\`\[\e[32;1m\] \[\e[32;1m\](\[\e[37;1m\]\h:\u\[\e[32;1m\])-(\[\e[37;1m\]\j\[\e[32;1m\])-(\D{%Y-%m-%d %H:%M:%S})-(\[\e[37;1m\]\w\[\e[32;1m\])\n\[\e[0m\] $ "
-
+PS1="\[\e[32;1m\]\[\e[37;1m\]\`if [ \$? = 0 ]; then echo \[\e[33m\] :\)\[\e[0m\]; else echo \[\e[31m\] X\(\[\e[0m\]; fi\`\[\e[32;1m\] \[\e[32;1m\](\[\e[37;1m\]\h:\u\[\e[32;1m\])-(\[\e[37;1m\]\j\[\e[32;1m\])-(\D{%Y-%m-%d %H:%M:%S})-(\[\e[37;1m\]\w\[\e[32;1m\])\n\[\e[0m\] $ps_git $ "
 export GREP_OPTIONS='--color=auto --exclude=*.pyc --exclude-dir=.git --exclude-dir=.svn'

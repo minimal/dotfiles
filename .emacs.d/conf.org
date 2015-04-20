@@ -105,6 +105,8 @@ is directly inspired by [[http://sachachua.com/blog/2012/06/literate-programming
                       (lambda ()
                         (interactive)
                         (join-line -1)))
+      (global-set-key (kbd "C-}") #'cua-scroll-up)
+      (global-set-key (kbd "C-{") #'cua-scroll-down)
 
     #+end_src
 
@@ -357,6 +359,10 @@ is directly inspired by [[http://sachachua.com/blog/2012/06/literate-programming
       (use-package textmate
         :ensure t
         :init (textmate-mode))
+
+      (use-package ace-isearch
+        :ensure t
+        :init (global-ace-isearch-mode nil))
     #+end_src
 
 * Languages
@@ -416,12 +422,14 @@ is directly inspired by [[http://sachachua.com/blog/2012/06/literate-programming
                      (enable-paredit-mode)
                      (setq cider-stacktrace-fill-column t
                            cider-repl-print-length 100)))
-         (require 'squiggly-clojure)
+         ;;(require 'squiggly-clojure)
          ;;nrepl-hide-special-buffers t
+         (setenv "EXPECTATIONS_COLORIZE" "false")
 
          ;; Custom error rendering to show diffs and form from my humane-test mods
          (defun cider-test-render-assertion (buffer test)
            "Emit into BUFFER report detail for the TEST assertion."
+           (message "in my custom render fn")
            (with-current-buffer buffer
              (nrepl-dbind-response test (var context type message expected actual diffstrs test-form error)
 
@@ -455,6 +463,9 @@ is directly inspired by [[http://sachachua.com/blog/2012/06/literate-programming
    #+begin_src emacs-lisp :tangle yes
      (use-package clojure-mode
        :ensure t
+       :mode ("\\.clj\\'" . clojure-mode)
+       :init (progn
+               (add-to-list 'auto-mode-alist '("\*expectations\*$" . clojure-mode)))
        :config
        (progn
          (add-hook #'clojure-mode-hook
@@ -471,6 +482,7 @@ is directly inspired by [[http://sachachua.com/blog/2012/06/literate-programming
        #'clojure-mode-hook
        (lambda ()
          (define-clojure-indent
+           (do-template 1)
            (copy 2)
            (create-table 1)
            (delete 1)
@@ -479,8 +491,8 @@ is directly inspired by [[http://sachachua.com/blog/2012/06/literate-programming
            (select 1)
            (truncate 1)
            (update 2)
-           (dom/div 2)
-           (dom/ 2)
+           (div 1)
+           (span 1)
            (alter-var-root 1)
            ;; storm
            (nextTuple 1)
@@ -496,6 +508,7 @@ is directly inspired by [[http://sachachua.com/blog/2012/06/literate-programming
            (with 1)
            (splitp 2)
            (percentiles 2)
+           ;; om
            )))
     #+end_src
 
@@ -528,14 +541,15 @@ is directly inspired by [[http://sachachua.com/blog/2012/06/literate-programming
         (setq ipython-command "/usr/local/bin/ipython")
         (setq py-python-command "/usr/local/bin/ipython")))
 
+     ;; Jedi currently not working form melpa. Sticking with el-get for now
      (use-package jedi
-       :ensure t
+       ;;:ensure t
        :commands (jedi:setup))
 
-     (use-package jedi-direx
-       :ensure t
-       :commands (jedi-direx:setup)
-       :config (jedi-direx:setup))
+     ;; (use-package jedi-direx
+     ;;   :ensure t
+     ;;   :commands (jedi-direx:setup)
+     ;;   :config (jedi-direx:setup))
    #+end_src
 
     To get jedi completion with a venv:

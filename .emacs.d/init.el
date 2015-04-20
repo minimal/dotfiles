@@ -5,6 +5,8 @@
              '("melpa-stable" . "http://stable.melpa.org/packages/") t)
 (add-to-list 'package-archives
              '("melpa" . "http://melpa.org/packages/") t)
+(add-to-list 'package-archives
+             '("marmalade" . "http://marmalade-repo.org/packages/") t)
 (package-initialize)
 (when (not package-archive-contents)
   (package-refresh-contents))
@@ -92,7 +94,7 @@
 (add-to-list 'auto-mode-alist '("\\.markdown\\'" . markdown-mode))
 (add-to-list 'auto-mode-alist '("\\.md\\'" . markdown-mode))
 
-(yas/load-directory "~/.emacs.d/snippets")
+(yas-load-directory "~/.emacs.d/snippets" t)
 
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
@@ -130,3 +132,10 @@
 ;; Don't ruin S-arrow to switch windows please (use M-+ and M-- instead to toggle)
 (setq org-replace-disputed-keys t)
 
+(custom-set-faces
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(font-lock-function-name-face ((t (:foreground "#4271ae" :weight bold))))
+ '(font-lock-type-face ((t (:foreground "#f99157" :weight bold)))))

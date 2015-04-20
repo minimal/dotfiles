@@ -7,13 +7,15 @@
     name =
     email = 
 [cola]
-    fontdiff = Droid Sans Mono Dotted,10,-1,5,50,0,0,0,0,0
+	fontdiff = Monaco,11,-1,5,50,0,0,0,0,0
     fontui = Nimbus Sans L,12,-1,5,50,0,0,0,0,0
     savewindowsettings = true
     tabwidth = 4
 [core]
-    editor = emacsclient  -nw
-    excludesfile = /home/chris/.gitignore
+    editor = /usr/local/Cellar/emacs/HEAD/bin/emacsclient -nw
+    # /usr/local/Cellar/emacs/24.2/Emacs.app/Contents/MacOS/bin/emacsclient -nw
+    # /Applications/Emacs.app/Contents/MacOS/bin/emacsclient  -nw
+    excludesfile = ~/.gitignore
 [gui]
     editor = emacsclient --no-wait
 
@@ -33,6 +35,7 @@
     dc = diff --cached
     m = merge
     mnff = merge --no-ff
+    pop = stash pop
     tags = !git for-each-ref --sort=-taggerdate --format '%(refname:short) %(taggerdate:relative)' refs/tags
     tagsonly = !git for-each-ref --sort=-taggerdate --format '%(refname:short)' refs/tags
     pick = !sh -c 'git log -S$1 -p' -  # show log diffs that add/remove arg string
@@ -49,7 +52,7 @@
 [branch]
     autosetuprebase = always
 [push]
-    default = upstream
+    default = simple
 [diff]
 	tool = diffmerge
 [difftool "diffmerge"]
@@ -59,3 +62,5 @@
 	trustExitCode = true
 [help]
 	autocorrect = 10
+[dude]
+	interval = 300
