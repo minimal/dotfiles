@@ -37,6 +37,7 @@
     ;;yasnippet-bundle
     use-package
     yasnippet
+    company
     ;flymake-cursor
     ;rainbow-mode)  ;; colours css colours
 ))

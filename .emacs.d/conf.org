@@ -358,6 +358,17 @@ is directly inspired by [[http://sachachua.com/blog/2012/06/literate-programming
       (use-package textmate
         :ensure t
         :init (textmate-mode))
+
+      (use-package ace-isearch
+        :ensure t
+        :init (global-ace-isearch-mode nil))
+
+      (use-package aggressive-indent
+        :ensure t)
+
+      (use-package github-browse-file
+        :ensure t)
+
     #+end_src
 
 * Languages
