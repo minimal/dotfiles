@@ -32,7 +32,10 @@
         - gnutls
         - gnu-indent
         - gnu-getopt
+        - tree
+        - aspell
         - sshfs
+        - terminal-notifier
         # - rbenv
         # - ruby-build
         # - elasticsearch
@@ -55,8 +58,11 @@
         - menumeters
         - trailer
         - sequel-pro
+        - telegram
+        - vlc
         # - spotify
         # - skype
+        - elm-platform
 
     - name: Clone dotfiles
       # I set force and update to no so that if I have any working
