@@ -78,6 +78,11 @@
         - .lein
         - .ansible
 
+    - name: Symlink dotfiles2
+      file: path={{ home }}/.{{ item }} src={{ code_home }}/dotfiles/{{ item }} state=link
+      with_items:
+        - gitignore
+
     - name: Setup prezto # TODO: the symlinks as well
       file: path={{ home }}/.zprezto src={{ code_home }}/prezto state=link
 
