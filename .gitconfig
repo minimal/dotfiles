@@ -33,12 +33,15 @@
     dc = diff --cached
     m = merge
     mnff = merge --no-ff
+    pop = stash pop
     tags = !git for-each-ref --sort=-taggerdate --format '%(refname:short) %(taggerdate:relative)' refs/tags
     tagsonly = !git for-each-ref --sort=-taggerdate --format '%(refname:short)' refs/tags
     pick = !sh -c 'git log -S$1 -p' -  # show log diffs that add/remove arg string
     graphviz = "!f() { echo 'digraph git {' ; git log --pretty='format:  %h -> { %p }' \"$@\" | sed 's/[0-9a-f][0-9a-f]*/\"&\"/g' ; echo '}'; }; f"
     root = !pwd
-	pu = push --follow-tags
+    pu = push --follow-tags
+    permission-reset = !git diff -p -R | grep -E \"^(diff|(old|new) mode)\" | git apply
+    sync = !git stash && git pull && git stash pop
 [github]
     user = minimal
     token = 
@@ -49,7 +52,7 @@
 [branch]
     autosetuprebase = always
 [push]
-    default = upstream
+    default = simple
 [diff]
 	tool = diffmerge
 [difftool "diffmerge"]
@@ -59,3 +62,5 @@
 	trustExitCode = true
 [help]
 	autocorrect = 10
+[dude]
+	interval = 300
