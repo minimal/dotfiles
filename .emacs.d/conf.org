@@ -116,6 +116,19 @@ is directly inspired by [[http://sachachua.com/blog/2012/06/literate-programming
    get away with on the :config side. Config doesn't run till the mode
    is activated.
 
+   Version 2 notes:
+   #+BEGIN_QUOTE
+
+   The meaning of :init has been changed: It now always happens before
+   package load, whether :config has been deferred or not. This means
+   that some uses of :init in your configuration may need to be
+   changed to :config (in the non-deferred case). For the deferred
+   case, the behavior is unchanged from before.
+
+   Also, because :init and :config now mean "before" and "after",
+   the :pre- and :post- keywords are gone, as they should no longer be
+   necessary
+   #+END_QUOTE
 
 ** Paradox
    Better package menu.
@@ -183,7 +196,7 @@ is directly inspired by [[http://sachachua.com/blog/2012/06/literate-programming
           (define-key helm-swoop-map (kbd "M-i") #'helm-multi-swoop-all-from-helm-swoop)))
     #+end_src
 
-    Ag for helm
+*** Ag for helm
 
     #+begin_src emacs-lisp :tangle yes
       (use-package helm-ag
@@ -195,6 +208,15 @@ is directly inspired by [[http://sachachua.com/blog/2012/06/literate-programming
         :ensure t
         :commands (helm-ag-r))
     #+end_src
+
+*** helm locate
+
+    #+begin_src emacs-lisp
+      (use-package helm-locate
+        :ensure t
+        :config (setq helm-locate-command "mdfind %s %s"))
+    #+end_src
+
 *** projectile
 
     Allows operations within projects (e.g. git repo). Good
@@ -336,7 +358,10 @@ is directly inspired by [[http://sachachua.com/blog/2012/06/literate-programming
 
       (use-package ethan-wspace
         :ensure t
-        :init (global-ethan-wspace-mode 1))
+        :init
+        (progn
+          (global-ethan-wspace-mode 1)
+          (setq mode-require-final-newline nil)))
 
       (use-package volatile-highlights
         :ensure t
@@ -475,6 +500,7 @@ is directly inspired by [[http://sachachua.com/blog/2012/06/literate-programming
                    (lambda ()
                      (auto-complete-mode -1)
                      (clj-refactor-mode)
+                     (enable-paredit-mode)
                      (aggressive-indent-mode)
                      (highlight-indentation-mode)))))
    #+end_src
