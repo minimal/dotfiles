@@ -42,6 +42,7 @@
         - mysql
         - apache-spark
         - rust
+        - node
 
     - name: Emacs
       homebrew: name=emacs state=present install_options=with-cocoa,with-glib,with-gnutls,HEAD

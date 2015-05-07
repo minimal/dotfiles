@@ -46,11 +46,17 @@
   (when (not (package-installed-p p))
     (package-install p)))
 
+(eval-when-compile
+  (require 'use-package))
+(require 'diminish)                ;; if you use :diminish
+(require 'bind-key)                ;; if you use any :bind variant
 
-(require 'use-package)
 (require 'yaml-mode)
 (require 'smooth-scrolling)
 (require 'ag)
+
+(setq magit-last-seen-setup-instructions "1.4.0")
+(setq magit-set-upstream-on-push t)
 
 ;;; yasnippet
 ;;; should be loaded before auto complete so that they can work together

@@ -14,3 +14,11 @@
 /.emacs.d/places
 /.emacs.d/projectile-bookmarks.eld
 /.ansible/tmp/
+/.lein/self-installs/
+/.emacs.d/.sx/
+/.emacs.d/auto-save-list/
+/.emacs.d/backups/
+/.emacs.d/el-get/
+/.emacs.d/tramp
+/.emacs.d/var/
+/.emacs.d/.python-environments/

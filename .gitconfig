@@ -13,7 +13,7 @@
     tabwidth = 4
 [core]
     editor = emacsclient  -nw
-    excludesfile = /home/chris/.gitignore
+    excludesfile = ~/.gitignore
 [gui]
     editor = emacsclient --no-wait
 
