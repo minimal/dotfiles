@@ -4,6 +4,7 @@
 ;; (cua-mode t nil (cua-base))
 (cua-mode)
 
+(add-hook 'emacs-lisp-mode-hook #'paredit-mode)
 ;(save-place t nil (saveplace))
 
 ;; bindings
