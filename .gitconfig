@@ -41,7 +41,7 @@
     root = !pwd
     pu = push --follow-tags
     permission-reset = !git diff -p -R | grep -E \"^(diff|(old|new) mode)\" | git apply
-    sync = !git stash && git pull && git stash pop
+    sync = !git stash && git pull --rebase && git stash pop
 [github]
     user = minimal
     token = 
