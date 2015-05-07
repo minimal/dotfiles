@@ -76,17 +76,17 @@ is directly inspired by [[http://sachachua.com/blog/2012/06/literate-programming
       ;; To unset a key e.g:
       ;; (global-unset-key (kbd "C-_"))
       ;; f1 is help prefix, press twice for help-for-help
-      (global-set-key [f2] 'goto-line)
+      (bind-key "<f2>" #'goto-line)
       ;; f3 is start record macro
       ;; f4 is stop record macro / execute macro
-      (global-set-key [f5] 'previous-multiframe-window)
-      (global-set-key [f6] 'next-multiframe-window)
-      (global-set-key [f7] 'kill-buffer)
-      (global-set-key [f8] 'dired-jump)
-      (global-set-key (kbd "<M-f8>") 'ido-find-file)
-      (global-set-key [(shift f8)] 'ido-find-file-other-window)
+      (bind-key "<f5>" #'previous-multiframe-window)
+      (bind-key "<f6>" #'next-multiframe-window)
+      (bind-key "<f7>" #'kill-buffer)
+      (bind-key "<f8>" #'dired-jump)
+      (bind-key "<M-f8>" #'ido-find-file)
+      (bind-key "<S-f8>" #'ido-find-file-other-window)
       ;; f10 is menu-bar-open
-      (global-set-key (kbd "<S-f9>") 'ido-switch-buffer-other-window)
+      (bind-key "<S-f9>" #'ido-switch-buffer-other-window)
       (set-register ?e '(file . "~/.emacs.d/chris.el")) ; 'C-x r j e' opens this file
       (define-key global-map (kbd "C-;") 'iedit-mode)
       (define-key global-map (kbd "C-3") 'comment-or-uncomment-region-or-line)
@@ -96,7 +96,7 @@ is directly inspired by [[http://sachachua.com/blog/2012/06/literate-programming
       ;; (global-set-key [(control q)] 'fill-paragraph) ;; virtual box
       ;; overrides meta-q
 
-
+      (bind-key "C-x g" #'magit-status)
       (global-set-key [(meta m)] 'jump-char-forward)
       (global-set-key [(shift meta m)] 'jump-char-backward)
       (global-set-key [(meta i)] 'back-to-indentation)
@@ -105,6 +105,8 @@ is directly inspired by [[http://sachachua.com/blog/2012/06/literate-programming
                       (lambda ()
                         (interactive)
                         (join-line -1)))
+      (bind-key "C-}" #'cua-scroll-up)
+      (bind-key "C-{" #'cua-scroll-down)
 
     #+end_src
 
