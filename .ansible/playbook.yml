@@ -26,6 +26,7 @@
         - git
         - coreutils
         - findutils
+        - rlwrap
         - gnu-tar
         - gnu-sed
         - gawk
@@ -34,7 +35,9 @@
         - gnu-getopt
         - tree
         - aspell
+        - unrar
         - sshfs
+        - fpp
         - terminal-notifier
         # - rbenv
         # - ruby-build
@@ -55,7 +58,7 @@
         - diffmerge
         - intellij-idea
         - iterm2
-        - istat-menus
+        # - istat-menus
         - menumeters
         - trailer
         - sequel-pro
