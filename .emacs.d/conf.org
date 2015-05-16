@@ -13,7 +13,7 @@ is directly inspired by [[http://sachachua.com/blog/2012/06/literate-programming
 
 ** Settings
 
-***   Mac specific.
+*** Mac specific.
 
    https://github.com/purcell/exec-path-from-shell is essential
 
@@ -39,7 +39,7 @@ is directly inspired by [[http://sachachua.com/blog/2012/06/literate-programming
          :init (exec-path-from-shell-initialize)))
    #+end_src
 
-***  Tab widths, recentf etc
+*** Tab widths, recentf etc
 
    #+begin_src emacs-lisp :tangle yes
      (setq-default tab-width 4)
@@ -163,7 +163,8 @@ is directly inspired by [[http://sachachua.com/blog/2012/06/literate-programming
        :init
        (progn
          (setq helm-quick-update t
-               helm-ff-skip-boring-files t)
+               helm-ff-skip-boring-files t
+               helm-locate-command "mdfind %s %s")
          (helm-mode))
        :bind (("<f9>" . helm-mini)
               ("M-<f9>" . helm-projectile-find-file-and-recent)
@@ -207,14 +208,6 @@ is directly inspired by [[http://sachachua.com/blog/2012/06/literate-programming
       (use-package helm-ag-r
         :ensure t
         :commands (helm-ag-r))
-    #+end_src
-
-*** helm locate
-
-    #+begin_src emacs-lisp
-      (use-package helm-locate
-        :ensure t
-        :config (setq helm-locate-command "mdfind %s %s"))
     #+end_src
 
 *** projectile
@@ -291,6 +284,14 @@ is directly inspired by [[http://sachachua.com/blog/2012/06/literate-programming
         :bind
         (("M-z" . ace-jump-zap-up-to-char-dwim)
          ("C-M-z" . ace-jump-zap-to-char-dwim)))
+    #+end_src
+
+*** ace window
+
+    #+begin_src emacs-lisp :tangle yes
+      (use-package ace-window
+        :ensure t
+        :bind (("C-#" . ace-window)))
     #+end_src
 
 *** Expand region
@@ -522,7 +523,10 @@ is directly inspired by [[http://sachachua.com/blog/2012/06/literate-programming
            (update 2)
            (dom/div 2)
            (dom/ 2)
+           (tdom/div 1)
+           (div 1)
            (alter-var-root 1)
+           (render-state 1)
            ;; storm
            (nextTuple 1)
            ;; cats
@@ -537,6 +541,8 @@ is directly inspired by [[http://sachachua.com/blog/2012/06/literate-programming
            (with 1)
            (splitp 2)
            (percentiles 2)
+           ;; core.match
+           (match 1)
            )))
     #+end_src
 
