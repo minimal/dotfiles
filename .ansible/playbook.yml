@@ -36,6 +36,7 @@
         - tree
         - aspell
         - unrar
+        - Caskroom/cask/osxfuse
         - sshfs
         - fpp
         - terminal-notifier
