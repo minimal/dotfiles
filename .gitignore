@@ -23,3 +23,5 @@
 /.emacs.d/var/
 /.emacs.d/.python-environments/
 /.lein/repl-port
+/.emacs.d/recentf
+/.emacs.d/projectile.cache

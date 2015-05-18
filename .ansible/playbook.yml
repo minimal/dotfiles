@@ -19,7 +19,7 @@
         - htop
         - zsh
         - tmux
-        - caskroom/cask/brew-cask
+        # - caskroom/cask/brew-cask
         # - apple-gcc42
         # - vim
         - the_silver_searcher
@@ -36,7 +36,7 @@
         - tree
         - aspell
         - unrar
-        - Caskroom/cask/osxfuse
+        # - caskroom/cask/osxfuse
         - sshfs
         - fpp
         - terminal-notifier
@@ -88,6 +88,7 @@
         - .tmux.conf
         - .lein
         - .ansible
+        - .emacs.d
 
     - name: Symlink dotfiles2
       file: path={{ home }}/.{{ item }} src={{ code_home }}/dotfiles/{{ item }} state=link

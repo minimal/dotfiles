@@ -111,8 +111,7 @@
  ;; If there is more than one, they won't work right.
  '(package-selected-packages
    (quote
-    (helm-locate- helm-locate ace-isearch paradox exec-path-from-shell yasnippet use-package flycheck auto-complete ag smooth-scrolling jump-char gist marmalade yaml-mode markdown-mode scpaste starter-kit)))
- '(paradox-github-token t))
+    (wrap-region multi-web-mode jedi-direx jedi cider github-browse-file aggressive-indent ace-isearch textmate color-identifiers-mode highlight-indentation volatile-highlights ethan-wspace visual-regexp-steroids quickrun guide-key-tip region-bindings-mode multiple-cursors expand-region ace-window ace-jump-zap ace-jump-mode drag-stuff helm-projectile helm-ag-r helm-ag helm-swoop helm ido-vertical-mode paradox exec-path-from-shell company yasnippet use-package flycheck auto-complete ag smooth-scrolling jump-char gist marmalade yaml-mode markdown-mode scpaste starter-kit))))
 
 (server-start)
 ;;; edit server for editing from chrome

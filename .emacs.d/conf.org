@@ -397,6 +397,9 @@ is directly inspired by [[http://sachachua.com/blog/2012/06/literate-programming
       (use-package github-browse-file
         :ensure t)
 
+      (use-package helm-themes
+        :ensure t)
+
     #+end_src
 
 * Languages
