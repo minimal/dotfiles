@@ -1,0 +1,22 @@
+#! /bin/zsh
+port=$SKIMPORT
+
+if [ $2 ]; then
+    user=$1
+    host=$2
+    # 2=$mytmp
+else
+    host=$1
+fi
+
+if [ $TMUX ]; then
+    printf "\033k@$host\033\\"
+fi
+
+if [ $2 ]; then
+    ssh -A -p $port $user@$host.skimlinks.com
+else
+    ssh -A -p $port chris@$host.skimlinks.com
+fi
+
+printf "\033klocal\033\\"

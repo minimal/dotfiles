@@ -456,7 +456,7 @@ is directly inspired by [[http://sachachua.com/blog/2012/06/literate-programming
                      (enable-paredit-mode)
                      (setq cider-stacktrace-fill-column t
                            cider-repl-print-length 100)))
-         (require 'squiggly-clojure)
+         ;;(require 'squiggly-clojure)
          ;;nrepl-hide-special-buffers t
          (setenv "EXPECTATIONS_COLORIZE" "false")
 

@@ -1,5 +1,6 @@
 ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
 brew install python
+pip install ansible
 pip install virtualenv
 brew install git
 brew install emacs --with-cocoa --with-gnutls --with-glib
@@ -11,3 +12,4 @@ brew install caskroom/cask/brew-cask
 brew-cask install amethyst
 brew-cask install quicksilver
 pip install flake8
+pip2.7 install virtualenvwrapper

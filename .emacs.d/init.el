@@ -5,6 +5,8 @@
              '("melpa-stable" . "http://stable.melpa.org/packages/") t)
 (add-to-list 'package-archives
              '("melpa" . "http://melpa.org/packages/") t)
+(add-to-list 'package-archives
+             '("marmalade" . "http://marmalade-repo.org/packages/") t)
 (package-initialize)
 (when (not package-archive-contents)
   (package-refresh-contents))
@@ -107,27 +109,10 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(ack-and-a-half-executable "/usr/local/bin/ack")
- '(coffee-command "/usr/local/bin/coffee")
- '(column-number-mode t)
- '(cua-mode t nil (cua-base))
- '(custom-safe-themes (quote ("71efabb175ea1cf5c9768f10dad62bb2606f41d110152f4ace675325d28df8bd" "628278136f88aa1a151bb2d6c8a86bf2b7631fbea5f0f76cba2a0079cd910f7d" "bb08c73af94ee74453c90422485b29e5643b73b05e8de029a6909af6a3fb3f58" "1b8d67b43ff1723960eb5e0cba512a2c7a2ad544ddb2533a90101fd1852b426e" "82d2cac368ccdec2fcc7573f24c3f79654b78bf133096f9b40c20d97ec1d8016" "3580fb8e37ee9e0bcb60762b81260290329a97f3ca19249569d404fce422342f" "d677ef584c6dfc0697901a44b885cc18e206f05114c8a3b7fde674fce6180879" "8aebf25556399b58091e533e455dd50a6a9cba958cc4ebb0aab175863c25b9a4" "bf9d5728e674bde6a112979bd830cc90327850aaaf2e6f3cc4654f077146b406" "5e1d1564b6a2435a2054aa345e81c89539a72c4cad8536cfe02583e0b7d5e2fa" "d2622a2a2966905a5237b54f35996ca6fda2f79a9253d44793cfe31079e3c92b" "501caa208affa1145ccbb4b74b6cd66c3091e41c5bb66c677feda9def5eab19c" default)))
- '(electric-indent-mode nil)
- '(electric-layout-mode t)
- '(electric-pair-mode t)
- '(erc-dangerous-hosts nil)
- '(erc-pals (quote ("catherine" "tomk" "stuart" "emilbielksi" "jurg" "phil" "tomjoy" "robcowie")))
- '(erc-track-exclude-types (quote ("JOIN" "KICK" "NICK" "PART" "QUIT" "MODE" "333" "353")))
- '(fill-column 70)
- '(hl-line-mode nil t)
- '(ibuffer-saved-filter-groups nil)
- '(ibuffer-saved-filters (quote (("realfiles" ((filename . ".*\\w.*"))) ("gnus" ((or (mode . message-mode) (mode . mail-mode) (mode . gnus-group-mode) (mode . gnus-summary-mode) (mode . gnus-article-mode)))) ("programming" ((or (mode . emacs-lisp-mode) (mode . cperl-mode) (mode . c-mode) (mode . java-mode) (mode . idl-mode) (mode . lisp-mode)))))))
- '(jabber-chat-buffer-show-avatar nil)
- '(jedi:complete-on-dot (quote on))
- '(line-move-visual nil)
- '(show-paren-mode t)
- '(sql-mysql-program "/usr/local/bin/mysql")
- '(tool-bar-mode nil))
+ '(package-selected-packages
+   (quote
+    (helm-locate- helm-locate ace-isearch paradox exec-path-from-shell yasnippet use-package flycheck auto-complete ag smooth-scrolling jump-char gist marmalade yaml-mode markdown-mode scpaste starter-kit)))
+ '(paradox-github-token t))
 
 (server-start)
 ;;; edit server for editing from chrome
@@ -139,3 +124,9 @@
 (setq org-replace-disputed-keys t)
 
 (windmove-default-keybindings)
+(custom-set-faces
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ )

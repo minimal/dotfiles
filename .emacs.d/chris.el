@@ -13,7 +13,7 @@
 ;; (global-set-key "\r" 'newline-and-indent)
 ;; http://xahlee.org/emacs/keyboard_shortcuts.html
 ;; (setq debug-on-error t)
-(org-babel-load-file "/Users/chris/code/dotfiles/.emacs.d/conf.org")
+(org-babel-load-file "/Users/chrismcdevitt/code/dotfiles/.emacs.d/conf.org")
 
 ;; begin use-package
 ;; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -397,15 +397,17 @@ If inside a code-block, simply calls `self-insert-command'."
 ;; (pprint (sort (.split (System/getProperty "java.class.path") ":")))
 
 
-(use-package org-projectile
-  ;; :bind (("C-c n p" . org-projectile:project-todo-completing-read)
-  ;;        ("C-c c" . org-capture))
-  :config
-  (progn
-    (setq org-projectile:projects-file
-          "~/Dropbox/code/projects.org")
-    (add-to-list 'org-capture-templates (org-projectile:project-todo-entry "p")))
-  :ensure t)
+;; (use-package org-projectile
+;;   ;; :bind (("C-c n p" . org-projectile:project-todo-completing-read)
+;;   ;;        ("C-c c" . org-capture))
+;;   :config
+;;   (progn
+;;     (setq org-projectile:projects-file
+;;           "~/Dropbox/code/projects.org")
+;;     (add-to-list 'org-capture-templates (org-projectile:project-todo-entry "p")))
+;;   :ensure t)
+
+
 ;; http://www.emacswiki.org/emacs/TransposeWindows
 (defun rotate-windows (arg)
   "Rotate your windows; use the prefix argument to rotate the other direction"
