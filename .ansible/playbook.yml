@@ -19,7 +19,7 @@
         - htop
         - zsh
         - tmux
-        - brew-cask
+        - caskroom/cask/brew-cask
         # - apple-gcc42
         # - vim
         - the_silver_searcher
