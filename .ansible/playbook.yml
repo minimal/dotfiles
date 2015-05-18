@@ -61,7 +61,7 @@
         - iterm2
         # - istat-menus
         - menumeters
-        - trailer
+        # - trailer
         - sequel-pro
         - telegram
         - vlc
