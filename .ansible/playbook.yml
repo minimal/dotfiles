@@ -100,6 +100,8 @@
       file: path={{ home }}/.zprezto src={{ code_home }}/prezto state=link
 
     - name: Pip python packages
+      environment:
+        PIP_REQUIRE_VIRTUALENV: false
       pip: name={{ item }}
       with_items:
         - virtualenv
