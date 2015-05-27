@@ -94,6 +94,7 @@
       file: path={{ home }}/.{{ item }} src={{ code_home }}/dotfiles/{{ item }} state=link
       with_items:
         - gitignore
+        - nixpkgs
 
     - name: Setup prezto # TODO: the symlinks as well
       file: path={{ home }}/.zprezto src={{ code_home }}/prezto state=link
