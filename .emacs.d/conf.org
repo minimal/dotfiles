@@ -510,6 +510,22 @@ is directly inspired by [[http://sachachua.com/blog/2012/06/literate-programming
                      (highlight-indentation-mode)))))
    #+end_src
 
+   Fighwheel repl with inf-clojure
+   Current best solution for getting a decent cljs repl. Run from
+   project root.
+
+   #+begin_src emacs-lisp
+     (use-package inf-clojure
+       :ensure t
+       :config
+       (progn
+         (defun cljs-fig-repl ()
+           (interactive)
+           (run-clojure "lein figwheel"))))
+
+   #+end_src
+
+
 *** Clojure mode indents
     #+begin_src emacs-lisp :tangle yes
       (add-hook
