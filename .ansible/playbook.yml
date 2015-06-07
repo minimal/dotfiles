@@ -61,9 +61,10 @@
         - iterm2
         # - istat-menus
         - menumeters
-        # - trailer
+        - launchrocket
+        - trailer
         - sequel-pro
-        - telegram
+        # - telegram
         - vlc
         # - spotify
         # - skype
