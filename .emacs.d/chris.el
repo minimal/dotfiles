@@ -15,6 +15,34 @@
 ;; (setq debug-on-error t)
 (org-babel-load-file "/Users/chrismcdevitt/code/dotfiles/.emacs.d/conf.org")
 
+
+(defun my-update-env (fn)
+  (message "in my custom render fn")
+  (let ((str
+         (with-temp-buffer
+           (insert-file-contents fn)
+           (buffer-string))) lst)
+    (setq lst (split-string str "\000"))
+    (while lst
+      (setq cur (car lst))
+      (when (string-match "^\\(.*?\\)=\\(.*\\)" cur)
+        (setq var (match-string 1 cur))
+        (setq value (match-string 2 cur))
+        (setenv var value))
+      (setq lst (cdr lst)))))
+
+(defun alarm (time message)
+  "Popup a buffer with message at given `time'. See docs for
+`run-at-time' to see what formats you can use."
+  (interactive "sTime: \nsMessage: ")
+  (let ((f (lambda (message)
+             (let ((buf (get-buffer-create "*alarm*")))
+               (save-excursion
+                 (set-buffer buf)
+                 (insert "Alarm: " message)
+                 (display-buffer buf))))))
+    (run-at-time time nil f message)))
+
 ;; begin use-package
 ;; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; clojure ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;

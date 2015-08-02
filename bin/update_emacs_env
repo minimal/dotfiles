@@ -1,0 +1,5 @@
+#! /bin/bash
+
+fn=tempfile
+printenv -0 > "$fn"
+emacsclient -e '(my-update-env "'"$fn"'")' >/dev/null
