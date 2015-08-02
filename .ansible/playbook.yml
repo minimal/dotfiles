@@ -46,7 +46,7 @@
         - mysql
         - apache-spark
         - rust
-        - node
+        # - node
 
     - name: Emacs
       homebrew: name=emacs state=present install_options=with-cocoa,with-glib,with-gnutls,HEAD
@@ -59,6 +59,7 @@
         - diffmerge
         - intellij-idea
         - iterm2
+        - flux
         # - istat-menus
         - menumeters
         - launchrocket
@@ -69,6 +70,8 @@
         # - spotify
         # - skype
         - elm-platform
+        # - karabiner
+        # - seil
 
     - name: Clone dotfiles
       # I set force and update to no so that if I have any working

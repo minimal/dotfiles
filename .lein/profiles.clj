@@ -1,7 +1,7 @@
 {:user {:plugins [[mvxcvi/whidbey "1.0.0" :exclusions [mvxcvi/puget]]
                   [lein-try "0.4.3"]
                   [lein-ancient "0.6.7"]
-                  [cider/cider-nrepl "0.9.0-SNAPSHOT"]
+                  [cider/cider-nrepl "0.9.0"]
                   [refactor-nrepl "1.0.5"]
                   [jonase/eastwood "0.2.1"]
                   [lein-kibit "0.1.2"]]

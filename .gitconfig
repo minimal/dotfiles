@@ -64,3 +64,5 @@
 	autocorrect = 10
 [dude]
 	interval = 300
+[rebase]
+	autosquash = true
