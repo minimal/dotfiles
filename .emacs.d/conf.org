@@ -24,7 +24,8 @@ is directly inspired by [[http://sachachua.com/blog/2012/06/literate-programming
      ;; magnars stuff
      (when is-mac
        ;; mac friendly font
-       (set-face-attribute 'default nil :font "Monaco-12")
+       ;; (set-face-attribute 'default nil :font "Monaco-12")
+       (set-face-attribute 'default nil :font "PragmataPro for Powerline-13")
        ;; Ignore .DS_Store files with ido mode
        (add-to-list 'ido-ignore-files "\\.DS_Store")
        ;; Don't open files from the workspace in a new frame
@@ -52,7 +53,8 @@ is directly inspired by [[http://sachachua.com/blog/2012/06/literate-programming
      (setq linum-format " %d  ")  ;; reduce glitching with fring
      (menu-bar-mode 1)
      (setq-default cursor-type 't)
-     (winner-mode 1) ;; C-c left => undo window layout change, C-c right => undo
+     (winner-mode 1) ;; C-c left => undo window layout change, C-c right => ;; undo
+     (turn-off-auto-fill)
    #+end_src
 
    Backup
@@ -225,6 +227,7 @@ is directly inspired by [[http://sachachua.com/blog/2012/06/literate-programming
       (use-package projectile
         :ensure projectile
         :diminish projectile-mode
+        :bind (("C-c p w" . helm-projectile-switch-project))
         :init
         (progn
           ;; (setq projectile-keymap-prefix (kbd "C-c p"))
@@ -630,4 +633,12 @@ is directly inspired by [[http://sachachua.com/blog/2012/06/literate-programming
                  (css-mode "<style +type=\"text/css\"[^>]*>" "</style>")))
          (setq mweb-filename-extensions '("php" "htm" "html" "ctp" "phtml" "php4" "php5"))
          (multi-web-global-mode 1)))
+   #+end_src
+** Shell
+   Enable flycheck (needs shellcheck installed)
+
+   #+begin_src emacs-lisp
+
+     (add-hook #'sh-mode-hook #'flycheck-mode)
+
    #+end_src
