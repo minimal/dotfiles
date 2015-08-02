@@ -27,3 +27,4 @@ Notes for things not automated yet
     sudo chown root:wheel `which htop`
 
   #+end_src
+* install a jdk http://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html
