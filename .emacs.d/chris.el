@@ -103,6 +103,23 @@
                            (current-global-map)) ;; not working??
 (global-set-key [(control a)] 'beginning-of-line-or-indentation)
 
+
+(defun theme-dark ()
+  "Flatland with smart modeline"
+  (interactive)
+  (helm-themes--load-theme "flatland")
+  (smart-mode-line-enable)
+  (sml/apply-theme "dark"))
+
+(defun theme-light ()
+  "Soft morning with smart modeline"
+  (interactive)
+  (helm-themes--load-theme "soft-morning")
+  (smart-mode-line-enable)
+  (sml/apply-theme "light"))
+
+(theme-dark)
+
 (defun coffee-custom ()
   "coffee-mode-hook"
   (set (make-local-variable 'tab-width) 2))
