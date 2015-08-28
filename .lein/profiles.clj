@@ -1,9 +1,10 @@
 {:user {:plugins [[mvxcvi/whidbey "1.0.0" :exclusions [mvxcvi/puget]]
                   [lein-try "0.4.3"]
                   [lein-ancient "0.6.7"]
-                  [cider/cider-nrepl "0.9.0"]
-                  [refactor-nrepl "1.0.5"]
+                  [cider/cider-nrepl "0.10.0-SNAPSHOT"]
+                  [refactor-nrepl "1.1.0"]
                   [jonase/eastwood "0.2.1"]
+                  [venantius/yagni "0.1.2"]
                   [lein-kibit "0.1.2"]]
 
         :dependencies [[org.clojure/tools.nrepl "0.2.10"]
@@ -15,7 +16,7 @@
                          (require 'cider.nrepl.middleware.pprint)
                          (alter-var-root #'cider.nrepl.middleware.pprint/pprint-eval
                            (constantly (fn [form] (let [res (eval form)]
-                                                   (puget.printer/pprint res) res))))
+                                                    (puget.printer/pprint res) res))))
                          (catch Exception e
                            (println "Error loading nrepl mw" e)))]}
 

@@ -1,5 +1,6 @@
 #! /usr/local/bin/zsh
-services=(redis-server mongod mysqld git-dude cmd-key-happy bitlbee rethinkdb)
+services=(redis-server mongod mysqld git-dude cmd-key-happy bitlbee
+          rethinkdb postgres elasticsearch)
 
 autoload colors
 if [[ "$terminfo[colors]" -gt 8 ]]; then
