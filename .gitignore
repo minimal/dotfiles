@@ -25,3 +25,8 @@
 /.lein/repl-port
 /.emacs.d/recentf
 /.emacs.d/projectile.cache
+/.lein/cache/
+/.lein/repl-history
+/.emacs.d/url/cookies
+/.emacs.d/network-security.data
+/.emacs.d/eshell/history
