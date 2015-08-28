@@ -9,6 +9,9 @@
     #   - firefox
 
   tasks:
+    - homebrew_tap: tap=homebrew/versions state=present
+    - homebrew_tap: tap=caskroom/fonts state=present
+    - homebrew_tap: tap=osx-cross/avr state=present
     - name: Install libraries with homebrew
       homebrew: name={{ item }} state=present
       with_items:
@@ -46,7 +49,7 @@
         - mysql
         - apache-spark
         - rust
-        # - node
+        # - node # use nvm instead
 
     - name: Emacs
       homebrew: name=emacs state=present install_options=with-cocoa,with-glib,with-gnutls,HEAD
@@ -72,6 +75,24 @@
         - elm-platform
         # - karabiner
         # - seil
+        - font-anonymous-pro
+        - font-source-code-pro
+        - font-alegreya
+        - font-alegreya-sans
+        - font-cardo
+        - font-droid-sans-mono
+        - font-droid-sans
+        - font-droid-serif
+        - font-fira-code
+        - font-fira-mono
+        - font-fira-sans
+        - font-hasklig
+        - font-inconsolata
+        - font-lato
+        - font-monoid
+        - font-open-sans
+        - font-vollkorn
+
 
     - name: Clone dotfiles
       # I set force and update to no so that if I have any working
