@@ -6,6 +6,8 @@
 
 (add-hook 'emacs-lisp-mode-hook #'paredit-mode)
 ;(save-place t nil (saveplace))
+(setq auto-save-file-name-transforms
+      `((".*" ,temporary-file-directory t)))
 
 ;; bindings
 ;; (setq x-super-keysym 'meta) ; make cmd key as meta - for apple keyboard on linux
@@ -250,10 +252,6 @@ sticky."
                                         ;("localhost")
          ("irc.freenode.net" "#typed-clojure"))))
 
-;; Keep emacs Custom-settings in separate file
-(setq custom-file (expand-file-name "secret.el" user-emacs-directory))
-(if (file-exists-p abbrev-file-name)
-    (load custom-file))
 
 (defun toggle-window-split ()
   (interactive)
@@ -334,9 +332,9 @@ sticky."
 ;; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 
-(setenv "PATH" (concat "/Applications/ghc-7.8.3.app/Contents/bin:" "~/.cabal/bin:" (getenv "PATH")))
-(add-to-list 'exec-path "~/.cabal/bin")
-(add-to-list 'exec-path "/Applications/ghc-7.8.3.app/Contents/bin")
+;; (setenv "PATH" (concat "/Applications/ghc-7.8.3.app/Contents/bin:" "~/.cabal/bin:" (getenv "PATH")))
+;; (add-to-list 'exec-path "~/.cabal/bin")
+;; (add-to-list 'exec-path "/Applications/ghc-7.8.3.app/Contents/bin")
 ;; Use Unicode arrows in place of ugly ASCII arrows
 ;; (require 'bodil-defuns)
 (defun font-lock-replace-symbol (mode reg sym)
@@ -362,9 +360,12 @@ sticky."
             (auto-complete-mode -1)
             (setq ghc-display-error 'minibuffer)))
 
-(autoload 'ghc-init "ghc" nil t)
-(autoload 'ghc-debug "ghc" nil t)
-(add-hook 'haskell-mode-hook (lambda () (ghc-init)))
+;; need to see if i need these again
+;; (autoload 'ghc-init "ghc" nil t)
+;; (autoload 'ghc-debug "ghc" nil t)
+;; (add-hook 'haskell-mode-hook (lambda () (ghc-init))) ;; disabled for now
+;; (remove-hook #'haskell-mode-hook (lambda () (ghc-init)))
+
 ;; run M-x haskell-process-load-or-reload
 ;; M-? to show error at cursor
 

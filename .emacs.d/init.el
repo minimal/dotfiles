@@ -1,5 +1,11 @@
 (setq visible-bell t)
 (add-to-list 'load-path "~/.emacs.d/vendor/")
+
+;; Keep emacs Custom-settings in separate file
+;; (setq custom-file (expand-file-name "secret.el" user-emacs-directory))
+;; (if (file-exists-p abbrev-file-name)
+;;     (load custom-file))
+
 (require 'package)
 (add-to-list 'package-archives
              '("melpa-stable" . "http://stable.melpa.org/packages/") t)
@@ -56,6 +62,7 @@
 (require 'yaml-mode)
 (require 'smooth-scrolling)
 (require 'ag)
+(require 'grep)  ;; to fix helm-ag-r
 
 (setq magit-last-seen-setup-instructions "1.4.0")
 (setq magit-set-upstream-on-push t)
