@@ -6,7 +6,7 @@ This document is the result of me wanting to test literate programming
 and thinking that my emacs configuration was the perfect candidate. It
 is directly inspired by [[http://sachachua.com/blog/2012/06/literate-programming-emacs-configuration-file/][a blog post]] by Sacha Chua and others.
 
-“C-'” in a source block runs org-edit-special
+“C-c '” in a source block runs org-edit-special
 
 * General
   helm, ido etc
@@ -54,7 +54,9 @@ is directly inspired by [[http://sachachua.com/blog/2012/06/literate-programming
      (menu-bar-mode 1)
      (setq-default cursor-type 't)
      (winner-mode 1) ;; C-c left => undo window layout change, C-c right => ;; undo
+     (remove-hook 'text-mode-hook 'turn-on-auto-fill) ;; really don't want this ffs
      (turn-off-auto-fill)
+     (setq confirm-kill-emacs 'y-or-n-p)
    #+end_src
 
    Backup
@@ -146,12 +148,16 @@ is directly inspired by [[http://sachachua.com/blog/2012/06/literate-programming
    #+end_src
 
 ** ido
-   Not used much now after helm but make sure it is vertical
+   Not used much now after helm but make sure it is vertical and has
+   normal navigation.
 
    #+BEGIN_SRC emacs-lisp
      (use-package ido-vertical-mode
        :ensure t
-       :init (ido-vertical-mode 1))
+       :init (ido-vertical-mode 1)
+       :config (progn
+                 (setq ido-vertical-define-keys 'C-n-and-C-p-only)
+                 (setq ido-vertical-show-count t)))
 
    #+END_SRC
 
@@ -342,7 +348,7 @@ is directly inspired by [[http://sachachua.com/blog/2012/06/literate-programming
         :diminish guide-key-mode
         :init
         (progn
-        (setq guide-key/guide-key-sequence '("C-x r" "C-x 4" "C-c" "C-x"))
+        (setq guide-key/guide-key-sequence '("C-x r" "C-x 4" "C-c" "C-x" "C-c p"))
         (guide-key-mode 1)))
     #+end_src
 
