@@ -57,3 +57,6 @@ skimlinks.zsh
 ehthumbs.db
 Icon?
 Thumbs.db
+
+.lein-failures
+.nrepl-port
