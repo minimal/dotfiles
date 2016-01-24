@@ -24,8 +24,9 @@ is directly inspired by [[http://sachachua.com/blog/2012/06/literate-programming
      ;; magnars stuff
      (when is-mac
        ;; mac friendly font
-       ;; (set-face-attribute 'default nil :font "Monaco-12")
-       (set-face-attribute 'default nil :font "PragmataPro for Powerline-13")
+       ;;(set-face-attribute 'default nil :font "Monaco-12")
+       (set-face-attribute 'default nil :font "PragmataPro-13")
+
        ;; Ignore .DS_Store files with ido mode
        (add-to-list 'ido-ignore-files "\\.DS_Store")
        ;; Don't open files from the workspace in a new frame
@@ -193,13 +194,16 @@ is directly inspired by [[http://sachachua.com/blog/2012/06/literate-programming
      (use-package helm
        :ensure helm
        :diminish helm-mode
-       :init
+       :config
        (progn
          (setq helm-quick-update t
                helm-ff-skip-boring-files t
                helm-locate-command "mdfind %s %s")
+         ;; need bind-key* to override prjectile bindings
+         (bind-key* "C-c p f" #'helm-projectile-find-file-and-recent)
          (helm-mode))
        :bind (("<f9>" . helm-mini)
+              ("C-x b" . helm-mini)
               ("M-<f9>" . helm-projectile-find-file-and-recent)
               ("M-S-<f9>" . helm-projectile)
               ("C-x a g" . helm-projectile-ag)
@@ -363,7 +367,7 @@ is directly inspired by [[http://sachachua.com/blog/2012/06/literate-programming
 
 
 *** Guide Key
-
+    *TODO*: look at replacing with https://github.com/justbur/emacs-which-key
     #+begin_src emacs-lisp :tangle yes
       (use-package guide-key
         :ensure guide-key-tip
@@ -421,9 +425,9 @@ is directly inspired by [[http://sachachua.com/blog/2012/06/literate-programming
         :ensure t
         :init (textmate-mode))
 
-      (use-package ace-isearch
-        :ensure t
-        :init (global-ace-isearch-mode nil))
+      ;; (use-package ace-isearch
+      ;;   :ensure t
+      ;;   :init (global-ace-isearch-mode nil))
 
       (use-package aggressive-indent
         :ensure t)
@@ -486,16 +490,32 @@ is directly inspired by [[http://sachachua.com/blog/2012/06/literate-programming
                                 ("C-`" . cider-eval-expression-at-point-in-repl)
                                 ("<f5>" . flycheck-previous-error)
                                 ("<f6>" . flycheck-next-error))
-                     (flycheck-mode)))
+                     ;;(flycheck-mode)
+                     ))
          (add-hook 'cider-repl-mode-hook
                    (lambda ()
                      (company-mode)
                      (enable-paredit-mode)
                      (setq cider-stacktrace-fill-column t
-                           cider-repl-print-length 100)))
+                           cider-repl-print-length 100
+                           cider-repl-history-file "~/.cache/cider-history"
+                           cider-repl-wrap-history t
+                           cider-repl-history-size 1000
+                           )))
          ;;(require 'squiggly-clojure)
          ;;nrepl-hide-special-buffers t
          (setenv "EXPECTATIONS_COLORIZE" "false")
+
+         (defun cider-figwheel-repl ()
+           (interactive)
+           (save-some-buffers)
+           (with-current-buffer (cider-current-repl-buffer)
+             (goto-char (point-max))
+             (insert "(require 'figwheel-sidecar.repl-api)
+                  (figwheel-sidecar.repl-api/start-figwheel!) ; idempotent
+                  (figwheel-sidecar.repl-api/cljs-repl)")
+             (cider-repl-return)))
+
 
          ;; Custom error rendering to show diffs and form from my humane-test mods
          (defun cider-test-render-assertion (buffer test)
@@ -538,10 +558,20 @@ is directly inspired by [[http://sachachua.com/blog/2012/06/literate-programming
          (add-hook #'clojure-mode-hook
                    (lambda ()
                      (auto-complete-mode -1)
-                     (clj-refactor-mode)
                      (enable-paredit-mode)
                      (aggressive-indent-mode)
-                     (highlight-indentation-mode)))))
+                     (highlight-indentation-mode)
+                     (rainbow-identifiers-mode)
+                     ))))
+
+
+     (use-package clj-refactor
+       :ensure t
+       :config
+       (progn
+         (add-hook #'clojure-mode-hook
+                   (lambda ()
+                     (clj-refactor-mode)))))
    #+end_src
 
    Fighwheel repl with inf-clojure
