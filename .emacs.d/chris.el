@@ -49,6 +49,72 @@
                  (display-buffer buf))))))
     (run-at-time time nil f message)))
 
+
+;; from mac port emacs
+
+(defcustom mac-auto-operator-composition-characters "!\"#$%&'()*+,-./:;<=>?@[\]^_`{|}~"
+  "Sequence of characters used in automatic operator composition."
+  :package-version '(Mac\ port . "5.10")
+  :type 'string
+  :group 'mac)
+
+(defalias 'mac-auto-operator-composition-shape-gstring 'font-shape-gstring
+  "Alias function for `font-shape-gstring'.
+This is used for distinguishing `composition-function-table'
+rules added by `mac-auto-operator-composition-mode'.")
+
+(define-minor-mode mac-auto-operator-composition-mode
+  "Toggle Mac Auto Operator Composition mode.
+With a prefix argument ARG, enable Mac Auto Operator Composition
+mode if ARG is positive, and disable it otherwise.  If called
+from Lisp, enable the mode if ARG is omitted or nil.
+Mac Auto Operator Composition mode automatically composes
+consecutive occurrences of characters consisting of the elements
+of `mac-auto-operator-composition-characters' if the font
+supports such a composition.  Some fonts provide ligatures for
+several combinations of symbolic characters so such a combination
+looks like a single unit of an operator symbol in a programming
+language."
+  :init-value nil
+  :global t
+  :group 'mac
+  :package-version '(Mac\ port . "5.10")
+  (if mac-auto-operator-composition-mode
+      (when (eq (terminal-live-p (frame-terminal)) 'ns)
+    (let* ((regexp (regexp-opt
+            (mapcar 'char-to-string
+                mac-auto-operator-composition-characters)))
+           (rule (vector (concat "." regexp "+") 0
+                 'mac-auto-operator-composition-shape-gstring))
+           (last-old-rules (list nil))
+           last-new-rules)
+      (mapc (lambda (c)
+          (let ((old-rules (aref composition-function-table c)))
+            (when (listp old-rules)
+              (unless (eq old-rules last-old-rules)
+            (setq last-old-rules old-rules)
+            (setq last-new-rules (cons rule old-rules)))
+              (set-char-table-range composition-function-table c
+                        last-new-rules))))
+        mac-auto-operator-composition-characters))
+    (global-auto-composition-mode 1))
+    (map-char-table
+     (lambda (c rules)
+       (when (consp rules)
+     (let (new-rules removed-p)
+       (dolist (rule rules)
+         (if (eq (aref rule 2) 'mac-auto-operator-composition-shape-gstring)
+         (setq removed-p t)
+           (push rule new-rules)))
+       (if removed-p
+           (set-char-table-range composition-function-table c
+                     (nreverse new-rules))))))
+     composition-function-table)))
+
+(mac-auto-operator-composition-mode)
+;; end railwaycat
+
+
 ;; begin use-package
 ;; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; clojure ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -355,25 +421,12 @@ sticky."
 ;; (setenv "PATH" (concat "/Applications/ghc-7.8.3.app/Contents/bin:" "~/.cabal/bin:" (getenv "PATH")))
 ;; (add-to-list 'exec-path "~/.cabal/bin")
 ;; (add-to-list 'exec-path "/Applications/ghc-7.8.3.app/Contents/bin")
-;; Use Unicode arrows in place of ugly ASCII arrows
-;; (require 'bodil-defuns)
-(defun font-lock-replace-symbol (mode reg sym)
-  (font-lock-add-keywords
-   mode `((,reg
-           (0 (progn (compose-region (match-beginning 1) (match-end 1)
-                                     ,sym 'decompose-region)))))))
+;; (defun font-lock-replace-symbol (mode reg sym)
+;;   (font-lock-add-keywords
+;;    mode `((,reg
+;;            (0 (progn (compose-region (match-beginning 1) (match-end 1)
+;;                                      ,sym 'decompose-region)))))))
 
-;; arrows: ⬅ ⟵  ➫ ➙ →
-(defun setup-haskell-arrows (mode mode-map)
-  (font-lock-replace-symbol mode "\\(->\\)" "➙")
-  (font-lock-replace-symbol mode "\\(<-\\)" "⟵")
-  (font-lock-replace-symbol mode "\\(=>\\)" "⇒")
-
-  (define-key mode-map (kbd "➙") (lambda () (interactive) (insert "->")))
-  (define-key mode-map (kbd "⟵") (lambda () (interactive) (insert "<-")))
-  (define-key mode-map (kbd "⇒") (lambda () (interactive) (insert "=>"))))
-(eval-after-load "haskell-mode"
-  '(setup-haskell-arrows 'haskell-mode haskell-mode-map))
 
 (add-hook 'haskell-mode-hook
           (lambda ()
@@ -396,8 +449,6 @@ sticky."
 (define-derived-mode purescript-mode haskell-mode "PureScript"
   "Major mode for PureScript")
 (add-to-list 'auto-mode-alist (cons "\\.purs\\'" 'purescript-mode))
-(setup-haskell-arrows 'purescript-mode purescript-mode-map)
-
 
 ;; round quotes
 (eval-after-load 'org
