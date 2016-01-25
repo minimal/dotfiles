@@ -2,7 +2,11 @@
   "Comment out one or more s-expressions."
   nil)
 ;; (cua-mode t nil (cua-base))
+;; really make suspend frame get in the sea
+(global-unset-key (kbd "C-z"))
 (cua-mode)
+(global-unset-key (kbd "C-x C-z"))
+(put 'suspend-frame 'disabled t)
 
 (add-hook 'emacs-lisp-mode-hook #'paredit-mode)
 ;(save-place t nil (saveplace))
@@ -15,7 +19,7 @@
 ;; (global-set-key "\r" 'newline-and-indent)
 ;; http://xahlee.org/emacs/keyboard_shortcuts.html
 ;; (setq debug-on-error t)
-(org-babel-load-file "/Users/chrismcdevitt/code/dotfiles/.emacs.d/conf.org")
+(org-babel-load-file "/Users/christophermcdevitt/code/dotfiles/.emacs.d/conf.org")
 
 
 (defun my-update-env (fn)
@@ -113,6 +117,20 @@
   (smart-mode-line-enable)
   (sml/apply-theme "dark"))
 
+(defun theme-charcoal ()
+  "Soft charcoal with smart modeline"
+  (interactive)
+  (helm-themes--load-theme "soft-charcoal")
+  (smart-mode-line-enable)
+  (sml/apply-theme "dark"))
+
+(defun theme-material ()
+  "Soft charcoal with smart modeline"
+  (interactive)
+  (helm-themes--load-theme "material")
+  (smart-mode-line-enable)
+  (sml/apply-theme "dark"))
+
 (defun theme-light ()
   "Soft morning with smart modeline"
   (interactive)
@@ -120,7 +138,9 @@
   (smart-mode-line-enable)
   (sml/apply-theme "light"))
 
-(theme-dark)
+;;(theme-dark)
+;; (theme-charcoal)
+(theme-material)
 
 (defun coffee-custom ()
   "coffee-mode-hook"
