@@ -597,47 +597,67 @@ is directly inspired by [[http://sachachua.com/blog/2012/06/literate-programming
    #+end_src
 
 *** Clojure mode indents
+
     #+begin_src emacs-lisp :tangle yes
       (add-hook
        #'clojure-mode-hook
-       (lambda ()
-         (define-clojure-indent
-           (copy 2)
-           (create-table 1)
-           (delete 1)
-           (drop-table 1)
-           (insert 2)
-           (select 1)
-           (truncate 1)
-           (update 2)
-           (dom/div 2)
-           (dom/ 2)
-           (tdom/div 1)
-           (div 1)
-           (alter-var-root 1)
-           (render-state 1)
-           ;; storm
-           (nextTuple 1)
-           ;; cats
-           (mlet 1)
-           ;; manifold
-           (let-flow 1)
-           ;; riemann
-           (tagged 1)
-           (where 1)
-           (rollup 2)
-           (by 1)
-           (with 1)
-           (splitp 2)
-           (percentiles 2)
-           ;; core.match
-           (match 1)
-           )))
 
-      (put 'defui 'clojure-backtracking-indent '(4 4 (2)))
-      (put 'defcomponent 'clojure-backtracking-indent '(4 4 (2)))
-      (put 's/defrecord 'clojure-backtracking-indent '(4 4 (2)))
-      (put-clojure-indent 'facts 1)
+       (lambda ()
+         ;;(put 'defui 'clojure-backtracking-indent '(4 4 (2)))
+         (put 'defui 'clojure-backtracking-indent '(1 nil nil (1)))
+         ;;(put 'defcomponent 'clojure-backtracking-indent '(4 4 (2)))
+         ;;(put 's/defrecord 'clojure-backtracking-indent '(4 4 (2)))
+         ;; (put-clojure-indent 'this-as 1)
+         (put-clojure-indent 'alet 1)
+         (put-clojure-indent 'mlet 1)
+         (put-clojure-indent 'div 1)
+         (put-clojure-indent 'GET 2)
+         (put-clojure-indent 'POST 2)
+         (put-clojure-indent 'PUT 2)
+         (put-clojure-indent 'defcomponent '(1 nil nil (1)))
+         )
+
+       )
+      ;; (put-clojure-indent 'facts 1)
+
+
+      (comment
+        (lambda ()
+          (define-clojure-indent
+            (copy 2)
+            (create-table 1)
+            (delete 1)
+            (drop-table 1)
+            (insert 2)
+            (select 1)
+            (truncate 1)
+            (update 2)
+            (dom/div 2)
+            (dom/ 2)
+            (tdom/div 1)
+            (div 1)
+            (alter-var-root 1)
+            (render-state 1)
+            ;; storm
+            (nextTuple 1)
+            ;; cats
+            (mlet 1)
+            ;; manifold
+            (let-flow 1)
+            ;; riemann
+            (tagged 1)
+            (where 1)
+            (rollup 2)
+            (by 1)
+            (with 1)
+            (splitp 2)
+            (percentiles 2)
+            ;; om
+            (defui '(2 nil nil (1))
+              ;; core.match
+              (match 1)
+
+              ))))
     #+end_src
 
 ** Python
