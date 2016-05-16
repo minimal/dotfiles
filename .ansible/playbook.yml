@@ -39,24 +39,32 @@
         - tree
         - aspell
         - unrar
+        - trash
         # - caskroom/cask/osxfuse
-        - sshfs
+        # - sshfs
         - fpp
         - terminal-notifier
         # - rbenv
         # - ruby-build
         # - elasticsearch
+        - postgres
         - mysql
-        - apache-spark
+        # - apache-spark
         - rust
+        - shellcheck
+        - planck
         # - node # use nvm instead
 
+    # - name: Aspell
+
+    State : STANDARD.
     - name: Emacs
       homebrew: name=emacs state=present install_options=with-cocoa,with-glib,with-gnutls,HEAD
 
     - name: Install homebrew cask apps
       homebrew_cask: name={{ item }} state=present
       with_items:
+        - google-chrome
         - amethyst
         - quicksilver
         - diffmerge
@@ -67,7 +75,7 @@
         - menumeters
         - launchrocket
         - trailer
-        - sequel-pro
+        # - sequel-pro
         # - telegram
         - vlc
         # - spotify
@@ -98,7 +106,7 @@
       # I set force and update to no so that if I have any working
       # changes or changes that I haven't pushed up it doesn't reset
       # my local history.
-      git: repo=git@github.com:minimal/{{ item }}.git dest={{ code_home }}/{{ item }} force=no update=no recursive=yes
+      git: repo=git@github.com:minimal/{{ item }}.git dest={{ code_home }}/{{ item }} force=no update=no recursive=yes accept_hostkey=true
       with_items:
         - dotfiles
         - prezto
@@ -144,3 +152,6 @@
     - name: Install ls++
       shell: cd {{ vendor_code }}/ls-- &&  cpan Term::ExtendedColor && perl Makefile.PL && make && make install && cp ls++.conf {{ home }}/.ls++.conf
       when: lspp_installed.stat.exists == false
+
+    - name: make cache dir
+      shell: mkdir -p ~/.cache
