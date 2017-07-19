@@ -108,6 +108,7 @@ is directly inspired by [[http://sachachua.com/blog/2012/06/literate-programming
       (define-key global-map (kbd "C-;") 'iedit-mode)
       (define-key global-map (kbd "C-3") 'comment-or-uncomment-region-or-line)
       (define-key global-map (kbd "M-3") 'comment-or-uncomment-region-or-line)
+      (bind-key "s-/" #'comment-or-uncomment-region-or-line)
       (global-set-key [(meta \])] 'textmate-shift-right)
       (global-set-key [(meta \[)] 'textmate-shift-left)
       ;; (global-set-key [(control q)] 'fill-paragraph) ;; virtual box
@@ -135,9 +136,12 @@ is directly inspired by [[http://sachachua.com/blog/2012/06/literate-programming
      #+begin_src emacs-lisp
        (bind-key "s-y" #'previous-multiframe-window)
        (bind-key "s-h" #'next-multiframe-window)
+       (bind-key "s-u" #'revert-buffer)
+       (bind-key "s-k" #'kill-this-buffer)
        (bind-key "s-i" #'helm-mini)
        (bind-key "s-o" #'switch-to-previous-buffer)
        (bind-key "s-p" #'helm-projectile-find-file-and-recent)
+       (bind-key "s-;" #'helm-semantic-or-imenu)
      #+end_src
 
 ** Use package
@@ -454,6 +458,12 @@ is directly inspired by [[http://sachachua.com/blog/2012/06/literate-programming
          (cider-interactive-eval
           "(reloaded.repl/reset)")))
 
+     (defun cider-integrant-refresh ()
+       (interactive)
+       (save-some-buffers)
+       (with-current-buffer (cider-current-repl-buffer)
+         (cider-interactive-eval
+          "(integrant.repl/reset)")))
    #+end_src
 
    Put source in repl and run. Good for documenting repl session that
@@ -483,14 +493,15 @@ is directly inspired by [[http://sachachua.com/blog/2012/06/literate-programming
        (progn
          (add-hook 'cider-mode-hook
                    (lambda ()
-                     (cider-turn-on-eldoc-mode)
+                     ;; (cider-turn-on-eldoc-mode)
                      (company-mode)
                      (bind-keys :map clojure-mode-map
                                 ("C-x M-r" . cider-namespace-refresh)
                                 ("C-`" . cider-eval-expression-at-point-in-repl)
                                 ("<f5>" . flycheck-previous-error)
+                                ("<s-return>" . "#_")
                                 ("<f6>" . flycheck-next-error))
-                     ;;(flycheck-mode)
+
                      ))
          (add-hook 'cider-repl-mode-hook
                    (lambda ()
@@ -547,6 +558,14 @@ is directly inspired by [[http://sachachua.com/blog/2012/06/literate-programming
                              (cider-font-lock-as-clojure diffstrs))))
                (newline))))
          ))
+
+     ;; sort ns
+
+     (defun cljr-sort-ns ()
+       (interactive)
+       (cljr--ensure-op-supported "clean-ns")
+       (cider-eval-ns-form :sync)
+       (cljr--clean-ns nil :no-pruning))
    #+end_src
 
 
@@ -562,6 +581,8 @@ is directly inspired by [[http://sachachua.com/blog/2012/06/literate-programming
                      (aggressive-indent-mode)
                      (highlight-indentation-mode)
                      (rainbow-identifiers-mode)
+                     (require 'flycheck-joker)
+                     (flycheck-mode)
                      ))))
 
 
@@ -614,7 +635,17 @@ is directly inspired by [[http://sachachua.com/blog/2012/06/literate-programming
          (put-clojure-indent 'GET 2)
          (put-clojure-indent 'POST 2)
          (put-clojure-indent 'PUT 2)
+         (put-clojure-indent 'ANY 2)
+         (put-clojure-indent 'GET* 2)
+         (put-clojure-indent 'POST* 2)
+         (put-clojure-indent 'PUT* 2)
+         (put-clojure-indent 'for-all 1)
+         (put-clojure-indent 'checking 2)
+         (put-clojure-indent 'fdef 1)
+         (put-clojure-indent 'match 1)
+         (put-clojure-indent 'match-spec 2)
          (put-clojure-indent 'defcomponent '(1 nil nil (1)))
+         (put-clojure-indent 'defcomponentk '(1 nil nil (1)))
          )
 
        )
@@ -659,6 +690,25 @@ is directly inspired by [[http://sachachua.com/blog/2012/06/literate-programming
 
               ))))
     #+end_src
+
+** Haskell
+   Haskell-mode with Intero gives the best experience. Intero uses Stack.
+
+   #+begin_src emacs-lisp :tangle yes
+     (use-package haskell-mode
+            :ensure t
+            :config
+            (progn
+              (add-hook #'haskell-mode-hook
+                        (lambda ()
+                          (intero-mode)
+                          (hindent-mode)
+                          (flycheck-add-next-checker 'intero
+                                                     '(warning . haskell-hlint))
+                          (highlight-indentation-mode)
+                          (rainbow-identifiers-mode)
+                          ))))
+   #+end_src
 
 ** Python
    [[https://www.python.org/static/community_logos/python-logo-generic.svg]]
