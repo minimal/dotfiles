@@ -281,7 +281,6 @@ is directly inspired by [[http://sachachua.com/blog/2012/06/literate-programming
     #+end_src
 
 *** org mode
-
     org-replace-disputed-keys has to actually run before org.el is
     loaded. So it is also before this file.
     #+begin_src emacs-lisp :tangle yes
@@ -293,6 +292,40 @@ is directly inspired by [[http://sachachua.com/blog/2012/06/literate-programming
 
       ;; Log done time
       (setq org-log-done t)
+
+      ;; material theme and linum are causing  count-screen-lines error
+      (add-hook 'org-mode-hook
+                (lambda () (linum-mode -1)))
+
+
+      (bind-key "<s-return>" #'org-meta-return  org-mode-map)
+
+      (setq org-default-notes-file (concat org-directory "/todo-august-2014.org"))
+      (setq org-refile-targets '((org-agenda-files . (:level . 1))))
+      ;; why doesn't this load automatically?
+      (setq org-capture-templates
+            '(("t" "Todo" entry (file+headline org-default-notes-file "Tasks")
+               "* TODO %?\n  %i\n %t %a")
+              ("T" "Clock-in Task" entry
+                    (file+headline org-default-notes-file "Tasks")
+                    "* TODO %?\n"
+                    :clock-in t
+                    :clock-resume t)
+              ("n" "Note (plain)" entry
+               (file+headline org-default-notes-file "Notes")
+               "* %?\n")
+              ("N" "Note (rich)" entry
+               (file+headline org-default-notes-file "Notes")
+               "* %?\n %a")
+              ("v" "inventory item" entry (file+headline (concat org-directory "/inventory.org_archive") "Things")
+                                            "** %? :UNCATEGORIZED:
+      :PROPERTIES:
+      :LOCATION: %^{LOCATION}p
+      :QUANTITY: %^{QUANTITY}p
+      :VALUE: %^{VALUE}p
+      :ACQUIRED_ON: %^t
+      :URL: %l
+      :END:" :clock-in f)))
     #+end_src
 
 ** Small utils
@@ -528,35 +561,37 @@ is directly inspired by [[http://sachachua.com/blog/2012/06/literate-programming
              (cider-repl-return)))
 
 
-         ;; Custom error rendering to show diffs and form from my humane-test mods
-         (defun cider-test-render-assertion (buffer test)
-           "Emit into BUFFER report detail for the TEST assertion."
-           (with-current-buffer buffer
-             (nrepl-dbind-response test (var context type message expected actual diffstrs test-form error)
+         ;; Custom error rendering to show diffs and form from my
+         ;; humane-test mods
+         (comment
+          (defun cider-test-render-assertion (buffer test)
+            "Emit into BUFFER report detail for the TEST assertion."
+            (with-current-buffer buffer
+              (nrepl-dbind-response test (var context type message expected actual diffstrs test-form error)
 
-               (cider-propertize-region (cider-intern-keys (cdr test))
-                 (cider-insert (capitalize type) (cider-test-type-face type) nil " in ")
-                 (cider-insert var 'font-lock-function-name-face t)
-                 (when context  (cider-insert context 'font-lock-doc-face t))
-                 (when message  (cider-insert message 'font-lock-doc-string-face t))
-                 (when test-form (cider-insert (cider-font-lock-as-clojure test-form) nil t "\n"))
-                 (when expected (cider-insert "expected: " 'font-lock-comment-face nil
-                                          (cider-font-lock-as-clojure expected)))
+                (cider-propertize-region (cider-intern-keys (cdr test))
+                  (cider-insert (capitalize type) (cider-test-type-face type) nil " in ")
+                  (cider-insert var 'font-lock-function-name-face t)
+                  (when context  (cider-insert context 'font-lock-doc-face t))
+                  (when message  (cider-insert message 'font-lock-doc-string-face t))
+                  (when test-form (cider-insert (cider-font-lock-as-clojure test-form) nil t "\n"))
+                  (when expected (cider-insert "expected: " 'font-lock-comment-face nil
+                                               (cider-font-lock-as-clojure expected)))
 
-                 (when actual   (cider-insert "  actual: " 'font-lock-comment-face)
-                   (if error
-                       (progn (insert-text-button
-                               error
-                               'follow-link t
-                               'action 'cider-test-stacktrace
-                               'help-echo "View causes and stacktrace")
-                              (newline))
-                     (insert (cider-font-lock-as-clojure actual))))
+                  (when actual   (cider-insert "  actual: " 'font-lock-comment-face)
+                        (if error
+                            (progn (insert-text-button
+                                    error
+                                    'follow-link t
+                                    'action 'cider-test-stacktrace
+                                    'help-echo "View causes and stacktrace")
+                                   (newline))
+                          (insert (cider-font-lock-as-clojure actual))))
 
-                 (when diffstrs
-                   (cider-insert "    diff: " 'font-lock-comment-face nil
-                             (cider-font-lock-as-clojure diffstrs))))
-               (newline))))
+                  (when diffstrs
+                    (cider-insert "    diff: " 'font-lock-comment-face nil
+                                  (cider-font-lock-as-clojure diffstrs))))
+                (newline)))))
          ))
 
      ;; sort ns
