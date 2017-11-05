@@ -53,8 +53,11 @@
     autosetuprebase = always
 [push]
     default = simple
+[pull]
+    ff = only
 [diff]
 	tool = diffmerge
+	compactionHeuristic = true
 [difftool "diffmerge"]
 	cmd = diffmerge \"$LOCAL\" \"$REMOTE\"
 [mergetool "diffmerge"]
@@ -66,3 +69,8 @@
 	interval = 300
 [rebase]
 	autosquash = true
+[commit]
+	template = /Users/christophermcdevitt/code/dotfiles/git_commit_msg.txt
+# rewrite github https: urls to ssh for pushing
+[url "git@github.com:"]
+	pushInsteadOf = "https://github.com/"
