@@ -1,14 +1,14 @@
 Notes for things not automated yet
 
 * keyboard prefs
-** keyboard -> modifier keys -> caps loc = control
-** keyboard -> input sources -> british pc
-** keyboard -> shortcuts -> display -> uncheck +/- brightness
-** keyboard -> shortcuts -> Mission Control -> Show desktop = cmd-f11
-** keyboard -> shortcuts -> Mission Control 
-** iterm -> prefs -> keys -> hotkey = f12
-** 
-
+-   keyboard -> modifier keys -> caps loc = control
+-   keyboard -> input sources -> british pc
+-   keyboard -> shortcuts -> display -> uncheck +/- brightness
+-   keyboard -> shortcuts -> Mission Control -> Show desktop = cmd-f11
+-   keyboard -> shortcuts -> Mission Control 
+-   iterm -> prefs -> keys -> hotkey = f12
+*** 
+* power prefs: don't sleep on AC    
 
 * zsh
  - git clone git@github.com:minimal/prezto.git
