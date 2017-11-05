@@ -16,7 +16,7 @@
       homebrew: name={{ item }} state=present
       with_items:
         - wget
-        - python
+        # - python
         - python3
         - leiningen
         - htop
@@ -47,10 +47,10 @@
         # - rbenv
         # - ruby-build
         # - elasticsearch
-        - postgres
-        - mysql
+        # - postgres
+        # - mysql
         # - apache-spark
-        - rust
+        # - rust
         - shellcheck
         - planck
         # - node # use nvm instead
@@ -58,8 +58,8 @@
     # - name: Aspell
 
     State : STANDARD.
-    - name: Emacs
-      homebrew: name=emacs state=present install_options=with-cocoa,with-glib,with-gnutls,HEAD
+    # - name: Emacs
+    #   homebrew: name=emacs state=present install_options=with-cocoa,with-glib,with-gnutls,HEAD
 
     - name: Install homebrew cask apps
       homebrew_cask: name={{ item }} state=present
@@ -80,7 +80,7 @@
         - vlc
         # - spotify
         # - skype
-        - elm-platform
+        # - elm-platform
         # - karabiner
         # - seil
         - font-anonymous-pro
