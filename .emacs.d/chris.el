@@ -13,13 +13,30 @@
 (setq auto-save-file-name-transforms
       `((".*" ,temporary-file-directory t)))
 
+
+;; (package-install 'intero)
+;; (add-hook 'haskell-mode-hook #'intero-mode)
+;; (add-hook 'haskell-mode-hook #'hindent-mode)
+;; (flycheck-add-next-checker 'intero
+;;                            '(warning . haskell-hlint))
+
+(persistent-scratch-setup-default) ;; use 1 for not auto restore
+
+(global-wakatime-mode)
+
+(require 'flycheck-mypy)
 ;; bindings
 ;; (setq x-super-keysym 'meta) ; make cmd key as meta - for apple keyboard on linux
 (setq mac-command-modifier 'meta) ;; on osx set command to meta
 ;; (global-set-key "\r" 'newline-and-indent)
 ;; http://xahlee.org/emacs/keyboard_shortcuts.html
 ;; (setq debug-on-error t)
-(org-babel-load-file "/Users/christophermcdevitt/code/dotfiles/.emacs.d/conf.org")
+
+(add-to-list 'safe-local-variable-values
+             '(flycheck-python-flake8-executable . "/Users/christophermcdevitt/Envs/invoice-dedupe-py3/bin/flake8"))
+
+(add-to-list 'safe-local-variable-values
+             '(flycheck-python-mypy-executable . "/Users/christophermcdevitt/Envs/invoice-dedupe-py3/bin/mypy"))
 
 
 (defun my-update-env (fn)
@@ -51,20 +68,20 @@
 
 
 ;; from mac port emacs
+(comment
+ (defcustom mac-auto-operator-composition-characters "!\"#$%&'()*+,-./:;<=>?@[\]^_`{|}~"
+   "Sequence of characters used in automatic operator composition."
+   :package-version '(Mac\ port . "5.10")
+   :type 'string
+   :group 'mac)
 
-(defcustom mac-auto-operator-composition-characters "!\"#$%&'()*+,-./:;<=>?@[\]^_`{|}~"
-  "Sequence of characters used in automatic operator composition."
-  :package-version '(Mac\ port . "5.10")
-  :type 'string
-  :group 'mac)
-
-(defalias 'mac-auto-operator-composition-shape-gstring 'font-shape-gstring
-  "Alias function for `font-shape-gstring'.
+ (defalias 'mac-auto-operator-composition-shape-gstring 'font-shape-gstring
+   "Alias function for `font-shape-gstring'.
 This is used for distinguishing `composition-function-table'
 rules added by `mac-auto-operator-composition-mode'.")
 
-(define-minor-mode mac-auto-operator-composition-mode
-  "Toggle Mac Auto Operator Composition mode.
+ (define-minor-mode mac-auto-operator-composition-mode
+   "Toggle Mac Auto Operator Composition mode.
 With a prefix argument ARG, enable Mac Auto Operator Composition
 mode if ARG is positive, and disable it otherwise.  If called
 from Lisp, enable the mode if ARG is omitted or nil.
@@ -75,84 +92,46 @@ supports such a composition.  Some fonts provide ligatures for
 several combinations of symbolic characters so such a combination
 looks like a single unit of an operator symbol in a programming
 language."
-  :init-value nil
-  :global t
-  :group 'mac
-  :package-version '(Mac\ port . "5.10")
-  (if mac-auto-operator-composition-mode
-      (when (eq (terminal-live-p (frame-terminal)) 'ns)
-    (let* ((regexp (regexp-opt
-            (mapcar 'char-to-string
-                mac-auto-operator-composition-characters)))
-           (rule (vector (concat "." regexp "+") 0
-                 'mac-auto-operator-composition-shape-gstring))
-           (last-old-rules (list nil))
-           last-new-rules)
-      (mapc (lambda (c)
-          (let ((old-rules (aref composition-function-table c)))
-            (when (listp old-rules)
-              (unless (eq old-rules last-old-rules)
-            (setq last-old-rules old-rules)
-            (setq last-new-rules (cons rule old-rules)))
-              (set-char-table-range composition-function-table c
-                        last-new-rules))))
-        mac-auto-operator-composition-characters))
-    (global-auto-composition-mode 1))
-    (map-char-table
-     (lambda (c rules)
-       (when (consp rules)
-     (let (new-rules removed-p)
-       (dolist (rule rules)
-         (if (eq (aref rule 2) 'mac-auto-operator-composition-shape-gstring)
-         (setq removed-p t)
-           (push rule new-rules)))
-       (if removed-p
-           (set-char-table-range composition-function-table c
-                     (nreverse new-rules))))))
-     composition-function-table)))
+   :init-value nil
+   :global t
+   :group 'mac
+   :package-version '(Mac\ port . "5.10")
+   (if mac-auto-operator-composition-mode
+       (when (eq (terminal-live-p (frame-terminal)) 'ns)
+         (let* ((regexp (regexp-opt
+                         (mapcar 'char-to-string
+                                 mac-auto-operator-composition-characters)))
+                (rule (vector (concat "." regexp "+") 0
+                              'mac-auto-operator-composition-shape-gstring))
+                (last-old-rules (list nil))
+                last-new-rules)
+           (mapc (lambda (c)
+                   (let ((old-rules (aref composition-function-table c)))
+                     (when (listp old-rules)
+                       (unless (eq old-rules last-old-rules)
+                         (setq last-old-rules old-rules)
+                         (setq last-new-rules (cons rule old-rules)))
+                       (set-char-table-range composition-function-table c
+                                             last-new-rules))))
+                 mac-auto-operator-composition-characters))
+         (global-auto-composition-mode 1))
+     (map-char-table
+      (lambda (c rules)
+        (when (consp rules)
+          (let (new-rules removed-p)
+            (dolist (rule rules)
+              (if (eq (aref rule 2) 'mac-auto-operator-composition-shape-gstring)
+                  (setq removed-p t)
+                (push rule new-rules)))
+            (if removed-p
+                (set-char-table-range composition-function-table c
+                                      (nreverse new-rules))))))
+      composition-function-table))))
 
 (mac-auto-operator-composition-mode)
 ;; end railwaycat
 
-
-;; begin use-package
-;; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; clojure ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-;; Use this to define add hoc reset
-;; (define-key clojure-mode-map (kbd "M-r")
-;;   (lambda ()
-;;     (interactive)
-;;     (cider-interactive-eval
-;;       "(require '[clojure.pprint :refer [pprint]])
-;;        (pprint @interesting-atom)")))
-
-;; indentation tweaks for korma etc
-
-
-;; (put-clojure-indent 'dom/div 'defun)
-
-;; (add-custom-clojure-indents 'dom 2)
-
-;; compojure
-;; (define-clojure-indent
-;;   (defroutes 'defun)
-;;   (GET 2)
-;;   (POST 2)
-;;   (PUT 2)
-;;   (DELETE 2)
-;;   (HEAD 2)
-;;   (ANY 2)
-;;   (context 2)
-;;   (dom/div 2))
-;;(put-clojure-indent 'match 1) ;; core.match
-
-;; (put-clojure-indent 'dom/div 2)
-
-
-;; end clojure
-;; end use-package ;;
-;; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(org-babel-load-file "/Users/christophermcdevitt/code/dotfiles/.emacs.d/conf.org")
 
 
 (defun align-repeat (start end regexp)
@@ -176,10 +155,18 @@ language."
 (global-set-key [(control a)] 'beginning-of-line-or-indentation)
 
 
+
 (defun theme-dark ()
   "Flatland with smart modeline"
   (interactive)
   (helm-themes--load-theme "flatland")
+  (smart-mode-line-enable)
+  (sml/apply-theme "dark"))
+
+(defun theme-spacemacs-dark ()
+  "Flatland with smart modeline"
+  (interactive)
+  (helm-themes--load-theme "spacemacs-dark")
   (smart-mode-line-enable)
   (sml/apply-theme "dark"))
 
@@ -204,9 +191,10 @@ language."
   (smart-mode-line-enable)
   (sml/apply-theme "light"))
 
-;;(theme-dark)
+;; (theme-dark)
+(theme-spacemacs-dark)
 ;; (theme-charcoal)
-(theme-material)
+;; (theme-material) ;; causes crashes
 
 (defun coffee-custom ()
   "coffee-mode-hook"
@@ -219,7 +207,7 @@ language."
   '(lambda() (coffee-custom)))
 (add-hook 'coffee-mode-hook 'flymake-coffee-load)
 
-(add-hook 'js-mode-hook 'flymake-jshint-load)
+;; (add-hook 'js-mode-hook 'flymake-jshint-load)
 
 (add-to-list 'auto-mode-alist '("\\.zsh\\'" . shell-script-mode))
 (add-to-list 'auto-mode-alist '("\\.gitconfig\\'" . conf-mode))
@@ -329,6 +317,8 @@ sticky."
 ;; Diminish modeline clutter
 (require 'diminish)
 (diminish 'wrap-region-mode)
+;; (diminish 'aggressive-indent-mode)
+;; (diminish 'highlight-indentation-mode)
 ;; (diminish 'yas/minor-mode)
 ;; (diminish 'auto-fill-mode) ;; errors!
 
@@ -392,6 +382,8 @@ sticky."
             (local-set-key [f6] 'flycheck-next-error)))
 
 
+(with-eval-after-load 'flycheck
+  (flycheck-pos-tip-mode))
 (eval-after-load 'flycheck
   '(custom-set-variables
     '(flycheck-display-errors-function #'flycheck-pos-tip-error-messages)))
@@ -417,7 +409,7 @@ sticky."
 ;; Haskell WIP
 ;; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-
+(add-to-list 'exec-path "~/.local/bin")
 ;; (setenv "PATH" (concat "/Applications/ghc-7.8.3.app/Contents/bin:" "~/.cabal/bin:" (getenv "PATH")))
 ;; (add-to-list 'exec-path "~/.cabal/bin")
 ;; (add-to-list 'exec-path "/Applications/ghc-7.8.3.app/Contents/bin")
@@ -427,16 +419,22 @@ sticky."
 ;;            (0 (progn (compose-region (match-beginning 1) (match-end 1)
 ;;                                      ,sym 'decompose-region)))))))
 
-
-(add-hook 'haskell-mode-hook
-          (lambda ()
-            (auto-complete-mode -1)
-            (setq ghc-display-error 'minibuffer)))
+(comment
+ (add-hook 'haskell-mode-hook
+           (lambda ()
+             (auto-complete-mode -1)
+             (flycheck-mode)
+             (setq ghc-display-error 'minibuffer))))
 
 ;; need to see if i need these again
-;; (autoload 'ghc-init "ghc" nil t)
-;; (autoload 'ghc-debug "ghc" nil t)
-;; (add-hook 'haskell-mode-hook (lambda () (ghc-init))) ;; disabled for now
+;;(autoload 'ghc-init "ghc" nil t)
+;;(autoload 'ghc-debug "ghc" nil)
+;;(add-hook 'haskell-mode-hook (lambda () (ghc-init))) ;; disabled for now
+
+;; (add-hook 'haskell-mode-hook 'company-mode)
+;; (add-to-list 'company-backends 'company-ghc)
+;; (custom-set-variables '(company-ghc-show-info t))
+
 ;; (remove-hook #'haskell-mode-hook (lambda () (ghc-init)))
 
 ;; run M-x haskell-process-load-or-reload
@@ -499,9 +497,9 @@ If inside a code-block, simply calls `self-insert-command'."
 
 (provide 'purscheck)
 
-(eval-after-load 'flycheck
-  '(add-hook 'flycheck-mode-hook #'flycheck-haskell-setup))
-
+;; (eval-after-load 'flycheck
+;;   '(add-hook 'flycheck-mode-hook #'flycheck-haskell-setup))
+;; (remove-hook 'flycheck-mode-hook #'flycheck-haskell-setup)
 
 ;; (py-test-define-project
 ;;  :name "Classifier"
@@ -553,3 +551,68 @@ If inside a code-block, simply calls `self-insert-command'."
         (setq i 0
               rotate-times
               (if (< rotate-times 0) (1+ rotate-times) (1- rotate-times)))))))
+
+
+(defun xah-copy-file-path (&optional φdir-path-only-p)
+  "Copy the current buffer's file path or dired path to `kill-ring'.
+Result is full path.
+If `universal-argument' is called first, copy only the dir path.
+URL `http://ergoemacs.org/emacs/emacs_copy_file_path.html'
+Version 2015-12-02"
+  (interactive "P")
+  (let ((ξfpath
+         (if (equal major-mode 'dired-mode)
+             (expand-file-name default-directory)
+           (if (null (buffer-file-name))
+               (user-error "Current buffer is not associated with a file.")
+             (buffer-file-name)))))
+    (kill-new
+     (if (null φdir-path-only-p)
+         (progn
+           (message "File path copied: 「%s」" ξfpath)
+           ξfpath
+           )
+       (progn
+         (message "Directory path copied: 「%s」" (file-name-directory ξfpath))
+         (file-name-directory ξfpath))))))
+
+
+(defun sort-words (reverse beg end)
+  "Sort words in region alphabetically, in REVERSE if negative.
+    Prefixed with negative \\[universal-argument], sorts in reverse.
+
+    The variable `sort-fold-case' determines whether alphabetic case
+    affects the sort order.
+
+    See `sort-regexp-fields'."
+  (interactive "*P\nr")
+  (sort-regexp-fields reverse "\\w+" "\\&" beg end))
+
+
+(eval-after-load 'edit-server
+    '(add-to-list 'edit-server-url-major-mode-alist
+                  '("inbox\\.google\\." . gmail-message-edit-server-mode)))
+
+
+;; org latex export
+(require 'ox-latex)
+(unless (boundp 'org-latex-classes)
+  (setq org-latex-classes nil))
+(comment
+ (add-to-list 'org-latex-classes
+              '("article"
+                "\\documentclass{article}"
+                ("\\section{%s}" . "\\section*{%s}"))))
+
+
+(add-to-list 'org-latex-classes
+          '("koma-article"
+             "\\documentclass{scrartcl}"
+             ("\\section{%s}" . "\\section*{%s}")
+             ("\\subsection{%s}" . "\\subsection*{%s}")
+             ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
+             ("\\paragraph{%s}" . "\\paragraph*{%s}")
+             ("\\subparagraph{%s}" . "\\subparagraph*{%s}")))
+
+
+
