@@ -1,95 +1,28 @@
 {:user {:plugins [
-                  [mvxcvi/whidbey "1.3.0"]
-                  [lein-ancient "0.6.8"]
-                  [cider/cider-nrepl "0.10.1"]
-                  [refactor-nrepl "2.0.0-SNAPSHOT" #_"1.2.0"]
+                  [mvxcvi/whidbey "1.3.1"]
+                  [lein-ancient "0.6.10"]
+                  [cider/cider-nrepl "0.14.0"]
+                  [refactor-nrepl "2.3.0"]
                   ;; [lein-try "0.4.3"]
-                  ;; [io.aviso/pretty "0.1.19"]
-                  ;; [jonase/eastwood "0.2.1"]
-                  ;; [venantius/yagni "0.1.2"]
+                  ;; [io.aviso/pretty "0.1.23"]
+                  [jonase/eastwood "0.2.3"]
+                  [com.jakemccrary/lein-test-refresh "0.20.0"]
+                  [venantius/yagni "0.1.4" :exclusions [org.clojure/clojure]]
+                  [venantius/ultra "0.5.1" :exclusions [org.clojure/clojure]]
                   ;; [lein-kibit "0.1.2"]
+                  [com.gfredericks/how-to-ns "0.1.5"]
                   ]
 
-        :dependencies [[org.clojure/tools.nrepl "0.2.12"]
-                       [spyscope "0.1.5"]
+        :dependencies [[org.clojure/tools.nrepl "0.2.13"]
+                       ;; [spyscope "0.1.5"]
+                       [mvxcvi/puget "1.0.1"]
                        [org.clojure/tools.namespace "0.2.10"]
-                       ;; [io.aviso/pretty "0.1.19"]
-                       ]
-        :injections [(require 'spyscope.core 'puget.printer)
+                       [io.aviso/pretty "0.1.33"]]
+        :injections [(require #_'spyscope.core
+                              'puget.printer)
                      ]
+        :test-refresh {:notify-command ["terminal-notifier" "-title" "Tests" "-message"]
+                       :changes-only true}
         }
  :mirrors {#"clojars" {:name "clojars mirror"
-                      :url "https://clojars-mirror.tcrawley.org/repo/"}}}
-
-#_{:plugins [#_[lein-iclojure "1.2"]
-             #_[lein-exec "0.3.3"]
-             [lein-try "0.4.3"]
-             [lein-ancient "0.6.5"]
-             [cider/cider-nrepl "0.9.0-SNAPSHOT"]
-             [refactor-nrepl "0.3.0-SNAPSHOT"]
-             [jonase/eastwood "0.2.1"]
-             [lein-kibit "0.0.8"]
-             [lein-dynalint "0.1.4"]
-
-             ;; [mvxcvi/whidbey "0.5.1" :exclusions [mvxcvi/puget]]
-             ;; [mvxcvi/whidbey "0.6.0"]
-             [quickie "0.3.6"]]
-   :dependencies [#_[clj-stacktrace "0.2.5"]
-                  [org.clojure/tools.nrepl "0.2.8" #_"0.2.7"]
-                  [spyscope "0.1.5"]
-                  [mvxcvi/puget "0.8.0"]
-                  [io.aviso/pretty "0.1.17"]
-                  [com.ambrosebs/dynalint "0.1.3"]
-                  [org.clojure/tools.namespace "0.2.10"]
-                  [flare "0.2.9-SNAPSHOT"]
-                  [pjstadig/humane-test-output "0.6.1-SNAPSHOT"]
-
-                  ;; [pjstadig/humane-test-output "0.6.0"]
-                  ;; [mvxcvi/puget "0.6.4"]
-                  [acyclic/squiggly-clojure "0.1.2-SNAPSHOT"]
-                  [slamhound "1.5.5"]]
-   :aliases {"slamhound" ["run" "-m" "slam.hound"]}
-   :injections [
-
-                ;; from
-                ;; http://z.caudate.me/give-your-clojure-workflow-more-flow/
-                (require 'spyscope.core)
-
-                (require 'io.aviso.repl
-                         'clojure.repl
-                         'clojure.main)
-                #_(alter-var-root #'clojure.main/repl-caught
-                                  (constantly @#'io.aviso.repl/pretty-repl-caught))
-                #_(alter-var-root #'clojure.repl/pst
-                                  (constantly @#'io.aviso.repl/pretty-pst))
-                ;; (require 'puget.printer)
-                #_(alter-var-root #'clojure.pprint/pprint
-                                  (constantly #(puget.printer/with-options
-                                                 {:color-scheme {:keyword [:red]
-                                                                 :nil [:blue :bold]
-                                                                 :delimiter [:blue]}}
-                                                 (puget.printer/pprint %))))
-
-                #_(require '[dynalint.lint :as dyn])
-                (require '[clojure.tools.namespace.repl :as tnr :refer [refresh]])
-
-                (require 'pjstadig.humane-test-output)
-                (pjstadig.humane-test-output/activate!)
-                #_(alter-var-root #'cider.nrepl.middleware.pprint/pprint-eval
-                                  (constantly (fn [form] (let [res (eval form)] (puget.printer/pprint res) res))))
-                ;; (require 'flare.midje)
-                ;; (flare.midje/install!)
-                ;; (require '[puget.printer :as puget :refer (cprint)])
-                ]
-
-
-   ;;        :jvm-opts ["-Xmx1g" "-Djava.awt.headless=true"] ;; no opts for grench
-
-   ;; :repl-options {:nrepl-middleware [io.aviso.nrepl/pretty-middleware]}
-   }
-
-;; :mirrors {"central" {:name "Ibiblio"
-;;                      :url "http://mirrors.ibiblio.org/pub/mirrors/maven2"}
-;;           #"clojars" {:name "Internal nexus"
-;;                       :url "http://mvn.local/nexus/releases"
-;;                       :repo-manager true}} :cuttle {:plugins [[lein-pprint "1.1.2"]]}
+                       :url "https://clojars-mirror.tcrawley.org/repo/"}}}
