@@ -1,0 +1,12 @@
+{:known-macros [clojure.spec/fdef clustermap.test-util/defspec-test compojure.core/routes compojure.core/GET compojure.core/POST
+                compojure.core/ANY om-tools.core/defcomponentk with-redefs secretary.core/defroute
+                om-tools.core/defcomponent
+                clustermap.lastcall-method/def-lastcall-method
+                clustermap.lastcall-method/def-lastcall-method-factory
+                clustermap.lastcall-method/defnk-lastcall-method-factory
+                plumbing.core/defnk
+                schema.core/defschema schema.core/defn
+                clojure.spec.alpha/fdef
+                clojure.spec.alpha/def
+                om.next/defui devcards.core/defcard]}
+;;
