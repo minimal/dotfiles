@@ -22,9 +22,9 @@
 
 (persistent-scratch-setup-default) ;; use 1 for not auto restore
 
-(global-wakatime-mode)
 
-(require 'flycheck-mypy)
+
+;;(require 'flycheck-mypy)
 ;; bindings
 ;; (setq x-super-keysym 'meta) ; make cmd key as meta - for apple keyboard on linux
 (setq mac-command-modifier 'meta) ;; on osx set command to meta

@@ -212,6 +212,7 @@ is directly inspired by [[http://sachachua.com/blog/2012/06/literate-programming
               ("M-S-<f9>" . helm-projectile)
               ("C-x a g" . helm-projectile-ag)
               ("<f11>" . helm-semantic-or-imenu)
+              ("C-x C-f" . helm-find-files)
               ("M-x" . helm-M-x)))
    #+END_SRC
 
@@ -249,6 +250,10 @@ is directly inspired by [[http://sachachua.com/blog/2012/06/literate-programming
       (use-package helm-ag-r
         :ensure t
         :commands (helm-ag-r))
+
+      ;; not sure if needed/used
+      (use-package ag
+        :ensure t)
     #+end_src
 
 *** projectile
@@ -429,6 +434,10 @@ is directly inspired by [[http://sachachua.com/blog/2012/06/literate-programming
 *** Others
 
     #+begin_src emacs-lisp :tangle yes
+      (use-package smooth-scrolling
+        :ensure t
+        :config (smooth-scrolling-mode))
+
       (use-package visual-regexp-steroids
         :ensure t)
 
@@ -475,9 +484,31 @@ is directly inspired by [[http://sachachua.com/blog/2012/06/literate-programming
       (use-package helm-themes
         :ensure t)
 
+      (use-package magithub
+        :after magit
+        :config (magithub-feature-autoinject t))
+
+
+      (use-package wakatime-mode
+        :ensure t
+        :config (global-wakatime-mode))
     #+end_src
 
 * Languages
+
+** General
+
+   #+begin_src emacs-lisp :tangle yes
+
+     (use-package flycheck
+       :ensure t)
+
+     (use-package company
+       :ensure t)
+
+   #+end_src
+
+
 ** Clojure
    [[http://clojure.org/space/showimage/clojure-icon.gif]]
 
@@ -528,6 +559,7 @@ is directly inspired by [[http://sachachua.com/blog/2012/06/literate-programming
                    (lambda ()
                      ;; (cider-turn-on-eldoc-mode)
                      (company-mode)
+                     (helm-cider-mode)
                      (bind-keys :map clojure-mode-map
                                 ("C-x M-r" . cider-namespace-refresh)
                                 ("C-`" . cider-eval-expression-at-point-in-repl)
@@ -603,8 +635,18 @@ is directly inspired by [[http://sachachua.com/blog/2012/06/literate-programming
        (cljr--clean-ns nil :no-pruning))
    #+end_src
 
-
    #+begin_src emacs-lisp :tangle yes
+     (use-package flycheck-clojure
+       :after flycheck
+       :ensure t)
+
+     (use-package flycheck-joker
+       :after flycheck
+       :ensure t)
+
+     (use-package helm-cider
+       :ensure t)
+
      (use-package clojure-mode
        :ensure t
        :config

@@ -45,15 +45,11 @@
     gist
     jump-char
     ;flymake-coffee
-    smooth-scrolling
     ;multi-web-mode
-    ag
     auto-complete
-    flycheck
     ;;yasnippet-bundle
     use-package
     yasnippet
-    company
     ;flymake-cursor
     ;rainbow-mode)  ;; colours css colours
 ))
@@ -68,8 +64,6 @@
 (require 'bind-key)                ;; if you use any :bind variant
 
 (require 'yaml-mode)
-(require 'smooth-scrolling)
-(require 'ag)
 (require 'grep)  ;; to fix helm-ag-r
 
 (setq magit-last-seen-setup-instructions "1.4.0")
