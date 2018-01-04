@@ -43,6 +43,8 @@
         # - caskroom/cask/osxfuse
         # - sshfs
         - fpp
+        - fzf
+        - fd
         - terminal-notifier
         # - rbenv
         # - ruby-build
@@ -53,6 +55,7 @@
         # - rust
         - shellcheck
         - planck
+        - poppler # has pdffonts
         # - node # use nvm instead
 
     # - name: Aspell
@@ -129,6 +132,7 @@
         - gitignore
         - nixpkgs
         - boot
+        - joker
 
     - name: Setup prezto # TODO: the symlinks as well
       file: path={{ home }}/.zprezto src={{ code_home }}/prezto state=link
