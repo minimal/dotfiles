@@ -15,36 +15,24 @@
     - name: Install libraries with homebrew
       homebrew: name={{ item }} state=present
       with_items:
-        - wget
         # - python
         - python3
-        - leiningen
         - htop
         - zsh
         - tmux
         # - caskroom/cask/brew-cask
         # - apple-gcc42
         # - vim
-        - the_silver_searcher
         - git
         - coreutils
-        - findutils
-        - rlwrap
         - gnu-tar
         - gnu-sed
-        - gawk
         - gnutls
         - gnu-indent
         - gnu-getopt
-        - tree
-        - aspell
-        - unrar
         - trash
         # - caskroom/cask/osxfuse
         # - sshfs
-        - fpp
-        - fzf
-        - fd
         - terminal-notifier
         # - rbenv
         # - ruby-build
@@ -53,10 +41,24 @@
         # - mysql
         # - apache-spark
         # - rust
-        - shellcheck
         - planck
         - poppler # has pdffonts
         # - node # use nvm instead
+
+        ##  moved to nix:
+        # - gawk
+        # - the_silver_searcher
+        # - findutils
+        # - fd
+        # - fpp
+        # - fzf
+        # - aspell
+        # - shellcheck
+        # - wget
+        # - rlwrap
+        # - leiningen
+        # - tree
+        # - unrar
 
     # - name: Aspell
 
