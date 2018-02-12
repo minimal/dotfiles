@@ -5,7 +5,7 @@ in
   packageOverrides = pkgs: with pkgs; {
     myPackages = pkgs.buildEnv {
       name = "my-packages";
-	    paths = [
+      paths = [
         aspell
         nox
         silver-searcher
@@ -28,6 +28,13 @@ in
         rlwrap
         shellcheck
         cloc
+        terminal-notifier
+        python3
+        direnv
+        pgcli
+        tmux
+        zsh
+        # exa # fails compile
       ];
       pathsToLink = [ "/share" "/bin" "/Applications"];
       extraOutputsToInstall = [ "man" "doc" ];

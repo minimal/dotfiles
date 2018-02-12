@@ -18,8 +18,6 @@
         # - python
         - python3
         - htop
-        - zsh
-        - tmux
         # - caskroom/cask/brew-cask
         # - apple-gcc42
         # - vim
@@ -31,9 +29,9 @@
         - gnu-indent
         - gnu-getopt
         - trash
+        - exa
         # - caskroom/cask/osxfuse
         # - sshfs
-        - terminal-notifier
         # - rbenv
         # - ruby-build
         # - elasticsearch
@@ -46,6 +44,8 @@
         # - node # use nvm instead
 
         ##  moved to nix:
+        # - tmux
+        # - zsh
         # - gawk
         # - the_silver_searcher
         # - findutils
@@ -58,6 +58,7 @@
         # - rlwrap
         # - leiningen
         # - tree
+        # - terminal-notifier
         # - unrar
 
     # - name: Aspell
