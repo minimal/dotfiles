@@ -3,6 +3,11 @@ in
 {
   allowUnfree = true;
   packageOverrides = pkgs: with pkgs; {
+    nix-my-packages  = pkgs.writeScriptBin "nix-my-packages"
+      ''
+        #!${super.stdenv.shell}
+        exec nix-env -f '<nixpkgs>' -iA myPackages
+      '';
     myPackages = pkgs.buildEnv {
       name = "my-packages";
       paths = [
@@ -34,6 +39,7 @@ in
         pgcli
         tmux
         zsh
+        emacs25Macport
         # exa # fails compile
       ];
       pathsToLink = [ "/share" "/bin" "/Applications"];
