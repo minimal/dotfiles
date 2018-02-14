@@ -40,6 +40,9 @@ in
         tmux
         zsh
         emacs25Macport
+        youtube-dl
+        gnupg
+        pinentry
         # exa # fails compile
       ];
       pathsToLink = [ "/share" "/bin" "/Applications"];
