@@ -63,27 +63,27 @@
 
     # - name: Aspell
 
-    State : STANDARD.
+    #State : STANDARD.
     # - name: Emacs
     #   homebrew: name=emacs state=present install_options=with-cocoa,with-glib,with-gnutls,HEAD
 
     - name: Install homebrew cask apps
       homebrew_cask: name={{ item }} state=present
       with_items:
-        - google-chrome
+#        - google-chrome
         - amethyst
-        - quicksilver
+        # - quicksilver
         - diffmerge
-        - intellij-idea
+#        - intellij-idea
         - iterm2
         - flux
         # - istat-menus
-        - menumeters
+        # - menumeters
         - launchrocket
         - trailer
         # - sequel-pro
         # - telegram
-        - vlc
+        # - vlc
         # - spotify
         # - skype
         # - elm-platform
@@ -94,9 +94,9 @@
         - font-alegreya
         - font-alegreya-sans
         - font-cardo
-        - font-droid-sans-mono
-        - font-droid-sans
-        - font-droid-serif
+        # - font-droid-sans-mono
+        # - font-droid-sans
+        # - font-droid-serif
         - font-fira-code
         - font-fira-mono
         - font-fira-sans
@@ -133,33 +133,37 @@
       file: path={{ home }}/.{{ item }} src={{ code_home }}/dotfiles/{{ item }} state=link
       with_items:
         - gitignore
-        - nixpkgs
         - boot
         - joker
+
+    - name: Symlink dotfiles3
+      file: path={{ home }}/.config/{{ item }} src={{ code_home }}/dotfiles/{{ item }} state=link
+      with_items:
+        - nixpkgs
 
     - name: Setup prezto # TODO: the symlinks as well
       file: path={{ home }}/.zprezto src={{ code_home }}/prezto state=link
 
-    - name: Pip python packages
-      environment:
-        PIP_REQUIRE_VIRTUALENV: false
-      pip: name={{ item }}
-      with_items:
-        - virtualenv
-        - virtualenvwrapper
-        - flake8
-        - ipython
+    # - name: Pip python packages
+    #   environment:
+    #     PIP_REQUIRE_VIRTUALENV: false
+    #   pip: name={{ item }}
+    #   with_items:
+    #     - virtualenv
+    #     - virtualenvwrapper
+    #     - flake8
+    #     - ipython
 
-    - name: Check if ls++ is installed
-      stat: path={{ home }}/perl5/bin/ls++
-      register: lspp_installed
+    # - name: Check if ls++ is installed
+    #   stat: path={{ home }}/perl5/bin/ls++
+    #   register: lspp_installed
 
-    - name: Get ls++
-      git: repo=git@github.com:trapd00r/ls--.git dest={{ vendor_code }}/ls--
+    # - name: Get ls++
+    #   git: repo=git@github.com:trapd00r/ls--.git dest={{ vendor_code }}/ls--
 
-    - name: Install ls++
-      shell: cd {{ vendor_code }}/ls-- &&  cpan Term::ExtendedColor && perl Makefile.PL && make && make install && cp ls++.conf {{ home }}/.ls++.conf
-      when: lspp_installed.stat.exists == false
+    # - name: Install ls++
+    #   shell: cd {{ vendor_code }}/ls-- &&  cpan Term::ExtendedColor && perl Makefile.PL && make && make install && cp ls++.conf {{ home }}/.ls++.conf
+    #   when: lspp_installed.stat.exists == false
 
     - name: make cache dir
       shell: mkdir -p ~/.cache
