@@ -1,7 +1,7 @@
 #!/bin/bash
-[[ $(file --mime $1) =~ binary ]] &&
-                 echo $1 is a binary file ||
-                 (highlight -O ansi -l $1 ||
-                  coderay $1 ||
-                  rougify $1 ||
-                  cat $1) 2> /dev/null | head -500
+[[ $(file --mime "$1") =~ binary ]] &&
+    echo "$1" is a binary file ||
+        (highlight -O ansi -l "$1" ||
+             coderay "$1" ||
+             rougify "$1" ||
+             cat "$1") 2> /dev/null | head -500

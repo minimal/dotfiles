@@ -1,3 +1,4 @@
+;; -*- mode: clojure -*-
 {:known-macros [clojure.spec/fdef clustermap.test-util/defspec-test compojure.core/routes compojure.core/GET compojure.core/POST
                 compojure.core/ANY om-tools.core/defcomponentk with-redefs secretary.core/defroute
                 om-tools.core/defcomponent
@@ -9,4 +10,3 @@
                 clojure.spec.alpha/fdef
                 clojure.spec.alpha/def
                 om.next/defui devcards.core/defcard]}
-;;

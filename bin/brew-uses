@@ -1,0 +1,2 @@
+#! /Users/cmcdevitt/.nix-profile/bin/zsh
+brew list | while read cask; do echo -n $fg[blue] $cask $fg[white]; brew uses --installed $cask | awk '{printf(" %s ", $0)}'; echo ""; done
