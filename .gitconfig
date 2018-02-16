@@ -4,8 +4,8 @@
     branch = auto
     ui = auto
 [user]                         
-    name =
-    email = 
+	name = Chris McDevitt
+	email = christophermcdevitt@gmail.com
 [cola]
     fontdiff = Droid Sans Mono Dotted,10,-1,5,50,0,0,0,0,0
     fontui = Nimbus Sans L,12,-1,5,50,0,0,0,0,0

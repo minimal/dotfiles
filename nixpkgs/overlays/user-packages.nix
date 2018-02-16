@@ -16,6 +16,12 @@ self: super:
     myPackages = with super; super.buildEnv {
       name = "my-packages";
       paths = [
+        gnutar
+        gnused
+        indent
+        getopt
+        gnutls
+        cmake
         aspell
         nox
         silver-searcher
@@ -50,6 +56,9 @@ self: super:
         pinentry
         joker
         sshrc
+        fontconfig
+        htop
+        wakatime
         # exa # fails compile
       ];
       pathsToLink = [ "/share" "/bin" "/Applications"];
