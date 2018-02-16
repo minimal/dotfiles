@@ -27,7 +27,7 @@
 
 (defvar my-packages
   '(
-    starter-kit
+    ;starter-kit
     ;starter-kit-lisp
     ;starter-kit-eshell
     ;starter-kit-js
@@ -35,7 +35,7 @@
     scpaste
     markdown-mode
     yaml-mode
-    marmalade
+;;    marmalade
     ;;  scpaste
     ;; python-pep8
     ;; python-pylint
@@ -215,3 +215,9 @@
  '(markdown-header-face-2 ((t (:inherit font-lock-function-name-face :weight bold :height 1.3 :family "Concourse T2"))))
  '(markdown-header-face-3 ((t (:inherit font-lock-function-name-face :weight bold :height 1.2 :family "Concourse T2")))))
 (put 'narrow-to-region 'disabled nil)
+(setq is-mac (equal system-type 'darwin))
+(load-file "~/.emacs.d/esk.el")
+(load-file "~/.emacs.d/chris.el")
+
+;; Doesn't pick up nix paths unless run here at the end
+(exec-path-from-shell-initialize)
