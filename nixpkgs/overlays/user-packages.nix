@@ -25,6 +25,7 @@ self: super:
         aspell
         nox
         silver-searcher
+        xz
         ## gitk not working:
         # tk
         # tcl
@@ -41,12 +42,14 @@ self: super:
         wget
         unrar # slow compile, nonfree
         leiningen
+        boot
         rlwrap
         shellcheck
         cloc
         terminal-notifier
         python3
         direnv
+        nix-repl
         pgcli
         tmux
         zsh
@@ -59,6 +62,8 @@ self: super:
         fontconfig
         htop
         wakatime
+        dhall
+        lastpass-cli
         # exa # fails compile
       ];
       pathsToLink = [ "/share" "/bin" "/Applications"];
@@ -66,5 +71,7 @@ self: super:
     };
     yarn = super.yarn;
     poppler = super.poppler;
+    kafkacat = super.kafkacat;
+
   };
 }
