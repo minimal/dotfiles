@@ -1,15 +1,17 @@
-if (cmd_exists ag); then
-    GREP=ag
+if (cmd_exists fd); then
+	fd $1
 else
-    GREP=grep
+	if (cmd_exists ag); then
+		GREP=ag
+	else
+		GREP=grep
+	fi
+	if [ `uname` = "Linux" ]; then
+		find -iname "*$1*" | $GREP $1
+	elif (cmd_exists gfind); then
+		gfind -iname "*$1*" | $GREP $1
+	else
+		echo "fallback"
+		find . | $GREP $1
+	fi
 fi
-
-if [ `uname` = "Linux" ]; then
-    find -iname "*$1*" | $GREP $1
-elif (cmd_exists gfind); then
-    gfind -iname "*$1*" | $GREP $1
-else
-    echo "fallback"
-    find . | $GREP $1
-fi
-
