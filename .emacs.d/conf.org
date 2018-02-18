@@ -28,7 +28,7 @@ is directly inspired by [[http://sachachua.com/blog/2012/06/literate-programming
        (set-face-attribute 'default nil :font "PragmataPro-13")
 
        ;; Ignore .DS_Store files with ido mode
-       (add-to-list 'ido-ignore-files "\\.DS_Store")
+       ;;(add-to-list 'ido-ignore-files "\\.DS_Store")
        ;; Don't open files from the workspace in a new frame
        (setq ns-pop-up-frames nil)
        ;; Use aspell for spell checking: brew install aspell --lang=en
@@ -87,7 +87,6 @@ is directly inspired by [[http://sachachua.com/blog/2012/06/literate-programming
         (setq mac-command-modifier 'meta)
         (setq mac-option-modifier 'super))
     #+end_src
-    #+end_src
 
     #+begin_src emacs-lisp :tangle yes
       ;; To unset a key e.g:
@@ -119,10 +118,8 @@ is directly inspired by [[http://sachachua.com/blog/2012/06/literate-programming
       (global-set-key [(shift meta m)] 'jump-char-backward)
       (global-set-key [(meta i)] 'back-to-indentation)
 
-      (global-set-key (kbd "M-K")
-                      (lambda ()
-                        (interactive)
-                        (join-line -1)))
+      ;; join next line to this line
+      (bind-key "M-K" (lambda () (interactive) (join-line -1)))
       (bind-key "C-}" #'cua-scroll-up)
       (bind-key "C-{" #'cua-scroll-down)
 
@@ -448,6 +445,10 @@ is directly inspired by [[http://sachachua.com/blog/2012/06/literate-programming
           (global-ethan-wspace-mode 1)
           (setq mode-require-final-newline nil)))
 
+      (use-package idle-highlight-mode
+        :ensure t
+        :config (idle-highlight-mode))
+
       (use-package volatile-highlights
         :ensure t
         :config (volatile-highlights-mode))
@@ -486,12 +487,47 @@ is directly inspired by [[http://sachachua.com/blog/2012/06/literate-programming
 
       (use-package magithub
         :after magit
+        :disabled t
         :config (magithub-feature-autoinject t))
 
 
       (use-package wakatime-mode
         :ensure t
         :config (global-wakatime-mode))
+
+      ;; resize automatically the windows you are working on to the size
+      ;; specified in the "Golden Ratio"
+      (use-package golden-ratio
+        :ensure t
+        :disabled t
+        :config (progn (golden-ratio-mode 1)
+                       (setq golden-ratio-auto-scale t)))
+
+      ;; https://stackoverflow.com/a/7939523
+      (defun switch-to-the-window-that-displays-the-most-recently-selected-buffer ()
+        (interactive)
+        (let* ((buflist (buffer-list (selected-frame)))      ; get buffer list in this frames ordered
+           (buflist (delq (current-buffer) buflist))     ; if there are multiple windows showing same buffer.
+           (winlist (mapcar 'get-buffer-window buflist)) ; buf->win
+           (winlist (delq nil winlist))                  ; remove non displayed windows
+           (winlist (delq (selected-window) winlist)))   ; remove current-window
+          (if winlist
+              (select-window (car winlist))
+            (message "Couldn't find a suitable window to switch to"))))
+
+      (bind-key "s-O" #'switch-to-the-window-that-displays-the-most-recently-selected-buffer)
+
+      ;; ask for gpg password from emacs:
+      ;; https://emacs.stackexchange.com/questions/32881/enabling-minibuffer-pinentry-with-emacs-25-and-gnupg-2-1-on-ubuntu-xenial
+      ;; less ~/.gnupg/gpg-agent.conf
+
+      ;; # agent timeout
+      ;; default-cache-ttl 360000
+      ;; pinentry-program /usr/local/bin/pinentry
+      ;; allow-emacs-pinentry
+      (setq epa-pinentry-mode 'loopback)
+      (pinentry-start)
+
     #+end_src
 
 * Languages
@@ -501,6 +537,9 @@ is directly inspired by [[http://sachachua.com/blog/2012/06/literate-programming
    #+begin_src emacs-lisp :tangle yes
 
      (use-package flycheck
+       :ensure t)
+
+     (use-package flycheck-pos-tip
        :ensure t)
 
      (use-package company
@@ -552,6 +591,7 @@ is directly inspired by [[http://sachachua.com/blog/2012/06/literate-programming
    #+begin_src emacs-lisp :tangle yes
      (use-package cider
        :ensure t
+       :pin melpa-stable
        :commands (cider-jack-in cider)
        :config
        (progn
@@ -772,19 +812,28 @@ is directly inspired by [[http://sachachua.com/blog/2012/06/literate-programming
    Haskell-mode with Intero gives the best experience. Intero uses Stack.
 
    #+begin_src emacs-lisp :tangle yes
+     (use-package intero
+       :defer t
+       :hook (haskell-mode . intero-mode)
+       :ensure t)
+
+     (use-package hindent
+       :defer t
+       :hook (haskell-mode . hindent-mode)
+       :ensure t)
+
      (use-package haskell-mode
-            :ensure t
-            :config
-            (progn
-              (add-hook #'haskell-mode-hook
-                        (lambda ()
-                          (intero-mode)
-                          (hindent-mode)
-                          (flycheck-add-next-checker 'intero
-                                                     '(warning . haskell-hlint))
-                          (highlight-indentation-mode)
-                          (rainbow-identifiers-mode)
-                          ))))
+       :defer t
+       :ensure t
+       :config (progn
+                 (add-hook #'haskell-mode-hook
+                           (lambda ()
+                             (flycheck-add-next-checker 'intero
+                                                        '(warning . haskell-hlint))
+                             (highlight-indentation-mode)
+                             (rainbow-identifiers-mode)
+                             )))
+       )
    #+end_src
 
 ** Python

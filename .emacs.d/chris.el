@@ -32,12 +32,13 @@
 ;; http://xahlee.org/emacs/keyboard_shortcuts.html
 ;; (setq debug-on-error t)
 
+(comment 
 (add-to-list 'safe-local-variable-values
              '(flycheck-python-flake8-executable . "/Users/christophermcdevitt/Envs/invoice-dedupe-py3/bin/flake8"))
 
 (add-to-list 'safe-local-variable-values
              '(flycheck-python-mypy-executable . "/Users/christophermcdevitt/Envs/invoice-dedupe-py3/bin/mypy"))
-
+)
 
 (defun my-update-env (fn)
   (message "in my custom render fn")
@@ -228,7 +229,7 @@ language."
 (setq-default indicate-empty-lines t
         indicate-buffer-boundaries 'left)
 
-(idle-highlight-mode)
+;;(idle-highlight-mode)
 (defun my-buffer-face-mode-variable ()
   "Set different fonts in current buffer"
   (interactive)
