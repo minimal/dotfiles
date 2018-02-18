@@ -41,6 +41,7 @@ self: super:
         tree
         wget
         unrar # slow compile, nonfree
+        clojure
         leiningen
         boot
         rlwrap
@@ -48,6 +49,9 @@ self: super:
         cloc
         terminal-notifier
         python3
+        pipenv
+        python36Packages.virtualenv
+        python36Packages.virtualenvwrapper
         direnv
         nix-repl
         pgcli
@@ -70,8 +74,9 @@ self: super:
       extraOutputsToInstall = [ "man" "doc" ];
     };
     yarn = super.yarn;
-    poppler = super.poppler;
+    poppler-utils = super.poppler_utils;
     kafkacat = super.kafkacat;
-
+    postgresql96 = super.postgresql96;
+    nixUnstable= super.nixUnstable;
   };
 }

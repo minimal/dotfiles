@@ -31,7 +31,6 @@
         # - apache-spark
         # - rust
         - planck
-        - poppler # has pdffonts
         # - node # use nvm instead
 
         ##  moved to nix:
@@ -60,6 +59,7 @@
         # - tree
         # - terminal-notifier
         # - unrar
+        # - poppler # has pdffonts
 
     # - name: Aspell
 
