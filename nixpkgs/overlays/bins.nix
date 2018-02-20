@@ -26,4 +26,27 @@ self: super: {
       platforms = platforms.unix;
     };
   };
+
+  loc = with super; stdenv.mkDerivation rec {
+    name = "loc-${version}";
+    version = "0.4.1";
+
+    src = fetchzip {
+      url = "https://github.com/cgag/loc/releases/download/v0.4.1/trust-v0.4.1-i686-apple-darwin.tar.gz";
+      sha256 = "1akckl5jy7ndd32k0792dlbw3dyfkcpi5ws0zh3hqf2n04ylnqqd";
+      name = "loc";
+    };
+
+    phases = [ "installPhase" ];
+
+    installPhase = ''
+      mkdir -p $out/bin
+      cp -p $src/loc $out/bin/loc
+    '';
+
+    meta = with stdenv.lib; {
+      description = "Count lines of code quickly.";
+      homepage = https://github.com/cgag/loc;
+    };
+  };
 }

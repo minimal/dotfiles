@@ -46,6 +46,7 @@ self: super:
         rlwrap
         shellcheck
         cloc
+        loc
         terminal-notifier
         python3
         pipenv
