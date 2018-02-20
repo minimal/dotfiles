@@ -22,7 +22,6 @@ self: super:
         getopt
         gnutls
         cmake
-        aspell
         nox
         silver-searcher
         xz
@@ -58,6 +57,7 @@ self: super:
         tmux
         zsh
         emacs25Macport
+        neovim
         youtube-dl
         gnupg
         pinentry
@@ -68,6 +68,7 @@ self: super:
         wakatime
         dhall
         lastpass-cli
+        highlight
         # exa # fails compile
       ];
       pathsToLink = [ "/share" "/bin" "/Applications"];
@@ -78,5 +79,7 @@ self: super:
     kafkacat = super.kafkacat;
     postgresql96 = super.postgresql96;
     nixUnstable= super.nixUnstable;
+    aspell = super.aspell;
+    aspell-en = super.aspellDicts.en;
   };
 }

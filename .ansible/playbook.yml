@@ -166,4 +166,4 @@
     #   when: lspp_installed.stat.exists == false
 
     - name: make cache dir
-      shell: mkdir -p ~/.cache
+      file: path={{ home }}/.cache state=directory
