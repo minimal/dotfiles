@@ -64,12 +64,14 @@ self: super:
         pinentry
         joker
         sshrc
+        prettyping
         fontconfig
         htop
         wakatime
         dhall
         lastpass-cli
         highlight
+        httpie
         # exa # fails compile
       ];
       pathsToLink = [ "/share" "/bin" "/Applications"];
@@ -79,8 +81,10 @@ self: super:
     poppler-utils = super.poppler_utils;
     kafkacat = super.kafkacat;
     postgresql96 = super.postgresql96;
-    nixUnstable= super.nixUnstable;
+    # nixUnstable= super.nixUnstable;
     aspell = super.aspell;
     aspell-en = super.aspellDicts.en;
+    ansible = super.ansible;
+    pandoc = super.pandoc;
   };
 }

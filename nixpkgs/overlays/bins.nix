@@ -49,4 +49,30 @@ self: super: {
       homepage = https://github.com/cgag/loc;
     };
   };
+
+  prettyping = with super; stdenv.mkDerivation rec {
+    name = "prettyping-${version}";
+    version = "e8d753";
+
+    src = fetchFromGitHub {
+      owner = "denilsonsa";
+      repo = "prettyping";
+      rev = "e8d7538b8742b27cffe28e9dfe13d1d1a12288e3";
+      sha256 = "05vfaq9y52z40245j47yjk1xaiwrazv15sgjq64w91dfyahjffxf";
+    };
+
+    phases = [ "unpackPhase" "installPhase" ];
+
+    installPhase = ''
+      mkdir -p $out/bin
+      cp -p prettyping $out/bin/prettyping
+    '';
+
+    meta = with stdenv.lib; {
+      description = "prettyping` is a wrapper around the standard `ping` tool, making the output prettier, more colorful, more compact, and easier to read.";
+      homepage = http://denilsonsa.github.io/prettyping/;
+      license = licenses.mit;
+      platforms = platforms.unix;
+    };
+  };
 }
