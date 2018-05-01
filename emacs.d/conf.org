@@ -2,9 +2,7 @@
 #+OPTIONS: toc:4 h:4
 #+TITLE: Emacs configuration
 
-This document is the result of me wanting to test literate programming
-and thinking that my emacs configuration was the perfect candidate. It
-is directly inspired by [[http://sachachua.com/blog/2012/06/literate-programming-emacs-configuration-file/][a blog post]] by Sacha Chua and others.
+Inspired by [[http://sachachua.com/blog/2012/06/literate-programming-emacs-configuration-file/][a blog post]] by Sacha Chua and others.
 
 “C-c '” in a source block runs org-edit-special
 
@@ -611,7 +609,7 @@ is directly inspired by [[http://sachachua.com/blog/2012/06/literate-programming
          (add-hook 'cider-repl-mode-hook
                    (lambda ()
                      (company-mode)
-                     (enable-paredit-mode)
+                     ;;(enable-paredit-mode)
                      (setq cider-stacktrace-fill-column t
                            cider-repl-print-length 100
                            cider-repl-history-file "~/.cache/cider-history"
@@ -694,7 +692,7 @@ is directly inspired by [[http://sachachua.com/blog/2012/06/literate-programming
          (add-hook #'clojure-mode-hook
                    (lambda ()
                      (auto-complete-mode -1)
-                     (enable-paredit-mode)
+                     ;;(enable-paredit-mode)
                      (aggressive-indent-mode)
                      (highlight-indentation-mode)
                      (rainbow-identifiers-mode)
@@ -905,3 +903,211 @@ is directly inspired by [[http://sachachua.com/blog/2012/06/literate-programming
      (add-hook #'sh-mode-hook #'flycheck-mode)
 
    #+end_src
+* evil mode
+Config derived from PJ
+
+
+#+begin_src emacs-lisp :tangle yes
+  (setq disable-evil-modes t)
+
+
+  (use-package which-key
+    :ensure t
+    :config (which-key-mode))
+  (use-package helm-descbinds
+    :ensure t
+    :after evil-leader
+    :config (evil-leader/set-key
+              "?" #'helm-descbinds))
+  (use-package magit
+    :ensure t
+    :config
+    (evil-leader/set-key
+      "gs" 'magit))
+  (use-package evil-magit
+    :ensure t
+    :unless disable-evil-modes
+    :after magit)
+
+  (use-package paredit
+    :ensure t
+    :if  disable-evil-modes
+    ;; :diminish paredit-mode
+    ;; :after (evil-paredit evil-leader) ; evil-paredit due to hook orders
+    ;; :config (evil-leader/set-key
+    ;; "ks" 'paredit-forward-slurp-sexp
+    ;; "kw" 'paredit-splice-sexp)
+    :config
+
+    (message "hello")
+    (with-current-buffer "*scratch*"
+        (enable-paredit-mode))
+    :hook ((clojurescript-mode clojure-mode emacs-lisp-mode) . paredit-mode))
+
+  (use-package evil-paredit
+    :ensure t
+    :disabled t
+    :hook ((clojurescript-mode clojure-mode emacs-lisp-mode) . evil-paredit-mode)
+    :after evil)
+
+  (use-package evil-smartparens
+    :ensure t
+    :unless disable-evil-modes
+    :hook ((clojurescript-mode clojure-mode emacs-lisp-mode lisp-interaction-mode) . evil-smartparens-mode)
+    :after smartparens
+    )
+  (use-package smartparens
+    :ensure t
+    :unless disable-evil-modes
+    :hook ((clojurescript-mode clojure-mode emacs-lisp-mode lisp-interaction-mode) . smartparens-strict-mode)
+    :config
+
+    (with-current-buffer "*scratch*"
+              (smartparens-strict-mode t))
+    (sp-with-modes sp-lisp-modes
+      ;; disable ', it's the quote character!
+      (sp-local-pair "'" nil :actions nil))
+    )
+  (use-package spaceline
+    :ensure t
+    ;; :disabled t
+    :after (evil ;;all-the-icons
+                 )
+    :init (setq powerline-height 24
+                spaceline-highlight-face-func 'spaceline-highlight-face-evil-state
+                powerline-default-separator 'arrow)
+    :config
+    (spaceline-spacemacs-theme)
+    (spaceline-helm-mode t))
+  (use-package hydra
+    :ensure t
+    :config
+    (defhydra hydra-git-gutter-nav (:hint t)
+      "Git gutter nav"
+      ("j" git-gutter:previous-hunk "up")
+      ("k" git-gutter:next-hunk "down"))
+
+    (defhydra hydra-text-zoom (:hint t)
+      "Font size"
+      ("k" text-scale-increase "up")
+      ("j" text-scale-decrease "down")
+      ("0" (text-scale-set 0) "reset")))
+
+  (use-package evil
+      :ensure t
+      :after evil-leader
+      :unless disable-evil-modes
+      ;; :diminish undo-tree-mode
+      :bind (:map evil-insert-state-map
+             ("TAB" . indent-for-tab-command)
+             :map evil-visual-state-map
+             ;;("<up>" . drag-stuff-up)
+             ;;("<down>" . drag-stuff-down)
+             ("u" . undo)
+             ;; ("C-;" . iedit-mode)
+               :map evil-normal-state-map
+              ;; ("k" . evil-previous-visual-line)
+             ;;("j" . evil-next-visual-line)
+               ("<up>" . evil-previous-visual-line)
+               ("<down>" . evil-next-visual-line)
+         ;;("<up>" . drag-stuff-up)
+            ;;("<down>" . drag-stuff-down)
+             ;; ("C-;" . iedit-mode)
+             ("TAB" . indent-for-tab-command))
+      :config
+      (evil-mode 1)
+      (defun my-evil-record-macro ()
+        (interactive)
+        (if buffer-read-only
+            (quit-window)
+          (call-interactively 'evil-record-macro)))
+      (with-eval-after-load 'evil-maps
+        (define-key evil-normal-state-map (kbd "q") 'my-evil-record-macro))
+      )
+
+    (use-package evil-leader
+
+      :ensure t
+      :unless disable-evil-modes
+      :config
+        (setq evil-default-cursor t
+            evil-shift-width 1
+            evil-shift-round nil)
+
+        (evil-leader/set-leader "<SPC>")
+        ;; (spacemacs/declare-prefix "w" "windows")
+        (which-key-declare-prefixes "SPC w" "windows")
+      (evil-leader/set-key
+        "<SPC>" 'helm-M-x
+        ;; "1"  'winum-select-window-1
+        ;; "2"  'winum-select-window-2
+        ;; "3"  'winum-select-window-3
+        ;; "4"  'winum-select-window-4
+        ;; "5"  'winum-select-window-5
+
+        ;; "F"  'hydra-text-zoom/body
+
+        "wv" 'split-window-right
+        "wh" 'split-window-below
+        "wb" 'balance-windows
+        "wm" 'delete-other-windows
+        "ww" 'other-window
+        "wd" 'delete-window
+        "w=" 'balance-windows
+        ;; "sw" 'helm-flyspell-correct
+        ;; "sn" 'flyspell-goto-next-error
+
+        ;; "/"  'helm-yas-complete
+
+        ;; "bd" 'kill-this-buffer
+        ;; "bb" 'helm-buffers-list
+
+        ;; "pf" 'helm-projectile-find-file-dwim
+        ;; "ps" 'helm-projectile-ag
+
+        ;; "yb" (interactively
+        ;;        (evil-yank (point-min) (point-max)))
+
+        ;; "u"  'undo-tree-visualize
+        ;; "P"  'helm-show-kill-ring
+
+        ;; "nr" 'narrow-to-region
+        ;; "nf" 'narrow-to-defun
+        ;; "nw" 'widen
+
+        ;; "gs" 'magit
+        ;; "gn" 'hydra-git-gutter-nav/body
+
+        ;; "ks" 'paredit-forward-slurp-sexp
+        ;; "kw" 'paredit-splice-sexp
+        ;; "kt" 'transpose-sexps
+
+        ;; "dl" 'delete-matching-lines
+
+        ;; ;; as-in, clean
+        ;; "c" (interactively
+        ;;       (delete-trailing-whitespace)
+        ;;       (save-excursion
+        ;;         (beginning-of-buffer)
+        ;;         (replace-regexp "\n\n\n+" "\n\n")))
+
+        ;; "fj" 'dired-jump
+        "fr" 'helm-recentf
+        "ff" 'helm-find-files
+        )
+
+      ;; messages has already been created
+      (with-current-buffer "*Messages*"
+        (evil-leader-mode t))
+      (with-current-buffer "*scratch*"
+        (evil-leader-mode t))
+
+      (global-evil-leader-mode)
+
+
+      )
+
+  (when disable-evil-modes
+    (message "disabling undo tree")
+    (global-undo-tree-mode 0))
+#+end_src

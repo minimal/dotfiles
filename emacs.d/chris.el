@@ -8,7 +8,7 @@
 (global-unset-key (kbd "C-x C-z"))
 (put 'suspend-frame 'disabled t)
 
-(add-hook 'emacs-lisp-mode-hook #'paredit-mode)
+;; (add-hook 'emacs-lisp-mode-hook #'paredit-mode)
 ;(save-place t nil (saveplace))
 (setq auto-save-file-name-transforms
       `((".*" ,temporary-file-directory t)))
