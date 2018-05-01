@@ -22,8 +22,10 @@ self: super:
         getopt
         gnutls
         cmake
+        curl
         nox
         silver-searcher
+        ripgrep
         xz
         ## gitk not working:
         # tk
