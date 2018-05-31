@@ -193,7 +193,7 @@ language."
   (sml/apply-theme "light"))
 
 ;; (theme-dark)
-(theme-spacemacs-dark)
+;; (theme-spacemacs-dark)
 ;; (theme-charcoal)
 ;; (theme-material) ;; causes crashes
 
