@@ -112,8 +112,6 @@ Inspired by [[http://sachachua.com/blog/2012/06/literate-programming-emacs-confi
       ;; overrides meta-q
 
       (bind-key "C-x g" #'magit-status)
-      (global-set-key [(meta m)] 'jump-char-forward)
-      (global-set-key [(shift meta m)] 'jump-char-backward)
       (global-set-key [(meta i)] 'back-to-indentation)
 
       ;; join next line to this line
@@ -361,6 +359,18 @@ Inspired by [[http://sachachua.com/blog/2012/06/literate-programming-emacs-confi
          ("C-M-z" . ace-jump-zap-to-char-dwim)))
     #+end_src
 
+
+    Jump Char
+
+    #+begin_src emacs-lisp :tangle yes
+      (use-package jump-char
+	:init (defvaralias 'lazy-highlight-face 'isearch-lazy-highlight) ;; fix err
+	:ensure t
+	:bind (("M-m" . 'jump-char-forward)
+	       ("S-M-m" . 'jump-char-backward)))
+    #+end_src
+
+
 *** ace window
 
     #+begin_src emacs-lisp :tangle yes
@@ -404,10 +414,11 @@ Inspired by [[http://sachachua.com/blog/2012/06/literate-programming-emacs-confi
 
 
 *** Guide Key
-    *TODO*: look at replacing with https://github.com/justbur/emacs-which-key
+    *DONE*: look at replacing with https://github.com/justbur/emacs-which-key
     #+begin_src emacs-lisp :tangle yes
       (use-package guide-key
         :ensure guide-key-tip
+        :disabled
         :diminish guide-key-mode
         :init
         (progn
@@ -523,8 +534,11 @@ Inspired by [[http://sachachua.com/blog/2012/06/literate-programming-emacs-confi
       ;; default-cache-ttl 360000
       ;; pinentry-program /usr/local/bin/pinentry
       ;; allow-emacs-pinentry
-      (setq epa-pinentry-mode 'loopback)
-      (pinentry-start)
+      (use-package pinentry
+	:ensure t 
+	:config 
+	(setq epa-pinentry-mode 'loopback)
+	(pinentry-start))
 
     #+end_src
 
