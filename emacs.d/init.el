@@ -43,7 +43,7 @@
     ;; ipython
     ;; coffee-mode
     gist
-    jump-char
+    ;;jump-char
     ;flymake-coffee
     ;multi-web-mode
     auto-complete
@@ -60,7 +60,7 @@
 
 (eval-when-compile
   (require 'use-package))
-(require 'diminish)                ;; if you use :diminish
+;;(require 'diminish)                ;; if you use :diminish
 (require 'bind-key)                ;; if you use any :bind variant
 
 (require 'yaml-mode)
@@ -105,7 +105,7 @@
 
 
 (require `tramp)
-(require 'jump-char)
+;;(require 'jump-char)
 
 (add-to-list 'auto-mode-alist '("\\.markdown\\'" . markdown-mode))
 (add-to-list 'auto-mode-alist '("\\.md\\'" . markdown-mode))
