@@ -13,31 +13,35 @@ Inspired by [[http://sachachua.com/blog/2012/06/literate-programming-emacs-confi
 
 *** Mac specific.
 
-   https://github.com/purcell/exec-path-from-shell is essential
+    https://github.com/purcell/exec-path-from-shell is essential
 
-   #+begin_src emacs-lisp :tangle yes
-     ;; Are we on a mac?
-     (setq is-mac (equal system-type 'darwin))
+    #+begin_src emacs-lisp
 
-     ;; magnars stuff
-     (when is-mac
-       ;; mac friendly font
-       ;;(set-face-attribute 'default nil :font "Monaco-12")
-       (set-face-attribute 'default nil :font "PragmataPro-13")
+	  ;; Are we on a mac?
+	  (setq is-mac (equal system-type 'darwin))
 
-       ;; Ignore .DS_Store files with ido mode
-       ;;(add-to-list 'ido-ignore-files "\\.DS_Store")
-       ;; Don't open files from the workspace in a new frame
-       (setq ns-pop-up-frames nil)
-       ;; Use aspell for spell checking: brew install aspell --lang=en
-       (setq ispell-program-name "/usr/local/bin/aspell")
-       ;; (global-set-key (kbd "<kp-delete>") 'delete)
-       (global-set-key '[(control kp-delete)] 'kill-word)
+	  ;; magnars stuff
+	  (when is-mac
+		(message "ran ran ran in is-mac")
+		;; mac friendly font
+		;;(set-face-attribute 'default nil :font "Monaco-12")
+		(set-face-attribute 'default nil :font "PragmataPro-13")
 
-       (use-package exec-path-from-shell
-         :ensure t
-         :init (exec-path-from-shell-initialize)))
-   #+end_src
+		;; Ignore .DS_Store files with ido mode
+		;;(add-to-list 'ido-ignore-files "\\.DS_Store")
+		;; Don't open files from the workspace in a new frame
+		(setq ns-pop-up-frames nil)
+		;; Use aspell for spell checking: brew install aspell --lang=en
+		(setq ispell-program-name "/usr/local/bin/aspell")
+		;; (global-set-key (kbd "<kp-delete>") 'delete)
+		(global-set-key '[(control kp-delete)] 'kill-word)
+
+		(use-package exec-path-from-shell
+		  :ensure t
+		  :config (exec-path-from-shell-initialize)
+		  (message "ran exec path")))
+
+    #+end_src
 
 *** Tab widths, recentf etc
 
@@ -48,8 +52,6 @@ Inspired by [[http://sachachua.com/blog/2012/06/literate-programming-emacs-confi
      (setq js-indent-level 4)
      (setq recentf-max-menu-items 50)
      (setq recentf-auto-cleanup 'never) ;; disable before we start recentf!
-     (global-linum-mode 1)
-     (setq linum-format " %d  ")  ;; reduce glitching with fring
      (menu-bar-mode 1)
      (setq-default cursor-type 't)
      (winner-mode 1) ;; C-c left => undo window layout change, C-c right => ;; undo
@@ -172,12 +174,12 @@ Inspired by [[http://sachachua.com/blog/2012/06/literate-programming-emacs-confi
    normal navigation.
 
    #+BEGIN_SRC emacs-lisp
-     (use-package ido-vertical-mode
-       :ensure t
-       :init (ido-vertical-mode 1)
-       :config (progn
-                 (setq ido-vertical-define-keys 'C-n-and-C-p-only)
-                 (setq ido-vertical-show-count t)))
+	  (use-package ido-vertical-mode
+	    :ensure t
+	    :config (progn
+		      (setq ido-vertical-define-keys 'C-n-and-C-p-only)
+		      (setq ido-vertical-show-count t)
+		      (ido-vertical-mode 1)))
 
    #+END_SRC
 
@@ -188,25 +190,26 @@ Inspired by [[http://sachachua.com/blog/2012/06/literate-programming-emacs-confi
    More options at http://pages.sachachua.com/.emacs.d/Sacha.html#unnumbered-14
 
    #+BEGIN_SRC emacs-lisp :tangle yes
-     (use-package helm
-       :ensure helm
-       :diminish helm-mode
-       :config
-       (progn
-         (setq helm-quick-update t
-               helm-ff-skip-boring-files t
-               helm-locate-command "mdfind %s %s")
-         ;; need bind-key* to override prjectile bindings
-         (bind-key* "C-c p f" #'helm-projectile-find-file-and-recent)
-         (helm-mode))
-       :bind (("<f9>" . helm-mini)
-              ("C-x b" . helm-mini)
-              ("M-<f9>" . helm-projectile-find-file-and-recent)
-              ("M-S-<f9>" . helm-projectile)
-              ("C-x a g" . helm-projectile-ag)
-              ("<f11>" . helm-semantic-or-imenu)
-              ("C-x C-f" . helm-find-files)
-              ("M-x" . helm-M-x)))
+	 (use-package helm
+	   :ensure helm
+	   :diminish helm-mode
+	   :config
+	   (progn
+		 (setq helm-quick-update t
+			   helm-ff-skip-boring-files t
+			   helm-locate-command "mdfind %s %s")
+		 ;; need bind-key* to override prjectile bindings
+		 (bind-key* "C-c p f" #'helm-projectile-find-file-and-recent)
+		 (helm-mode))
+	   :bind (("<f9>" . helm-mini)
+			  ("C-x b" . helm-mini)
+			  ("M-<f9>" . helm-projectile-find-file-and-recent)
+			  ("M-S-<f9>" . helm-projectile)
+			  ("C-x a g" . helm-projectile-ag)
+			  ("C-x a r" . helm-projectile-rg)
+			  ("<f11>" . helm-semantic-or-imenu)
+			  ("C-x C-f" . helm-find-files)
+			  ("M-x" . helm-M-x)))
    #+END_SRC
 
 *** helm-swoop
@@ -440,106 +443,111 @@ Inspired by [[http://sachachua.com/blog/2012/06/literate-programming-emacs-confi
 *** Others
 
     #+begin_src emacs-lisp :tangle yes
-      (use-package smooth-scrolling
-        :ensure t
-        :config (smooth-scrolling-mode))
+	  (use-package smooth-scrolling
+		:ensure t
+		:config (smooth-scrolling-mode))
 
-      (use-package visual-regexp-steroids
-        :ensure t)
+	  (use-package visual-regexp-steroids
+		:ensure t)
 
-      (use-package ethan-wspace
-        :ensure t
-        :init
-        (progn
-          (global-ethan-wspace-mode 1)
-          (setq mode-require-final-newline nil)))
+	  (use-package ethan-wspace
+		:ensure t
+		:init
+		(progn
+		  (global-ethan-wspace-mode 1)
+		  (setq mode-require-final-newline nil)))
 
-      (use-package idle-highlight-mode
-        :ensure t
-        :config (idle-highlight-mode))
+	  (use-package idle-highlight-mode
+		:ensure t
+		:config (idle-highlight-mode))
 
-      (use-package volatile-highlights
-        :ensure t
-        :config (volatile-highlights-mode))
+	  (use-package volatile-highlights
+		:ensure t
+		:config (volatile-highlights-mode))
 
-      (use-package highlight-indentation
-        :ensure t)
+	  (use-package highlight-indentation
+		:ensure t)
 
-      (use-package color-identifiers-mode
-        :ensure t)
+	  (use-package color-identifiers-mode
+		:ensure t)
 
-      (use-package popwin
-        :ensure t
-        :init
-        (progn
-          (setq display-buffer-function 'popwin:display-buffer)
-          (push "*undo-tree*" popwin:special-display-config)
-          ;; (push '("*Ack-and-a-half*" :height 20) popwin:special-display-config)
-          (push "*vc-diff*" popwin:special-display-config)))
+	  (use-package popwin
+		:ensure t
+		:config
+		(progn
+		  (setq display-buffer-function 'popwin:display-buffer)
+		  (push "*undo-tree*" popwin:special-display-config)
+		  ;; (push '("*Ack-and-a-half*" :height 20) popwin:special-display-config)
+		  (push "*vc-diff*" popwin:special-display-config)))
 
-      (use-package textmate
-        :ensure t
-        :init (textmate-mode))
+	  (use-package textmate
+		:ensure t
+		:init (textmate-mode))
 
-      ;; (use-package ace-isearch
-      ;;   :ensure t
-      ;;   :init (global-ace-isearch-mode nil))
+	  ;; (use-package ace-isearch
+	  ;;   :ensure t
+	  ;;   :init (global-ace-isearch-mode nil))
 
-      (use-package aggressive-indent
-        :ensure t)
+	  (use-package aggressive-indent
+		:ensure t)
 
-      (use-package github-browse-file
-        :ensure t)
+	  (use-package github-browse-file
+		:ensure t)
 
-      (use-package helm-themes
-        :ensure t)
+	  (use-package helm-themes
+		:ensure t)
 
-      (use-package magithub
-        :after magit
-        :disabled t
-        :config (magithub-feature-autoinject t))
+	  (use-package magithub
+		:after magit
+		:disabled t
+		:config (magithub-feature-autoinject t))
 
 
-      (use-package wakatime-mode
-        :ensure t
-        :config (global-wakatime-mode))
+	  (use-package wakatime-mode
+		:ensure t
+		:config (global-wakatime-mode))
 
-      ;; resize automatically the windows you are working on to the size
-      ;; specified in the "Golden Ratio"
-      (use-package golden-ratio
-        :ensure t
-        :disabled t
-        :config (progn (golden-ratio-mode 1)
-                       (setq golden-ratio-auto-scale t)))
+	  ;; resize automatically the windows you are working on to the size
+	  ;; specified in the "Golden Ratio"
+	  (use-package golden-ratio
+		:ensure t
+		:disabled t
+		:config (progn (golden-ratio-mode 1)
+					   (setq golden-ratio-auto-scale t)))
 
-      ;; https://stackoverflow.com/a/7939523
-      (defun switch-to-the-window-that-displays-the-most-recently-selected-buffer ()
-        (interactive)
-        (let* ((buflist (buffer-list (selected-frame)))      ; get buffer list in this frames ordered
-           (buflist (delq (current-buffer) buflist))     ; if there are multiple windows showing same buffer.
-           (winlist (mapcar 'get-buffer-window buflist)) ; buf->win
-           (winlist (delq nil winlist))                  ; remove non displayed windows
-           (winlist (delq (selected-window) winlist)))   ; remove current-window
-          (if winlist
-              (select-window (car winlist))
-            (message "Couldn't find a suitable window to switch to"))))
+	  ;; https://stackoverflow.com/a/7939523
+	  (defun switch-to-the-window-that-displays-the-most-recently-selected-buffer ()
+		(interactive)
+		(let* ((buflist (buffer-list (selected-frame)))      ; get buffer list in this frames ordered
+			   (buflist (delq (current-buffer) buflist))     ; if there are multiple windows showing same buffer.
+			   (winlist (mapcar 'get-buffer-window buflist)) ; buf->win
+			   (winlist (delq nil winlist))                  ; remove non displayed windows
+			   (winlist (delq (selected-window) winlist)))   ; remove current-window
+		  (if winlist
+			  (select-window (car winlist))
+			(message "Couldn't find a suitable window to switch to"))))
 
-      (bind-key "s-O" #'switch-to-the-window-that-displays-the-most-recently-selected-buffer)
+	  (bind-key "s-O" #'switch-to-the-window-that-displays-the-most-recently-selected-buffer)
 
-      ;; ask for gpg password from emacs:
-      ;; https://emacs.stackexchange.com/questions/32881/enabling-minibuffer-pinentry-with-emacs-25-and-gnupg-2-1-on-ubuntu-xenial
-      ;; less ~/.gnupg/gpg-agent.conf
+	  ;; ask for gpg password from emacs:
+	  ;; https://emacs.stackexchange.com/questions/32881/enabling-minibuffer-pinentry-with-emacs-25-and-gnupg-2-1-on-ubuntu-xenial
+	  ;; less ~/.gnupg/gpg-agent.conf
 
-      ;; # agent timeout
-      ;; default-cache-ttl 360000
-      ;; pinentry-program /usr/local/bin/pinentry
-      ;; allow-emacs-pinentry
-      (use-package pinentry
-	:ensure t 
-	:config 
-	(setq epa-pinentry-mode 'loopback)
-	(pinentry-start))
+	  ;; # agent timeout
+	  ;; default-cache-ttl 360000
+	  ;; pinentry-program /usr/local/bin/pinentry
+	  ;; allow-emacs-pinentry
+	  (use-package pinentry
+		:ensure t
+		:config
+		(setq epa-pinentry-mode 'loopback)
+		(pinentry-start))
 
+	  (use-package persistent-scratch
+		:ensure t)
+
+	  (use-package diminish
+		:ensure t)
     #+end_src
 
 * Languages
@@ -565,126 +573,160 @@ Inspired by [[http://sachachua.com/blog/2012/06/literate-programming-emacs-confi
 
    Reset from any buffer and return to buffer
    #+begin_src emacs-lisp :tangle yes
-     ;; Reloaded reset from any clojure buffer
-     (defun cider-namespace-refresh ()
-       (interactive)
-       (save-some-buffers)
-       (with-current-buffer (cider-current-repl-buffer)
-         (cider-interactive-eval
-          "(reloaded.repl/reset)")))
+	 ;; Reloaded reset from any clojure buffer
+	 (defun cider-namespace-refresh ()
+		 (interactive)
+		 (save-some-buffers)
+		 (with-current-buffer (cider-current-repl-buffer)
+		   (cider-interactive-eval
+			"(reloaded.repl/reset)")))
 
-     (defun cider-integrant-refresh ()
-       (interactive)
-       (save-some-buffers)
-       (with-current-buffer (cider-current-repl-buffer)
-         (cider-interactive-eval
-          "(integrant.repl/reset)")))
+	   (defun cider-integrant-refresh ()
+		 (interactive)
+		 (save-some-buffers)
+		 (with-current-buffer (cider-current-repl-buffer)
+		   (cider-interactive-eval
+			"(integrant.repl/reset)")))
    #+end_src
 
    Put source in repl and run. Good for documenting repl session that
    runs code from a buffer.
 
    #+begin_src emacs-lisp :tangle yes
-     (defun cider-eval-expression-at-point-in-repl ()
-       (interactive)
-       (let ((form (cider-sexp-at-point)))
-         ;; Strip excess whitespace
-         (while (string-match "\\`\s+\\|\n+\\'" form)
-           (setq form (replace-match "" t t form)))
-         (with-current-buffer (cider-current-repl-buffer)
-           (goto-char (point-max))
-           (insert form)
-           (cider-repl-return))))
+	 (defun cider-eval-expression-at-point-in-repl ()
+	   (interactive)
+	   (let ((form (cider-sexp-at-point)))
+		 ;; Strip excess whitespace
+		 (while (string-match "\\`\s+\\|\n+\\'" form)
+		   (setq form (replace-match "" t t form)))
+		 (with-current-buffer (cider-current-repl-buffer)
+		   (goto-char (point-max))
+		   (insert form)
+		   (cider-repl-return))))
    #+end_src
 
 
    Load cider with customisations, custom test error reporting
 
    #+begin_src emacs-lisp :tangle yes
-     (use-package cider
-       :ensure t
-       :pin melpa-stable
-       :commands (cider-jack-in cider)
-       :config
-       (progn
-         (add-hook 'cider-mode-hook
-                   (lambda ()
-                     ;; (cider-turn-on-eldoc-mode)
-                     (company-mode)
-                     (helm-cider-mode)
-                     (bind-keys :map clojure-mode-map
-                                ("C-x M-r" . cider-namespace-refresh)
-                                ("C-`" . cider-eval-expression-at-point-in-repl)
-                                ("<f5>" . flycheck-previous-error)
-                                ("<s-return>" . "#_")
-                                ("<f6>" . flycheck-next-error))
+	 (use-package cider
+	   :ensure t
+	   :pin melpa-stable
+	   :commands (cider-jack-in cider)
+	   :hook ((cider--debug-mode-hook . evil-normalize-keymaps))
+	   :config
+	   (progn
+		 (add-hook 'cider-mode-hook
+				   (lambda ()
+					 ;; (cider-turn-on-eldoc-mode)
+					 (company-mode)
+					 (helm-cider-mode)
+					 (bind-keys :map clojure-mode-map
+								("C-x M-r" . cider-namespace-refresh)
+								("C-`" . cider-eval-expression-at-point-in-repl)
+								("<f5>" . flycheck-previous-error)
+								("<s-return>" . "#_")
+								("<f6>" . flycheck-next-error))
 
-                     ))
-         (add-hook 'cider-repl-mode-hook
-                   (lambda ()
-                     (company-mode)
-                     ;;(enable-paredit-mode)
-                     (setq cider-stacktrace-fill-column t
-                           cider-repl-print-length 100
-                           cider-repl-history-file "~/.cache/cider-history"
-                           cider-repl-wrap-history t
-                           cider-repl-history-size 1000
-                           )))
-         ;;(require 'squiggly-clojure)
-         ;;nrepl-hide-special-buffers t
-         (setenv "EXPECTATIONS_COLORIZE" "false")
+					 ))
+		 (add-hook 'cider-repl-mode-hook
+				   (lambda ()
+					 (company-mode)
+					 ;;(enable-paredit-mode)
+					 (setq cider-stacktrace-fill-column t
+						   cider-repl-print-length 100
+						   cider-repl-history-file "~/.cache/cider-history"
+						   cider-repl-wrap-history t
+						   cider-repl-history-size 1000
+						   )))
+		 ;;(require 'squiggly-clojure)
+		 ;;nrepl-hide-special-buffers t
+		 (setenv "EXPECTATIONS_COLORIZE" "false")
+		 ;;(evil-set-initial-state 'cider-stacktrace-mode 'normal)
+		 (comment (evil-define-key 'normal cider-stacktrace-mode-map
+					(kbd "q") cider-popup-buffer-quit-function))
 
-         (defun cider-figwheel-repl ()
-           (interactive)
-           (save-some-buffers)
-           (with-current-buffer (cider-current-repl-buffer)
-             (goto-char (point-max))
-             (insert "(require 'figwheel-sidecar.repl-api)
-                  (figwheel-sidecar.repl-api/start-figwheel!) ; idempotent
-                  (figwheel-sidecar.repl-api/cljs-repl)")
-             (cider-repl-return)))
+		 (defun cider-figwheel-repl ()
+		   (interactive)
+		   (save-some-buffers)
+		   (with-current-buffer (cider-current-repl-buffer)
+			 (goto-char (point-max))
+			 (insert "(require 'figwheel-sidecar.repl-api)
+		  (figwheel-sidecar.repl-api/start-figwheel!) ; idempotent
+		  (figwheel-sidecar.repl-api/cljs-repl)")
+			 (cider-repl-return)))
+
+		 (defmacro evil-helper-cider-make-debug-command (&rest cider-commands)
+		   "Make functions that wrap `cider-debug' commands.
+	 Cider debug commands are sent through
+	 `cider-debug-mode-send-reply'.  ex. \(cider-debug-mode-send-reply
+	 \":next\"\)"
+		   (let ((commands (if (consp cider-commands)
+							   cider-commands
+							 (list cider-commands))))
+			 `(progn
+				,@(cl-loop
+				   for command in commands
+				   collect
+				   (let ((funsymbol
+						  (intern (format "evil-helper-cider-debug-%s" command))))
+					 `(defun ,funsymbol ()
+						,(format
+						  "Send :%s to `cider-debug-mode-send-reply'." command)
+						(interactive)
+						(cider-debug-mode-send-reply ,(format ":%s" command))))))))
+
+		 (evil-helper-cider-make-debug-command "next"
+											   "continue"
+											   "out"
+											   "quit"
+											   "eval"
+											   "inject"
+											   "inspect"
+											   "locals")
 
 
-         ;; Custom error rendering to show diffs and form from my
-         ;; humane-test mods
-         (comment
-          (defun cider-test-render-assertion (buffer test)
-            "Emit into BUFFER report detail for the TEST assertion."
-            (with-current-buffer buffer
-              (nrepl-dbind-response test (var context type message expected actual diffstrs test-form error)
 
-                (cider-propertize-region (cider-intern-keys (cdr test))
-                  (cider-insert (capitalize type) (cider-test-type-face type) nil " in ")
-                  (cider-insert var 'font-lock-function-name-face t)
-                  (when context  (cider-insert context 'font-lock-doc-face t))
-                  (when message  (cider-insert message 'font-lock-doc-string-face t))
-                  (when test-form (cider-insert (cider-font-lock-as-clojure test-form) nil t "\n"))
-                  (when expected (cider-insert "expected: " 'font-lock-comment-face nil
-                                               (cider-font-lock-as-clojure expected)))
+		 ;; Custom error rendering to show diffs and form from my
+		 ;; humane-test mods
+		 (comment
+		  (defun cider-test-render-assertion (buffer test)
+			"Emit into BUFFER report detail for the TEST assertion."
+			(with-current-buffer buffer
+			  (nrepl-dbind-response test (var context type message expected actual diffstrs test-form error)
 
-                  (when actual   (cider-insert "  actual: " 'font-lock-comment-face)
-                        (if error
-                            (progn (insert-text-button
-                                    error
-                                    'follow-link t
-                                    'action 'cider-test-stacktrace
-                                    'help-echo "View causes and stacktrace")
-                                   (newline))
-                          (insert (cider-font-lock-as-clojure actual))))
+				(cider-propertize-region (cider-intern-keys (cdr test))
+				  (cider-insert (capitalize type) (cider-test-type-face type) nil " in ")
+				  (cider-insert var 'font-lock-function-name-face t)
+				  (when context  (cider-insert context 'font-lock-doc-face t))
+				  (when message  (cider-insert message 'font-lock-doc-string-face t))
+				  (when test-form (cider-insert (cider-font-lock-as-clojure test-form) nil t "\n"))
+				  (when expected (cider-insert "expected: " 'font-lock-comment-face nil
+											   (cider-font-lock-as-clojure expected)))
 
-                  (when diffstrs
-                    (cider-insert "    diff: " 'font-lock-comment-face nil
-                                  (cider-font-lock-as-clojure diffstrs))))
-                (newline)))))
-         ))
+				  (when actual   (cider-insert "  actual: " 'font-lock-comment-face)
+						(if error
+							(progn (insert-text-button
+									error
+									'follow-link t
+									'action 'cider-test-stacktrace
+									'help-echo "View causes and stacktrace")
+								   (newline))
+						  (insert (cider-font-lock-as-clojure actual))))
 
-     ;; sort ns
+				  (when diffstrs
+					(cider-insert "    diff: " 'font-lock-comment-face nil
+								  (cider-font-lock-as-clojure diffstrs))))
+				(newline)))))
+		 ))
 
-     (defun cljr-sort-ns ()
-       (interactive)
-       (cljr--ensure-op-supported "clean-ns")
-       (cider-eval-ns-form :sync)
-       (cljr--clean-ns nil :no-pruning))
+	 ;; sort ns
+
+	 (defun cljr-sort-ns ()
+	   (interactive)
+	   (cljr--ensure-op-supported "clean-ns")
+	   (cider-eval-ns-form :sync)
+	   (cljr--clean-ns nil :no-pruning))
    #+end_src
 
    #+begin_src emacs-lisp :tangle yes
@@ -701,6 +743,7 @@ Inspired by [[http://sachachua.com/blog/2012/06/literate-programming-emacs-confi
 
      (use-package clojure-mode
        :ensure t
+       :pin melpa-stable
        :config
        (progn
          (add-hook #'clojure-mode-hook
@@ -717,6 +760,7 @@ Inspired by [[http://sachachua.com/blog/2012/06/literate-programming-emacs-confi
 
      (use-package clj-refactor
        :ensure t
+       :pin melpa-stable
        :config
        (progn
          (add-hook #'clojure-mode-hook
@@ -749,75 +793,76 @@ Inspired by [[http://sachachua.com/blog/2012/06/literate-programming-emacs-confi
 *** Clojure mode indents
 
     #+begin_src emacs-lisp :tangle yes
-      (add-hook
-       #'clojure-mode-hook
+	  (add-hook
+	   #'clojure-mode-hook
 
-       (lambda ()
-         ;;(put 'defui 'clojure-backtracking-indent '(4 4 (2)))
-         (put 'defui 'clojure-backtracking-indent '(1 nil nil (1)))
-         ;;(put 'defcomponent 'clojure-backtracking-indent '(4 4 (2)))
-         ;;(put 's/defrecord 'clojure-backtracking-indent '(4 4 (2)))
-         ;; (put-clojure-indent 'this-as 1)
-         (put-clojure-indent 'alet 1)
-         (put-clojure-indent 'mlet 1)
-         (put-clojure-indent 'div 1)
-         (put-clojure-indent 'GET 2)
-         (put-clojure-indent 'POST 2)
-         (put-clojure-indent 'PUT 2)
-         (put-clojure-indent 'ANY 2)
-         (put-clojure-indent 'GET* 2)
-         (put-clojure-indent 'POST* 2)
-         (put-clojure-indent 'PUT* 2)
-         (put-clojure-indent 'for-all 1)
-         (put-clojure-indent 'checking 2)
-         (put-clojure-indent 'fdef 1)
-         (put-clojure-indent 'match 1)
-         (put-clojure-indent 'match-spec 2)
-         (put-clojure-indent 'defcomponent '(1 nil nil (1)))
-         (put-clojure-indent 'defcomponentk '(1 nil nil (1)))
-         )
+	   (lambda ()
+		 ;;(put 'defui 'clojure-backtracking-indent '(4 4 (2)))
+		 (put 'defui 'clojure-backtracking-indent '(1 nil nil (1)))
+		 ;;(put 'defcomponent 'clojure-backtracking-indent '(4 4 (2)))
+		 ;;(put 's/defrecord 'clojure-backtracking-indent '(4 4 (2)))
+		 ;; (put-clojure-indent 'this-as 1)
+		 (put-clojure-indent 'alet 1)
+		 (put-clojure-indent 'mlet 1)
+		 (put-clojure-indent 'div 1)
+		 (put-clojure-indent 'GET 2)
+		 (put-clojure-indent 'POST 2)
+		 (put-clojure-indent 'PUT 2)
+		 (put-clojure-indent 'ANY 2)
+		 (put-clojure-indent 'GET* 2)
+		 (put-clojure-indent 'POST* 2)
+		 (put-clojure-indent 'PUT* 2)
+		 (put-clojure-indent 'for-all 1)
+		 (put-clojure-indent 'checking 2)
+		 (put-clojure-indent 'fdef 1)
+		 (put-clojure-indent 'match 1)
+		 (put-clojure-indent 'match-spec 2)
+		 (put-clojure-indent 'defcomponent '(1 nil nil (1)))
+		 (put-clojure-indent 'defcomponentk '(1 nil nil (1)))
+		 (put-clojure-indent 'test-api-call 1)
+		 )
 
-       )
-      ;; (put-clojure-indent 'facts 1)
+	   )
+	  ;; (put-clojure-indent 'facts 1)
 
 
-      (comment
-        (lambda ()
-          (define-clojure-indent
-            (copy 2)
-            (create-table 1)
-            (delete 1)
-            (drop-table 1)
-            (insert 2)
-            (select 1)
-            (truncate 1)
-            (update 2)
-            (dom/div 2)
-            (dom/ 2)
-            (tdom/div 1)
-            (div 1)
-            (alter-var-root 1)
-            (render-state 1)
-            ;; storm
-            (nextTuple 1)
-            ;; cats
-            (mlet 1)
-            ;; manifold
-            (let-flow 1)
-            ;; riemann
-            (tagged 1)
-            (where 1)
-            (rollup 2)
-            (by 1)
-            (with 1)
-            (splitp 2)
-            (percentiles 2)
-            ;; om
-            (defui '(2 nil nil (1))
-              ;; core.match
-              (match 1)
+	  (comment
+		(lambda ()
+		  (define-clojure-indent
+			(copy 2)
+			(create-table 1)
+			(delete 1)
+			(drop-table 1)
+			(insert 2)
+			(select 1)
+			(truncate 1)
+			(update 2)
+			(dom/div 2)
+			(dom/ 2)
+			(tdom/div 1)
+			(div 1)
+			(alter-var-root 1)
+			(render-state 1)
+			;; storm
+			(nextTuple 1)
+			;; cats
+			(mlet 1)
+			;; manifold
+			(let-flow 1)
+			;; riemann
+			(tagged 1)
+			(where 1)
+			(rollup 2)
+			(by 1)
+			(with 1)
+			(splitp 2)
+			(percentiles 2)
+			;; om
+			(defui '(2 nil nil (1))
+			  ;; core.match
+			  (match 1)
 
-              ))))
+			  ))))
     #+end_src
 
 ** Haskell
@@ -924,7 +969,7 @@ Doom themes are nice
 #+begin_src emacs-lisp :tangle yes
   (use-package doom-themes
     :ensure t
-    :config 
+    :config
     (interactive)
     (helm-themes--load-theme "doom-dracula"))
 #+end_src
@@ -934,206 +979,255 @@ Config derived from PJ
 
 
 #+begin_src emacs-lisp :tangle yes
-  (setq disable-evil-modes t)
-
+  (setq disable-evil-modes nil)
 
   (use-package which-key
-    :ensure t
-    :config (which-key-mode))
+	:ensure t
+	:config (which-key-mode))
   (use-package helm-descbinds
-    :ensure t
-    :after evil-leader
-    :config (evil-leader/set-key
-              "?" #'helm-descbinds))
+	:ensure t
+	:after evil-leader
+	:config (evil-leader/set-key
+		  "?" #'helm-descbinds))
   (use-package magit
-    :ensure t
-    :config
-    (evil-leader/set-key
-      "gs" 'magit))
+	:ensure t
+	:config
+	(evil-leader/set-key
+	  "gs" 'magit))
   (use-package evil-magit
-    :ensure t
-    :unless disable-evil-modes
-    :after magit)
+	:ensure t
+	:unless disable-evil-modes
+	:after magit)
+
+  (use-package evil-collection
+	:after evil
+	:disabled
+	:ensure t
+	:config
+	(evil-collection-init 'cider))
 
   (use-package paredit
-    :ensure t
-    :if  disable-evil-modes
-    ;; :diminish paredit-mode
-    ;; :after (evil-paredit evil-leader) ; evil-paredit due to hook orders
-    ;; :config (evil-leader/set-key
-    ;; "ks" 'paredit-forward-slurp-sexp
-    ;; "kw" 'paredit-splice-sexp)
-    :config
+	:ensure t
+	:if  disable-evil-modes
+	;; :diminish paredit-mode
+	;; :after (evil-paredit evil-leader) ; evil-paredit due to hook orders
+	;; :config (evil-leader/set-key
+	;; "ks" 'paredit-forward-slurp-sexp
+	;; "kw" 'paredit-splice-sexp)
+	:config
 
-    (message "hello")
-    (with-current-buffer "*scratch*"
-        (enable-paredit-mode))
-    :hook ((clojurescript-mode clojure-mode emacs-lisp-mode) . paredit-mode))
+	(message "hello")
+	(with-current-buffer "*scratch*"
+	(enable-paredit-mode))
+	:hook ((clojurescript-mode clojure-mode emacs-lisp-mode) . paredit-mode))
 
   (use-package evil-paredit
-    :ensure t
-    :disabled t
-    :hook ((clojurescript-mode clojure-mode emacs-lisp-mode) . evil-paredit-mode)
-    :after evil)
+	:ensure t
+	:disabled t
+	:hook ((clojurescript-mode clojure-mode emacs-lisp-mode) . evil-paredit-mode)
+	:after evil)
 
   (use-package evil-smartparens
-    :ensure t
-    :unless disable-evil-modes
-    :hook ((clojurescript-mode clojure-mode emacs-lisp-mode lisp-interaction-mode) . evil-smartparens-mode)
-    :after smartparens
-    )
+	:ensure t
+	:unless disable-evil-modes
+	:hook ((clojurescript-mode clojure-mode emacs-lisp-mode lisp-interaction-mode) . evil-smartparens-mode)
+	:after smartparens
+	)
   (use-package smartparens
-    :ensure t
-    :unless disable-evil-modes
-    :hook ((clojurescript-mode clojure-mode emacs-lisp-mode lisp-interaction-mode) . smartparens-strict-mode)
-    :config
+	:ensure t
+	:unless disable-evil-modes
+	:hook ((clojurescript-mode clojure-mode emacs-lisp-mode lisp-interaction-mode) . smartparens-strict-mode)
+	:config
 
-    (with-current-buffer "*scratch*"
-              (smartparens-strict-mode t))
-    (sp-with-modes sp-lisp-modes
-      ;; disable ', it's the quote character!
-      (sp-local-pair "'" nil :actions nil))
-    )
+	(with-current-buffer "*scratch*"
+		  (smartparens-strict-mode t))
+	(sp-with-modes sp-lisp-modes
+	  ;; disable ', it's the quote character!
+	  (sp-local-pair "'" nil :actions nil))
+	(sp-use-paredit-bindings)
+	)
   (use-package spaceline
-    :ensure t
-    ;; :disabled t
-    :after (evil ;;all-the-icons
-                 )
-    :init (setq powerline-height 24
-                spaceline-highlight-face-func 'spaceline-highlight-face-evil-state
-                powerline-default-separator 'arrow)
-    :config
-    (spaceline-spacemacs-theme)
-    (spaceline-helm-mode t))
+	:ensure t
+	;; :disabled t
+	:after (evil ;;all-the-icons
+		 doom-themes)
+	:init (setq powerline-height 24
+		spaceline-highlight-face-func 'spaceline-highlight-face-evil-state
+		powerline-default-separator 'arrow)
+	:config
+	(spaceline-spacemacs-theme)
+	(spaceline-helm-mode t))
   (use-package hydra
-    :ensure t
-    :config
-    (defhydra hydra-git-gutter-nav (:hint t)
-      "Git gutter nav"
-      ("j" git-gutter:previous-hunk "up")
-      ("k" git-gutter:next-hunk "down"))
+	:ensure t
+	:config
+	(defhydra hydra-git-gutter-nav (:hint t)
+	  "Git gutter nav"
+	  ("j" git-gutter:previous-hunk "up")
+	  ("k" git-gutter:next-hunk "down"))
 
-    (defhydra hydra-text-zoom (:hint t)
-      "Font size"
-      ("k" text-scale-increase "up")
-      ("j" text-scale-decrease "down")
-      ("0" (text-scale-set 0) "reset")))
+	(defhydra hydra-text-zoom (:hint t)
+	  "Font size"
+	  ("k" text-scale-increase "up")
+	  ("j" text-scale-decrease "down")
+	  ("0" (text-scale-set 0) "reset")))
+
+  (use-package evil-replace-with-register
+	;; how to get the key working?
+	:ensure t)
 
   (use-package evil
-      :ensure t
-      :after evil-leader
-      :unless disable-evil-modes
-      ;; :diminish undo-tree-mode
-      :bind (:map evil-insert-state-map
-             ("TAB" . indent-for-tab-command)
-             :map evil-visual-state-map
-             ;;("<up>" . drag-stuff-up)
-             ;;("<down>" . drag-stuff-down)
-             ("u" . undo)
-             ;; ("C-;" . iedit-mode)
-               :map evil-normal-state-map
-              ;; ("k" . evil-previous-visual-line)
-             ;;("j" . evil-next-visual-line)
-               ("<up>" . evil-previous-visual-line)
-               ("<down>" . evil-next-visual-line)
-         ;;("<up>" . drag-stuff-up)
-            ;;("<down>" . drag-stuff-down)
-             ;; ("C-;" . iedit-mode)
-             ("TAB" . indent-for-tab-command))
-      :config
-      (evil-mode 1)
-      (defun my-evil-record-macro ()
-        (interactive)
-        (if buffer-read-only
-            (quit-window)
-          (call-interactively 'evil-record-macro)))
-      (with-eval-after-load 'evil-maps
-        (define-key evil-normal-state-map (kbd "q") 'my-evil-record-macro))
-      )
+	:ensure t
+	:after evil-leader
+	:unless disable-evil-modes
+	:init
+	(setq evil-want-integration nil)
+	;; :diminish undo-tree-mode
+	:bind (:map evil-insert-state-map
+				("TAB" . indent-for-tab-command)
+				("C-z" . undo)
 
-    (use-package evil-leader
+				:map evil-visual-state-map
+				;;("<up>" . drag-stuff-up)
+				;;("<down>" . drag-stuff-down)
+				("u" . undo)
+				("C-z" . undo)
+				;; ("C-;" . iedit-mode)
 
-      :ensure t
-      :unless disable-evil-modes
-      :config
-        (setq evil-default-cursor t
-            evil-shift-width 1
-            evil-shift-round nil)
+				:map evil-normal-state-map
+				;; ("k" . evil-previous-visual-line)
+				;;("j" . evil-next-visual-line)
+				("<up>" . evil-previous-visual-line)
+				("<down>" . evil-next-visual-line)
+				;;("<up>" . drag-stuff-up)
+				;;("<down>" . drag-stuff-down)
+				;; ("C-;" . iedit-mode)
+				("s-z" . evil-emacs-state)
+				("TAB" . indent-for-tab-command)
+				("C-z" . undo)
 
-        (evil-leader/set-leader "<SPC>")
-        ;; (spacemacs/declare-prefix "w" "windows")
-        (which-key-declare-prefixes "SPC w" "windows")
-      (evil-leader/set-key
-        "<SPC>" 'helm-M-x
-        ;; "1"  'winum-select-window-1
-        ;; "2"  'winum-select-window-2
-        ;; "3"  'winum-select-window-3
-        ;; "4"  'winum-select-window-4
-        ;; "5"  'winum-select-window-5
+				:map evil-emacs-state-map
+				("s-z" . evil-visual-state)
+				("C-z" . undo)
 
-        ;; "F"  'hydra-text-zoom/body
+				:map cider-stacktrace-mode-map
+				("q" . quit-window)
+				)
+	:config
+	(evil-mode 1)
+	(setq evil-want-fine-undo t)
+	(evil-set-initial-state 'cider-stacktrace-mode 'normal)
+	(evil-define-key 'normal cider-stacktrace-mode-map
+	  (kbd "q") cider-popup-buffer-quit-function)
+	(dolist (key-com '(("n" . evil-helper-cider-debug-next)
+					   ("o" . evil-helper-cider-debug-out)
+					   ("L" . evil-helper-cider-debug-locals)
+					   ("c" . evil-helper-cider-debug-continue)
+					   ("q" . evil-helper-cider-debug-quit)))
+	  (evil-define-key 'normal cider--debug-mode-hook
+		(kbd (car key-com)) (cdr key-com)))
+	(comment
+	 (defun my-evil-record-macro ()
+	   (interactive)
+	   (if buffer-read-only
+		   (quit-window)
+		 (call-interactively 'evil-record-macro)))
+	 (with-eval-after-load 'evil-maps
+	   (define-key evil-normal-state-map (kbd "q") 'my-evil-record-macro)))
+	)
 
-        "wv" 'split-window-right
-        "wh" 'split-window-below
-        "wb" 'balance-windows
-        "wm" 'delete-other-windows
-        "ww" 'other-window
-        "wd" 'delete-window
-        "w=" 'balance-windows
-        ;; "sw" 'helm-flyspell-correct
-        ;; "sn" 'flyspell-goto-next-error
+  (use-package evil-leader
 
-        ;; "/"  'helm-yas-complete
+	:ensure t
+	:unless disable-evil-modes
+	:config
+	(setq evil-default-cursor t
+		  evil-shift-width 1
+		  evil-shift-round nil)
 
-        ;; "bd" 'kill-this-buffer
-        ;; "bb" 'helm-buffers-list
+	(evil-leader/set-leader "<SPC>")
+	;; (spacemacs/declare-prefix "w" "windows")
+	(which-key-declare-prefixes
+	  "SPC w" "windows"
+	  "SPC f" "find"
+	  "SPC g" "git"
+	  "SPC p" "projectile"
+	  "SPC pf" "find")
 
-        ;; "pf" 'helm-projectile-find-file-dwim
-        ;; "ps" 'helm-projectile-ag
+	(evil-leader/set-key
+	  "<SPC>" 'helm-M-x
+	  ;; "1"  'winum-select-window-1
+	  ;; "2"  'winum-select-window-2
+	  ;; "3"  'winum-select-window-3
+	  ;; "4"  'winum-select-window-4
+	  ;; "5"  'winum-select-window-5
 
-        ;; "yb" (interactively
-        ;;        (evil-yank (point-min) (point-max)))
+	  ;; "F"  'hydra-text-zoom/body
 
-        ;; "u"  'undo-tree-visualize
-        ;; "P"  'helm-show-kill-ring
+	  "wv" 'split-window-right
+	  "wh" 'split-window-below
+	  "wb" 'balance-windows
+	  "wm" 'delete-other-windows
+	  "ww" 'other-window
+	  "wd" 'delete-window
+	  "w=" 'balance-windows
+	  ;; "sw" 'helm-flyspell-correct
+	  ;; "sn" 'flyspell-goto-next-error
 
-        ;; "nr" 'narrow-to-region
-        ;; "nf" 'narrow-to-defun
-        ;; "nw" 'widen
+	  ;; "/"  'helm-yas-complete
 
-        ;; "gs" 'magit
-        ;; "gn" 'hydra-git-gutter-nav/body
+	  ;; "bd" 'kill-this-buffer
+	  ;; "bb" 'helm-buffers-list
 
-        ;; "ks" 'paredit-forward-slurp-sexp
-        ;; "kw" 'paredit-splice-sexp
-        ;; "kt" 'transpose-sexps
+	  ;; "pf" 'helm-projectile-find-file-dwim
+	  ;; "ps" 'helm-projectile-ag
 
-        ;; "dl" 'delete-matching-lines
+	  ;; "yb" (interactively
+	  ;;        (evil-yank (point-min) (point-max)))
 
-        ;; ;; as-in, clean
-        ;; "c" (interactively
-        ;;       (delete-trailing-whitespace)
-        ;;       (save-excursion
-        ;;         (beginning-of-buffer)
-        ;;         (replace-regexp "\n\n\n+" "\n\n")))
+	  ;; "u"  'undo-tree-visualize
+	  ;; "P"  'helm-show-kill-ring
 
-        ;; "fj" 'dired-jump
-        "fr" 'helm-recentf
-        "ff" 'helm-find-files
-        )
+	  ;; "nr" 'narrow-to-region
+	  ;; "nf" 'narrow-to-defun
+	  ;; "nw" 'widen
 
-      ;; messages has already been created
-      (with-current-buffer "*Messages*"
-        (evil-leader-mode t))
-      (with-current-buffer "*scratch*"
-        (evil-leader-mode t))
+	  ;; "gs" 'magit
+	  ;; "gn" 'hydra-git-gutter-nav/body
 
-      (global-evil-leader-mode)
+	  ;; "ks" 'paredit-forward-slurp-sexp
+	  ;; "kw" 'paredit-splice-sexp
+	  ;; "kt" 'transpose-sexps
+
+	  ;; "dl" 'delete-matching-lines
+
+	  ;; ;; as-in, clean
+	  ;; "c" (interactively
+	  ;;       (delete-trailing-whitespace)
+	  ;;       (save-excursion
+	  ;;         (beginning-of-buffer)
+	  ;;         (replace-regexp "\n\n\n+" "\n\n")))
+
+	  ;; "fj" 'dired-jump
+	  "fr" 'helm-recentf
+	  "ff" 'helm-find-files
+	  "fw" 'helm-swoop
+	  "pfa" 'helm-projectile-ag
+	  "pfr" 'helm-projectile-rg
+	  "pp" 'helm-projectile-switch-project
+	  )
+
+	;; messages has already been created
+	(with-current-buffer "*Messages*"
+	  (evil-leader-mode t))
+	(with-current-buffer "*scratch*"
+	  (evil-leader-mode t))
+
+	(global-evil-leader-mode)
 
 
-      )
+	)
 
   (when disable-evil-modes
-    (message "disabling undo tree")
-    (global-undo-tree-mode 0))
+	(message "disabling undo tree")
+	(global-undo-tree-mode 0))
 #+end_src
