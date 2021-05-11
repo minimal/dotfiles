@@ -8,6 +8,8 @@ How to install ansible initially?
   /usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
   nix-env -f '<nixpkgs>' -iA ansible
 #+end_src
+** Install home-manager
+https://github.com/nix-community/home-manager#installation
 ** run local installs
 #+begin_src sh
   make ansible
