@@ -16,77 +16,37 @@ self: super:
     myPackages = with super; super.buildEnv {
       name = "my-packages";
       paths = [
-        gnutar
-        gnused
-        indent
-        getopt
-        gnutls
-        cmake
-        curl
-        nox
-        silver-searcher
-        ripgrep
-        xz
+        # ripgrep # moved to home-manager
         ## gitk not working:
         # tk
         # tcl
         # gitAndTools.gitFull
-        git-crypt
-        jq
-        coreutils
-        findutils
-        gawk
-        fd
-        fzf
-        fpp
-        tree
-        wget
-        unrar # slow compile, nonfree
-        clojure
-        leiningen
-        boot
-        rlwrap
-        shellcheck
-        cloc
-        loc
-        terminal-notifier
-        python3
-        pipenv
-        python36Packages.virtualenv
-        python36Packages.virtualenvwrapper
-        direnv
-        nix-repl
-        pgcli
-        tmux
-        zsh
-        emacs25Macport
-        neovim
-        youtube-dl
-        gnupg
-        pinentry
-        joker
-        sshrc
-        prettyping
-        fontconfig
-        htop
-        wakatime
-        dhall
-        lastpass-cli
-        highlight
-        httpie
-        # exa # fails compile
+        # jq
+        #clojure
+        # python36Packages.virtualenv 10may
+        # python36Packages.virtualenvwrapper 10may
       ];
       pathsToLink = [ "/share" "/bin" "/Applications"];
       extraOutputsToInstall = [ "man" "doc" ];
     };
-    yarn = super.yarn;
-    poppler-utils = super.poppler_utils;
-    kafkacat = super.kafkacat;
-    postgresql96 = super.postgresql96;
+    # yarn = super.yarn;
+    # poppler-utils = super.poppler_utils; # pdf stuff
+    # postgresql96 = super.postgresql96;
     # nixUnstable= super.nixUnstable;
-    aspell = super.aspell;
-    aspell-en = super.aspellDicts.en;
-    ansible = super.ansible;
-    pandoc = super.pandoc;
+    # aspell = super.aspell;
+    # aspell-en = super.aspellDicts.en;
+    # ansible = super.ansible;
+    #pandoc = super.pandoc;
+    #asciinema = super.asciinema;
+    # joker = super.joker;
+    # gitandtools = super.gitAndTools.gitFull;
+
+    # myemacspackages =  super: epkgs: with epkgs;
+    # [
+    #   visual-regexp
+    #   visual-regexp-steroids
+    # ];
+
+    # myinstallepkgs =  super.emacsPackagesNgGen [  epkgs.visual-regexp];
   };
 }

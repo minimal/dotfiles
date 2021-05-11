@@ -20,7 +20,6 @@
         # - vim
         - git
         - trash
-        - exa
         # - caskroom/cask/osxfuse
         # - sshfs
         # - rbenv
@@ -31,37 +30,6 @@
         # - apache-spark
         # - rust
         - planck
-        # - node # use nvm instead
-
-        ##  moved to nix:
-        # - coreutils
-        # - gnu-tar
-        # - gnu-sed
-        # - gnutls
-        # - gnu-indent
-        # - gnu-getopt
-        # - htop
-        # - tmux
-        # - zsh
-        # - gawk
-        # - the_silver_searcher
-        # - findutils
-        # - fd
-        # - fpp
-        # - fzf
-        # - aspell
-        # - shellcheck
-        # - wget
-        # - rlwrap
-        # - leiningen
-        # - python
-        # - python3
-        # - tree
-        # - terminal-notifier
-        # - unrar
-        # - poppler # has pdffonts
-
-    # - name: Aspell
 
     #State : STANDARD.
     # - name: Emacs
@@ -120,18 +88,17 @@
     - name: Symlink dotfiles
       file: path={{ home }}/{{ item }} src={{ code_home }}/dotfiles/{{ item }} state=link
       with_items:
-        - .gitconfig
-        - .tmux.conf
+        # - .gitconfig
+        # - .tmux.conf
         - .amethyst
         - .sshrc
-        - .tmux.conf
-        - .lein
+        # - .lein
         - .ansible
 
     - name: Symlink dotfiles2
       file: path={{ home }}/.{{ item }} src={{ code_home }}/dotfiles/{{ item }} state=link
       with_items:
-        - gitignore
+        # - gitignore
         - boot
         - joker
         - emacs.d
@@ -143,27 +110,6 @@
 
     - name: Setup prezto # TODO: the symlinks as well
       file: path={{ home }}/.zprezto src={{ code_home }}/prezto state=link
-
-    # - name: Pip python packages
-    #   environment:
-    #     PIP_REQUIRE_VIRTUALENV: false
-    #   pip: name={{ item }}
-    #   with_items:
-    #     - virtualenv
-    #     - virtualenvwrapper
-    #     - flake8
-    #     - ipython
-
-    # - name: Check if ls++ is installed
-    #   stat: path={{ home }}/perl5/bin/ls++
-    #   register: lspp_installed
-
-    # - name: Get ls++
-    #   git: repo=git@github.com:trapd00r/ls--.git dest={{ vendor_code }}/ls--
-
-    # - name: Install ls++
-    #   shell: cd {{ vendor_code }}/ls-- &&  cpan Term::ExtendedColor && perl Makefile.PL && make && make install && cp ls++.conf {{ home }}/.ls++.conf
-    #   when: lspp_installed.stat.exists == false
 
     - name: make cache dir
       file: path={{ home }}/.cache state=directory
