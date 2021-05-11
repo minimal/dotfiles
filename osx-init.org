@@ -1,5 +1,19 @@
 Notes for things not automated yet
 
+* bootstrap nix and ansible
+How to install ansible initially?
+** install nix, brew, ansible
+#+begin_src sh
+  curl https://nixos.org/nix/install | sh
+  /usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
+  nix-env -f '<nixpkgs>' -iA ansible
+#+end_src
+** run local installs
+#+begin_src sh
+  make ansible
+  make nix-packages
+#+end_src
+
 * keyboard prefs
 -   keyboard -> modifier keys -> caps loc = control
 -   keyboard -> input sources -> british pc
@@ -8,7 +22,7 @@ Notes for things not automated yet
 -   keyboard -> shortcuts -> Mission Control 
 -   iterm -> prefs -> keys -> hotkey = f12
 *** 
-* power prefs: don't sleep on AC    
+* power prefs: don't sleep on AC
 
 * zsh
  - git clone git@github.com:minimal/prezto.git
