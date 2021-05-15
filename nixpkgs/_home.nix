@@ -36,7 +36,6 @@
     nox
     ripgrep
     silver-searcher
-    terminal-notifier
     tree
     unrar # slow compile, nonfree
     wget
@@ -69,7 +68,6 @@
     httpie
 
     kafkacat
-    emacsMacport
     neovim
     youtube-dl
     gnupg
@@ -83,14 +81,13 @@
     # dhall-text
     # lastpass-cli
 
-    postgresql96
+    postgresql
   ];
 
   # Raw configuration files
   home.file.".tmux.conf".source = ../.tmux.conf;
   home.file.".gitignore".source = ../gitignore;
   # home.file.".gitconfig".source = ../.gitconfig;
-  home.file.".lein".source = ../.lein;
 
   # Git config using Home Manager modules
   programs.git = {
