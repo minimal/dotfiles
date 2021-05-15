@@ -140,7 +140,7 @@
       core = {
         editor          = "emacsclient  -nw";
         excludesfile    = "~/.gitignore";
-        attributesfile  = "/Users/cmcdevitt/.gitattributes";
+        attributesfile  = "~/.gitattributes";
       };
 
       help.autocorrect = 10;
@@ -150,7 +150,7 @@
       pull.default = "only";
 
       commit = {
-        template = "/Users/cmcdevitt/code/dotfiles/git_commit_msg.txt";
+        template = "~/code/dotfiles/git_commit_msg.txt";
         gpgsign = false;
       };
 
