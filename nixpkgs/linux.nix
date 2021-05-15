@@ -5,6 +5,7 @@
   imports = [ ./_home.nix ];
   home.packages = with pkgs; [
     unzip
+    trash-cli
   ];
 
   home.sessionVariables = {

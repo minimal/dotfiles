@@ -32,3 +32,5 @@
 /emacs.d/eshell/history
 /boot/cache/
 /emacs.d/.persistent-scratch
+
+home.nix
