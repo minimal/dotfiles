@@ -45,6 +45,7 @@
     ansible
     direnv
     nix-prefetch-git
+    nixpkgs-fmt
     pgcli
     poppler_utils # pdftools
     prettyping
