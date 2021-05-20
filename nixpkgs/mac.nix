@@ -21,6 +21,8 @@ in
   home.sessionVariables = {
     EDITOR = "emacsclient --no-wait";
     VISUAL = "emacsclient --no-wait";
+    PROJECT_HOME="${HOME}/code";
+    CONFLUENT_HOME = "${HOME}/Downloads/confluent-6.1.1";
   };
 
   home.file.".lein".source = ../.lein;
@@ -81,28 +83,34 @@ in
 
 
     profileExtra = ''
-      . ~/.nix-profile/etc/profile.d/nix.sh
+      . ${HOME}/.nix-profile/etc/profile.d/nix.sh
 
-      if [[ -s $HOME/.secrets ]]; then
-        source "$HOME/.secrets"
+      if [[ -s ${HOME}/.secrets ]]; then
+        source "${HOME}/.secrets"
       fi
-      export PROJECT_HOME=~/code
 
-      export PATH="$HOME/.local/bin:$PATH"
-      export PATH=$PATH:$HOME/Downloads/confluent-6.1.1/bin/
-      export PATH="$HOME/bin:$PATH"
-      CONFLUENT_HOME=/Users/cmcdevitt/Downloads/confluent-6.1.1
+      path=(${HOME}/bin
+            ${HOME}/.local/bin
+            ${HOME}/Downloads/confluent-6.1.1/bin/
+            $path)
     '';
     # + builtins.readFile ../Makefile;
     initExtra = ''
-        # To customize prompt, run `p10k configure` or edit ~/.config/zsh/.p10k.zsh.
-        [[ ! -f ~/.config/zsh/.p10k.zsh ]] || source ~/.config/zsh/.p10k.zsh
+      # To customize prompt, run `p10k configure` or edit ~/.config/zsh/.p10k.zsh.
+      [[ ! -f ~/.config/zsh/.p10k.zsh ]] || source ~/.config/zsh/.p10k.zsh
 
       function grep-port {
           lsof -n -i4TCP:$1 | grep LISTEN
       }
 
       function cdgroot () { cd `git root`; } # relies on a git alias `root = !pwd`
+
+      # awesome!! e.g. $ git <up-arrow> => $ git log
+      bindkey "^[[A" history-beginning-search-backward
+      bindkey "^[[B" history-beginning-search-forward
+      # some keyboards use this:
+      bindkey "^[OA" history-beginning-search-backward
+      bindkey "^[OB" history-beginning-search-forward
     '';
   };
 
@@ -117,6 +125,7 @@ in
     enable = true;
     enableZshIntegration = true;
     defaultOptions = [
+      "--preview 'fzfprev {}'"
       "--height 40%"
       "--layout=reverse"
       "--border"
