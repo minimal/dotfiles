@@ -69,6 +69,7 @@
     httpie
     sourceHighlight
 
+    awscli2
     kafkacat
     neovim
     youtube-dl
