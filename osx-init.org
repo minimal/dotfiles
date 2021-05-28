@@ -1,19 +1,22 @@
-Notes for things not automated yet
-
 * bootstrap nix and ansible
-How to install ansible initially?
-** install nix, brew, ansible
-#+begin_src sh
-  curl https://nixos.org/nix/install | sh
-  /usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
-  nix-env -f '<nixpkgs>' -iA ansible
-#+end_src
+
+** install nix
+https://nixos.org/manual/nix/stable/#sect-macos-installation
+
 ** Install home-manager
 https://github.com/nix-community/home-manager#installation
-** run local installs
+
+** arrange configs and run
+#+begin_src sh
+  ln -s ~/code/dotfiles/nixpkgs ~/.config/
+  cd ~/code/dotfiles/nixpkgs
+  ln -s mac.nix home.nix
+  home-manager switch
+#+end_src
+
+** run ansible
 #+begin_src sh
   make ansible
-  make nix-packages
 #+end_src
 
 * keyboard prefs
@@ -23,24 +26,11 @@ https://github.com/nix-community/home-manager#installation
 -   keyboard -> shortcuts -> Mission Control -> Show desktop = cmd-f11
 -   keyboard -> shortcuts -> Mission Control 
 -   iterm -> prefs -> keys -> hotkey = f12
-*** 
+
 * power prefs: don't sleep on AC
-
-* zsh
- - git clone git@github.com:minimal/prezto.git
-   #+begin_src sh
-     setopt EXTENDED_GLOB
-     for rcfile in "${ZDOTDIR:-$HOME}"/.zprezto/runcoms/^README.md(.N); do
-       ln -s "$rcfile" "${ZDOTDIR:-$HOME}/.${rcfile:t}"
-     done
-
-     git pull && git submodule update --init --recursive
-   #+end_src
 
 * htop needs root to work properly
   #+begin_src sh
     sudo chmod u+s `which htop`
     sudo chown root:wheel `which htop`
-
   #+end_src
-* install a jdk http://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html
