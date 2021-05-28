@@ -1,13 +1,10 @@
 dotfiles
 ========
 
-Some of my dotfiles and utils. Mainly emacs
+Nix home-manager config, dotfiles and emacs.
 
 Emacs config [here](emacs.d/conf.org)
 
-Zsh is at https://github.com/minimal/prezto
-
-Most packages installed by [Nix config](nixpkgs/overlays/user-packages.nix)
+Most packages and dotfiles installed by Nix with home manager [Nix config](nixpkgs/)
 
 Rest installed with brew by [Ansible config](.ansible/playbook.yml)
-
