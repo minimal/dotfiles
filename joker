@@ -9,4 +9,6 @@
                 schema.core/defschema schema.core/defn
                 clojure.spec.alpha/fdef
                 clojure.spec.alpha/def
+                manifold.deferred/let-flow
+                clojure.test.check.generators/let
                 om.next/defui devcards.core/defcard]}

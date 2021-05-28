@@ -1,6 +1,10 @@
 
+# <type>(<scope>): <subject>
 # If applied, this commit will...
 
 # Why is this change being made?
 
 # Provide links to any relevant tickets, URLs or other resources
+
+# Types: build, ci, docs, feat, fix, perf, refactor, style, test
+# Scopes: common, core, routing etc

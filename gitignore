@@ -60,3 +60,8 @@ Thumbs.db
 
 .lein-failures
 .nrepl-port
+tags
+
+
+.cpcache
+/.dir-locals.el
