@@ -2,6 +2,7 @@
 {
   # Git config using Home Manager modules
   programs.git = {
+    package = pkgs.gitAndTools.gitFull;
     enable = true;
     userName = "Chris McDevitt";
 

@@ -95,10 +95,12 @@ self: super: {
       cp -p $src/bb $out/bin/bb
     '';
 
-    meta = with stdenv.lib; {
+    meta = with lib; {
       description = "Native, fast starting Clojure interpreter for scripting";
       homepage = https://github.com/babashka/babashka;
       platforms = [ "x86_64-darwin" ];
     };
   };
 }
+# See for fetching different archs
+# https://github.com/jtacoma/nixpkgs/blob/42e09c2134add3ae66c6579478c474aeffd8443d/pkgs/development/interpreters/dart/default.nix
