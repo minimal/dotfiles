@@ -14,6 +14,7 @@ in
     terminal-notifier
     emacsMacport
     tk
+    babashka-bin
   ];
 
   programs.git.userEmail = "chris.mcdevitt@fundingcircle.com";
