@@ -70,7 +70,7 @@ self: super: {
       cp -p prettyping $out/bin/prettyping
     '';
 
-    meta = with stdenv.lib; {
+    meta = with lib; {
       description = "prettyping` is a wrapper around the standard `ping` tool, making the output prettier, more colorful, more compact, and easier to read.";
       homepage = http://denilsonsa.github.io/prettyping/;
       license = licenses.mit;
