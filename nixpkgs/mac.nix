@@ -22,11 +22,11 @@ in
   home.sessionVariables = {
     EDITOR = "emacsclient --no-wait";
     VISUAL = "emacsclient --no-wait";
-    PROJECT_HOME="${HOME}/code";
+    PROJECT_HOME = "${HOME}/code";
     CONFLUENT_HOME = "${HOME}/Downloads/confluent-6.1.1";
   };
 
-  home.file.".lein".source = ../.lein;
+  # home.file.".lein".source = ../.lein;
 
   programs.zsh = {
     enable = true;
@@ -44,6 +44,7 @@ in
       gita = "git archive --format=zip `git reflog | grep 'HEAD@{0}' | cut -d \" \" -f1 | sed 's/[.]*//g'` > archive.zip";
       # gka = "gitk --all&";
       rm-git-turds = "rm **/(*.orig|*(LOCAL|BASE|REMOTE|BACKUP)*)";
+      mdfindname = "mdfind -name";
     };
     prezto = {
       enable = true;
@@ -95,6 +96,8 @@ in
             ${HOME}/Downloads/confluent-6.1.1/bin/
             $path)
     '';
+    # /usr/local/bin gets added at the front after the above so
+    # overrides some of nix bins etc. How to fix?
     # + builtins.readFile ../Makefile;
     initExtra = ''
       # To customize prompt, run `p10k configure` or edit ~/.config/zsh/.p10k.zsh.
@@ -117,7 +120,7 @@ in
 
   programs.htop = {
     enable = true;
-    treeView = true;
+    settings.tree_view = true;
   };
 
   programs.jq.enable = true;
