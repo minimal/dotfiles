@@ -18,7 +18,7 @@ in
       gita = "git archive --format=zip `git reflog | grep 'HEAD@{0}' | cut -d \" \" -f1 | sed 's/[.]*//g'` > archive.zip";
       # gka = "gitk --all&";
       rm-git-turds = "rm **/(*.orig|*(LOCAL|BASE|REMOTE|BACKUP)*)";
-      mdfindname = "mdfind -name";
+      switch = "home-manager switch";
     };
     prezto = {
       enable = true;
