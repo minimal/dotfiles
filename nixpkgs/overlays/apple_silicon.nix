@@ -13,4 +13,5 @@ in
   emacsMacport = pkgs.emacsMacport;
   babashka = pkgs.babashka;
   ghc = pkgs.ghc;
+  haskellPackages = pkgs.haskellPackages;
 }
