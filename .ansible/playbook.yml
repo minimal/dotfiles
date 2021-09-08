@@ -4,9 +4,6 @@
     home: "{{ lookup('env','HOME') }}"
     code_home: "{{ home }}/code"
     vendor_code:  "{{ code_home }}/vendor"
-    # applications: # .dmg, .app, .zip type applications via brew-cask
-    #   - google-chrome
-    #   - firefox
 
   tasks:
     - homebrew_tap: tap=homebrew/versions state=present
@@ -15,26 +12,7 @@
     - name: Install libraries with homebrew
       homebrew: name={{ item }} state=present
       with_items:
-        # - caskroom/cask/brew-cask
-        # - apple-gcc42
-        # - vim
-        - git
         - trash
-        # - caskroom/cask/osxfuse
-        # - sshfs
-        # - rbenv
-        # - ruby-build
-        # - elasticsearch
-        # - postgres
-        # - mysql
-        # - apache-spark
-        # - rust
-        - planck
-
-    #State : STANDARD.
-    # - name: Emacs
-    #   homebrew: name=emacs state=present install_options=with-cocoa,with-glib,with-gnutls,HEAD
-
     - name: Install homebrew cask apps
       homebrew_cask: name={{ item }} state=present
       with_items:
@@ -42,21 +20,12 @@
         - amethyst
         # - quicksilver
         - diffmerge
-#        - intellij-idea
         - iterm2
         - flux
         # - istat-menus
         # - menumeters
         - launchrocket
         - trailer
-        # - sequel-pro
-        # - telegram
-        # - vlc
-        # - spotify
-        # - skype
-        # - elm-platform
-        # - karabiner
-        # - seil
         - font-anonymous-pro
         - font-source-code-pro
         - font-alegreya
@@ -83,7 +52,6 @@
       git: repo=git@github.com:minimal/{{ item }}.git dest={{ code_home }}/{{ item }} force=no update=no recursive=yes accept_hostkey=true
       with_items:
         - dotfiles
-        - prezto
 
     - name: Symlink dotfiles
       file: path={{ home }}/{{ item }} src={{ code_home }}/dotfiles/{{ item }} state=link
@@ -99,8 +67,6 @@
       file: path={{ home }}/.{{ item }} src={{ code_home }}/dotfiles/{{ item }} state=link
       with_items:
         # - gitignore
-        - boot
-        - joker
         - emacs.d
 
     - name: Symlink dotfiles3
@@ -108,8 +74,3 @@
       with_items:
         - nixpkgs
 
-    - name: Setup prezto # TODO: the symlinks as well
-      file: path={{ home }}/.zprezto src={{ code_home }}/prezto state=link
-
-    - name: make cache dir
-      file: path={{ home }}/.cache state=directory
