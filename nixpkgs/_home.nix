@@ -89,6 +89,7 @@
 
   programs.direnv.enable = true;
   programs.direnv.nix-direnv.enable = true;
+  programs.direnv.nix-direnv.enableFlakes = true;
 
   # Raw configuration files
   home.file.".tmux.conf".source = ../.tmux.conf;
