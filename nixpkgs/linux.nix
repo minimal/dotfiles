@@ -23,6 +23,9 @@
       shellAliases = {
         code = "/mnt/c/Users/Chris/AppData/Local/Programs/Microsoft\\ VS\\ Code/bin/code";
       };
+      initExtra = ''
+        if [[ $(pwd) != $HOME ]] then cd ~; fi
+      '';
     };
 
     fzf = {
