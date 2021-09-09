@@ -98,7 +98,7 @@
   home.file."bin/fzfprev".source = ../bin/fzfprev;
   home.file."bin/qfind".source = ../bin/fzfprev;
   home.file."bin/cmd_exists".source = ../bin/cmd_exists;
-  home.file.".config/nix/nix.conf".source = ../config/nix/nix.conf;
+  home.file.".config/nix/nix.conf".source = config.lib.file.mkOutOfStoreSymlink ../config/nix/nix.conf;
 
   # This value determines the Home Manager release that your
   # configuration is compatible with. This helps avoid breakage
