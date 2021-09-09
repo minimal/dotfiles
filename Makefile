@@ -6,10 +6,10 @@ nix-packages-tree:
 	nix-store -q --tree /nix/var/nix/profiles/per-user/${USER}/profile
 
 hm-switch:
-	home-manager switch
+	nix develop -c home-manager switch
 
 hm-packages:
-	home-manager packages
+	nix develop -c home-manager packages
 
 nix-gc-30d:
 	nix-collect-garbage --delete-older-than 30d
