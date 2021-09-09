@@ -69,6 +69,22 @@
 
       url."git@github.com:".pushInsteadOf = "https://github.com/";
       diff."clojure".xfuncname = "(^\\(.*|\\s*\\(defn.*)";
+
+      pager = {
+        diff = "delta";
+        log = "delta";
+        reflog = "delta";
+        show ="delta";
+      };
+      delta = {
+        plus-style = "syntax #012800";
+        minus-style = "syntax #340001";
+        syntax-theme = "Monokai Extended";
+        navigate = true;
+      };
+      interactive = {
+        diffFilter = "delta --color-only";
+      };
     };
   };
 }

@@ -18,6 +18,7 @@
     cmake
     coreutils
     curl
+    delta
     exa # ls alt
     fd
     findutils
