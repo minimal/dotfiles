@@ -72,8 +72,11 @@ in
     '';
     # /usr/local/bin gets added at the front after the above so
     # overrides some of nix bins etc. How to fix?
-    # + builtins.readFile ../Makefile;
+
+    initExtraBeforeCompInit =  builtins.readFile ./nixcompletion.zsh;
+
     initExtra = ''
+
       # To customize prompt, run `p10k configure` or edit ~/.config/zsh/.p10k.zsh.
       [[ ! -f ~/.config/zsh/.p10k.zsh ]] || source ~/.config/zsh/.p10k.zsh
 
