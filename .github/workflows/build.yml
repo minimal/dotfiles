@@ -46,4 +46,7 @@ jobs:
       - name: Run Flake Checks
         run: |
           nix flake check -v --show-trace
+      - name: Run home manager build
+        run: |
+          nix develop -c home-manager build --flake '.#DESKTOP-096IFDV'
         timeout-minutes: 240
