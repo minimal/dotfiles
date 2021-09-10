@@ -1,5 +1,6 @@
+{ config, pkgs, ... }:
 let
-  HOME = builtins.getEnv "HOME";
+  HOME = config.home.homeDirectory;
 in
 {
   programs.zsh = {

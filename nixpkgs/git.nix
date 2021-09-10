@@ -23,7 +23,7 @@
       pg                = "push origin HEAD:refs/for/master";
       nm                = "log --no-merges";
       dw                = "diff --word-diff";
-      d                 = "diff --color-words --abbrev";
+      d                 = "diff;
       dc                = "diff --cached";
       m                 = "merge";
       mnff              = "merge --no-ff";
