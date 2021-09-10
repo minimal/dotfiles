@@ -1,10 +1,7 @@
-* bootstrap nix and ansible
+* bootstrap nix
 
 ** install nix
 https://nixos.org/manual/nix/stable/#sect-macos-installation
-
-** Install home-manager
-https://github.com/nix-community/home-manager#installation
 
 ** arrange configs and run
 #+begin_src sh
@@ -12,11 +9,6 @@ https://github.com/nix-community/home-manager#installation
   cd ~/code/dotfiles/nixpkgs
   ln -s mac.nix home.nix
   home-manager switch
-#+end_src
-
-** run ansible
-#+begin_src sh
-  make ansible
 #+end_src
 
 * keyboard prefs

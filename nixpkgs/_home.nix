@@ -43,7 +43,6 @@
     wget
     xz
 
-    ansible
     direnv
     nix-prefetch-git
     nixpkgs-fmt

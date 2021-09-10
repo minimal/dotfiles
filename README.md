@@ -7,4 +7,4 @@ Emacs config [here](emacs.d/conf.org)
 
 Most packages and dotfiles installed by Nix with home manager [Nix config](nixpkgs/)
 
-Rest installed with brew by [Ansible config](.ansible/playbook.yml)
+Rest installed with brew 
