@@ -3,7 +3,7 @@
 # ln -s mac.nix home.nix
 let
   vars = import ./vars.nix;
-  HOME = config.homeDirectory;
+  HOME = config.home.homeDirectory;
 in
 {
   imports = [

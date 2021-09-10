@@ -45,12 +45,12 @@
           username = "chris";
           baseModules = [ ./nixpkgs/linux.nix ];
         };
-        MacBook-Pro.local = mkHomeConfig {
+        MacBook-Prolocal = mkHomeConfig {
           system = "x86_64-darwin";
           username = "cmcdevitt";
           baseModules = [ ./nixpkgs/mac.nix ];
         };
-        Yuris-MacBook-Air.local = mkHomeConfig {
+        Yuris-MacBook-Airlocal = mkHomeConfig {
           system = "aarch64-darwin";
           username = "chris";
           baseModules = [ ./nixpkgs/mac.nix ];

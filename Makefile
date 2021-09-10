@@ -1,5 +1,5 @@
 prefix := '.\#'
-flake := $(prefix)`hostname`
+flake := $(prefix)`hostname | tr -d .`
 ansible:
 	ansible-playbook -i .ansible/hosts .ansible/playbook.yml
 
