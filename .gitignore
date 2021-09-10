@@ -34,3 +34,4 @@
 /emacs.d/.persistent-scratch
 
 home.nix
+/.direnv/
