@@ -6,8 +6,8 @@
 
   # Home Manager needs a bit of information about you and the
   # paths it should manage.
-  home.username = builtins.getEnv "USER"; 
-  home.homeDirectory = builtins.getEnv "HOME"; 
+  # home.username = builtins.getEnv "USER";
+  # home.homeDirectory = builtins.getEnv "HOME";
 
   home.packages = with pkgs; [
     # pkgs is the set of all packages in the default home.nix implementation
@@ -39,7 +39,7 @@
     ripgrep
     silver-searcher
     tree
-    unrar # slow compile, nonfree
+    # unrar # slow compile, nonfree
     wget
     xz
 
@@ -108,5 +108,5 @@
   # You can update Home Manager without changing this value. See
   # the Home Manager release notes for a list of state version
   # changes in each release.
-  home.stateVersion = "21.05";
+  # home.stateVersion = "21.05";
 }

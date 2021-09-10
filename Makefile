@@ -1,4 +1,5 @@
-
+prefix := '.\#'
+flake := $(prefix)`hostname`
 ansible:
 	ansible-playbook -i .ansible/hosts .ansible/playbook.yml
 
@@ -6,7 +7,12 @@ nix-packages-tree:
 	nix-store -q --tree /nix/var/nix/profiles/per-user/${USER}/profile
 
 hm-switch:
-	nix develop -c home-manager switch
+	nix --experimental-features 'nix-command flakes' develop -c home-manager switch --flake $(flake)
+
+hm-config-setup:
+	ln -sfn $(PWD)/config/nix/nix.conf ~/.config/nix/nix.conf
+
+hm-bootstrap: hm-config-setup hm-switch
 
 hm-packages:
 	nix develop -c home-manager packages

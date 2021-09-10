@@ -14,7 +14,50 @@
   };
 
   outputs = { self, nixpkgs, flake-utils, doom-emacs, emacs-overlay, home-manager }:
+    let
+      inherit (home-manager.lib) homeManagerConfiguration;
+      isDarwin = system: (builtins.elem system nixpkgs.lib.platforms.darwin);
+      homePrefix = system: if isDarwin system then "/Users" else "/home";
+      overlays = [
+        emacs-overlay.overlay
+        (final: prev: { doomEmacsRevision = doom-emacs.rev; })
+      ];
+      mkHomeConfig =
+        { username
+        , system ? "x86_64-linux"
+        , baseModules ? [ ]
+        , extraModules ? [ ]
+        }:
+        homeManagerConfiguration rec {
+          inherit system username;
+          homeDirectory = "${homePrefix system}/${username}";
+          # extraSpecialArgs = { inherit inputs lib; };
+          configuration = {
+            imports = baseModules ++ extraModules
+              ++ [{ nixpkgs.overlays = overlays; }];
+          };
+        };
+    in
+    {
 
+      homeConfigurations = {
+        DESKTOP-096IFDV = mkHomeConfig {
+          username = "chris";
+          baseModules = [ ./nixpkgs/linux.nix ];
+        };
+        MacBook-Pro.local = mkHomeConfig {
+          system = "x86_64-darwin";
+          username = "cmcdevitt";
+          baseModules = [ ./nixpkgs/mac.nix ];
+        };
+        Yuris-MacBook-Air.local = mkHomeConfig {
+          system = "aarch64-darwin";
+          username = "chris";
+          baseModules = [ ./nixpkgs/mac.nix ];
+        };
+      };
+    }
+    //
     flake-utils.lib.eachDefaultSystem (system:
       let
         system-map = {
@@ -37,7 +80,6 @@
           buildInputs = with pkgs; [ (import home-manager { inherit pkgs; }).home-manager ];
           shellHook = ''
             export NIX_PATH="nixpkgs=${nixpkgs}:home-manager=${home-manager}"
-            export HOME_MANAGER_CONFIG="./nixpkgs/${hm-filename}.nix"
           '';
         };
       });
