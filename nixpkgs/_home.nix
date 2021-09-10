@@ -92,7 +92,7 @@
   programs.direnv.nix-direnv.enableFlakes = true;
 
   # Raw configuration files
-  home.file.".tmux.conf".source = ../.tmux.conf;
+  home.file.".tmux.conf".source = ../config/tmux.conf;
   home.file.".gitignore".source = ../gitignore;
   home.file."bin/fzfprev".source = ../bin/fzfprev;
   home.file."bin/qfind".source = ../bin/fzfprev;

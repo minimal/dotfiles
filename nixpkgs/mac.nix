@@ -26,6 +26,7 @@ in
     CONFLUENT_HOME = "${HOME}/Downloads/confluent-6.1.1";
   };
 
+  home.file.".amethyst".source = config.lib.file.mkOutOfStoreSymlink ../config/amethyst;
   # home.file.".lein".source = ../.lein;
   programs = {
     git.userEmail = "chris.mcdevitt@fundingcircle.com";
