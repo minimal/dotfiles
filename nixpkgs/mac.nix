@@ -15,7 +15,7 @@ in
     terminal-notifier
     emacsMacport
     tk
-    babashka
+    # babashka # broken
   ];
 
 
