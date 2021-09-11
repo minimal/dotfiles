@@ -39,6 +39,24 @@
         };
     in
     {
+      checks = builtins.listToAttrs (
+        (map
+          (system: {
+            name = system;
+            value = {
+              linux = self.homeConfigurations.DESKTOP-096IFDV.activationPackage;
+            };
+          })
+          nixpkgs.lib.platforms.linux) ++
+        (map
+          (system: {
+            name = system;
+            value = {
+              mac = self.homeConfigurations.MacBook-Prolocal.activationPackage;
+            };
+          })
+          nixpkgs.lib.platforms.darwin)
+      );
 
       homeConfigurations = {
         DESKTOP-096IFDV = mkHomeConfig {
