@@ -1,6 +1,6 @@
 dotfiles
 ========
-![nix build](https://github.com/minimal/dotfiles/workflows/CI/badge.svg)
+[![CI](https://github.com/minimal/dotfiles/actions/workflows/build.yml/badge.svg)](https://github.com/minimal/dotfiles/actions/workflows/build.yml)
 
 Nix home-manager config, dotfiles and emacs.
 
