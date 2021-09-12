@@ -21,6 +21,8 @@
       overlays = [
         emacs-overlay.overlay
         (final: prev: { doomEmacsRevision = doom-emacs.rev; })
+        (import ./nixpkgs/overlays/bins.nix)
+        (import ./nixpkgs/overlays/apple_silicon.nix { nixpkgs = nixpkgs; })
       ];
       mkHomeConfig =
         { username
