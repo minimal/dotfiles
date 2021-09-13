@@ -39,20 +39,16 @@ jobs:
           install_url: https://github.com/numtide/nix-unstable-installer/releases/download/${{ env.NIX_VERSION }}/install
           extra_nix_config: |
             experimental-features = nix-command flakes
-      # Runs a single command using the runners shell
-      - name: Run a one-line script
-        run: echo Hello, world!
-
-      # Runs a set of commands using the runners shell
-      - name: Run a multi-line script
-        run: |
-          echo Add other actions to build,
-          echo test, and deploy your project.
       - name: Run Flake Checks
+        if: ${{ matrix.os == 'ubuntu-latest' }}
         run: |
           nix flake check -v --show-trace
       - name: Run linux home manager build
         if: ${{ matrix.os == 'ubuntu-latest' }}
         run: |
           nix develop -c home-manager build --flake '.#DESKTOP-096IFDV'
+      - name: Run linux home manager build
+        if: ${{ matrix.os == 'macos-latest' }}
+        run: |
+          nix develop -c home-manager build --flake '.#MacBook-Prolocal'
         timeout-minutes: 240
