@@ -8,6 +8,7 @@ hm-switch:
 	nix --experimental-features 'nix-command flakes' develop -c home-manager switch --flake $(flake)
 
 hm-config-setup:
+	mkdir -p ~/.config/nix 
 	ln -sfn $(PWD)/config/nix/nix.conf ~/.config/nix/nix.conf
 
 hm-bootstrap: hm-config-setup hm-switch
@@ -20,3 +21,5 @@ nix-gc-30d:
 
 nix-repair-store:
 	nix-store --verify --check-contents --repair
+nix-install-unstable:
+	nix-env -f '<nixpkgs>' -iA nixUnstable
