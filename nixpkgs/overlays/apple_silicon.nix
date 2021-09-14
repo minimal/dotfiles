@@ -10,12 +10,9 @@
       else prev;
   in
   {
-    shellcheck = pkgs.shellcheck;
     emacsMacport = pkgs.emacsMacport;
     babashka = pkgs.babashka;
     clj-kondo = pkgs.clj-kondo;
-    ghc = pkgs.ghc;
-    haskellPackages = pkgs.haskellPackages;
     kafkacat = pkgs.kafkacat;
   }
 )
