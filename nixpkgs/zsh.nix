@@ -74,7 +74,9 @@ in
     # /usr/local/bin gets added at the front after the above so
     # overrides some of nix bins etc. How to fix?
 
-    initExtraBeforeCompInit =  builtins.readFile ./nixcompletion.zsh;
+    initExtraBeforeCompInit = ''
+          fpath=(~/code/dotfiles/nixpkgs/zfunc $fpath)
+        '';
 
     initExtra = ''
 

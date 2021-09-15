@@ -1,3 +1,5 @@
+#compdef nix
+
 function _nix() {
   local ifs_bk="$IFS"
   local input=("${(Q)words[@]}")
@@ -18,4 +20,5 @@ function _nix() {
   _describe 'nix' suggestions
 }
 
-# compdef _nix nix # gives warning and works without
+_nix "$@"
+#compdef _nix /nix/store/nxbibr9m3pppjydlylyysja2m1gq6774-nix-2.4pre20210802_47e96bb/bin/nix
