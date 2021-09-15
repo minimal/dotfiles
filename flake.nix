@@ -18,9 +18,10 @@
       inherit (home-manager.lib) homeManagerConfiguration;
       isDarwin = system: (builtins.elem system nixpkgs.lib.platforms.darwin);
       homePrefix = system: if isDarwin system then "/Users" else "/home";
-      overlays = [
+      mkOverlays = system: [
         emacs-overlay.overlay
         (final: prev: { doomEmacsRevision = doom-emacs.rev; })
+        (final: prev: { home-manager = home-manager.packages.${system}.home-manager; })
         (import ./nixpkgs/overlays/bins.nix)
         (import ./nixpkgs/overlays/apple_silicon.nix { nixpkgs = nixpkgs; })
       ];
@@ -36,7 +37,7 @@
           # extraSpecialArgs = { inherit inputs lib; };
           configuration = {
             imports = baseModules ++ extraModules
-              ++ [{ nixpkgs.overlays = overlays; }];
+              ++ [{ nixpkgs.overlays = (mkOverlays system); }];
           };
         };
     in
