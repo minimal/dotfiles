@@ -93,7 +93,7 @@
 
   # Raw configuration files
   home.file.".tmux.conf".source = ../config/tmux.conf;
-  home.file.".gitignore".source = ../gitignore;
+  home.file.".config/git/gitignore".source = ../config/git/gitignore;
   home.file."bin/fzfprev".source = ../bin/fzfprev;
   home.file."bin/qfind".source = ../bin/fzfprev;
   home.file."bin/cmd_exists".source = ../bin/cmd_exists;

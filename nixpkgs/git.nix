@@ -1,5 +1,6 @@
 { config, pkgs, ... }:
 {
+  home.file.".config/git/git_commit_msg.txt".source = ../config/git/git_commit_msg.txt;
   # Git config using Home Manager modules
   programs.git = {
     package = pkgs.gitAndTools.gitFull;
@@ -48,8 +49,8 @@
       };
       core = {
         editor          = "emacsclient  -nw";
-        excludesfile    = "~/.gitignore";
-        attributesfile  = "~/.gitattributes";
+        excludesfile    = "~/.config/git/gitignore";
+        attributesfile  = "~/.config/git/gitattributes";
       };
 
       help.autocorrect = 10;
@@ -59,7 +60,7 @@
       pull.default = "only";
 
       commit = {
-        template = "~/code/dotfiles/git_commit_msg.txt";
+        template = "~/.config/git/git_commit_msg.txt";
         gpgsign = false;
       };
 
