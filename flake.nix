@@ -62,7 +62,7 @@
       );
 
       homeConfigurations = {
-        DESKTOP-096IFDV = mkHomeConfig {
+        chris-3900x = mkHomeConfig {
           username = "chris";
           baseModules = [ ./nixpkgs/linux.nix ];
         };
@@ -81,18 +81,9 @@
     //
     flake-utils.lib.eachDefaultSystem (system:
       let
-        system-map = {
-          "x86_64-linux" = "linux";
-          "x86_64-darwin" = "mac";
-          "aarch64-darwin" = "mac";
-        };
-        hm-filename = system-map."${system}";
         pkgs = import nixpkgs {
           inherit system;
-          overlays = [
-            emacs-overlay.overlay
-            (final: prev: { doomEmacsRevision = doom-emacs.rev; })
-          ];
+          overlays = (mkOverlays system);
         };
       in
       {

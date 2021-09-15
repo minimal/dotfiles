@@ -11,6 +11,7 @@
 
   home.packages = with pkgs; [
     # pkgs is the set of all packages in the default home.nix implementation
+    home-manager
 
     # cmdline / system programs
     aspell
