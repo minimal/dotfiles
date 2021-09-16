@@ -47,7 +47,7 @@
           (system: {
             name = system;
             value = {
-              linux = self.homeConfigurations.DESKTOP-096IFDV.activationPackage;
+              linux = self.homeConfigurations.chris-3900x.activationPackage;
             };
           })
           nixpkgs.lib.platforms.linux) ++
