@@ -24,7 +24,7 @@
         (final: prev: { doomEmacsRevision = doom-emacs.rev; })
         (final: prev: { home-manager = home-manager.packages.${system}.home-manager; })
         (import ./nixpkgs/overlays/bins.nix)
-        (import ./nixpkgs/overlays/apple_silicon.nix { nixpkgs = nixpkgs; })
+        (import ./nixpkgs/apple_silicon.nix { nixpkgs = nixpkgs; })
       ];
       mkHomeConfig =
         { username
