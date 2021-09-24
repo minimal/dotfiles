@@ -10,10 +10,10 @@ in
     ./_home.nix
     ./git.nix
     ./zsh.nix
+    ./emacs.nix
   ];
   home.packages = with pkgs; [
     terminal-notifier
-    emacsMacport
     tk
     # babashka # broken
   ];
