@@ -3,6 +3,7 @@
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
     flake-utils.url = "github:numtide/flake-utils";
+    devshell.url = "github:numtide/devshell";
 
     home-manager = {
       url = "github:nix-community/home-manager/master";
@@ -13,7 +14,7 @@
     emacs-overlay.url = "github:nix-community/emacs-overlay";
   };
 
-  outputs = { self, nixpkgs, flake-utils, doom-emacs, emacs-overlay, home-manager }:
+  outputs = { self, nixpkgs, flake-utils, doom-emacs, emacs-overlay, home-manager, devshell }:
     let
       inherit (home-manager.lib) homeManagerConfiguration;
       isDarwin = system: (builtins.elem system nixpkgs.lib.platforms.darwin);
@@ -83,16 +84,25 @@
       let
         pkgs = import nixpkgs {
           inherit system;
-          overlays = (mkOverlays system);
+          overlays = (mkOverlays system) ++ [ devshell.overlay ];
         };
-      in
-      {
-        devShell = pkgs.mkShell {
+        nixBin = pkgs.writeShellScriptBin "nix" ''
+          ${pkgs.nixFlakes}/bin/nix --option experimental-features "nix-command flakes" "$@"
+        '';
+
+        devShellOld = pkgs.mkShell {
           nativeBuildInputs = [ pkgs.bashInteractive ];
-          buildInputs = with pkgs; [ (import home-manager { inherit pkgs; }).home-manager ];
+          packages = with pkgs; [ nixUnstable ];
+          buildInputs = with pkgs; [ pkgs.home-manager ];
           shellHook = ''
             export NIX_PATH="nixpkgs=${nixpkgs}:home-manager=${home-manager}"
           '';
+        };
+      in
+      {
+
+        devShell = pkgs.devshell.mkShell {
+          packages = with pkgs; [ pkgs.home-manager ];
         };
       });
 }
