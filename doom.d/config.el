@@ -73,3 +73,8 @@
 ;;
 ;; You can also try 'gd' (or 'C-c c d') to jump to their definition and see how
 ;; they are implemented.
+;;
+;; Need this for emacsPgtkGcc terminal wsl for some reason
+
+(map! [mouse-4] [wheel-up])
+(map! [mouse-5] [wheel-down])
