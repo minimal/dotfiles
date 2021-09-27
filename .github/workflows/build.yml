@@ -47,7 +47,7 @@ jobs:
         if: ${{ matrix.os == 'ubuntu-latest' }}
         run: |
           nix develop -c home-manager build --flake '.#chris-3900x'
-      - name: Run linux home manager build
+      - name: Run mac home manager build
         if: ${{ matrix.os == 'macos-latest' }}
         run: |
           nix develop -c home-manager build --flake '.#MacBook-Prolocal'
