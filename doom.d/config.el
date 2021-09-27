@@ -20,6 +20,10 @@
 
 (use-package magit-delta
   :hook (magit-mode . magit-delta-mode))
+
+(use-package wakatime-mode
+  :config (global-wakatime-mode))
+
 ;; Some functionality uses this to identify you, e.g. GPG configuration, email
 ;; clients, file templates and snippets.
 (setq user-full-name "Chris McDevitt"
