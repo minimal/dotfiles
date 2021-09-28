@@ -59,8 +59,7 @@
               mac = self.homeConfigurations.MacBook-Prolocal.activationPackage;
             };
           })
-          [ ] #nixpkgs.lib.platforms.darwin # disable until IFD bug fixed
-        )
+          nixpkgs.lib.platforms.darwin)
       );
 
       homeConfigurations = {
