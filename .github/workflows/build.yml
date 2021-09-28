@@ -39,11 +39,11 @@ jobs:
           install_url: https://github.com/numtide/nix-unstable-installer/releases/download/${{ env.NIX_VERSION }}/install
           extra_nix_config: |
             experimental-features = nix-command flakes
-      # - name: Run Flake Checks
-      #   if: ${{ matrix.os == 'ubuntu-latest' }}
-      #   run: |
-      #     nix flake check -v --show-trace --no-build
-      #   timeout-minutes: 240
+      - name: Run Flake Checks
+        if: ${{ matrix.os == 'ubuntu-latest' }}
+        run: |
+          nix flake check -v --show-trace --no-build
+        timeout-minutes: 240
       - name: Run Flake show
         run: |
           nix flake show
