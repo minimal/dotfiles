@@ -28,11 +28,11 @@ jobs:
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v2.3.4
         with:
           # Shallow clones won't work
           fetch-depth: 0
-      - uses: cachix/install-nix-action@v13
+      - uses: cachix/install-nix-action@v14
         env:
           NIX_VERSION: nix-2.4pre20210823_af94b54
         with:
@@ -42,13 +42,5 @@ jobs:
       - name: Run Flake Checks
         if: ${{ matrix.os == 'ubuntu-latest' }}
         run: |
-          nix flake check -v --show-trace
-      - name: Run linux home manager build
-        if: ${{ matrix.os == 'ubuntu-latest' }}
-        run: |
-          nix develop -c home-manager build --flake '.#chris-3900x'
-      - name: Run mac home manager build
-        if: ${{ matrix.os == 'macos-latest' }}
-        run: |
-          nix develop -c home-manager build --flake '.#MacBook-Prolocal'
+          nix flake check -v --show-trace --no-build
         timeout-minutes: 240
