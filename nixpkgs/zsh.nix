@@ -58,6 +58,12 @@ in
       '';
     };
 
+    zplug = {
+      enable = true;
+      plugins = [
+        { name = "jeffreytse/zsh-vi-mode"; }
+      ];
+    };
 
     profileExtra = ''
       . ${HOME}/.nix-profile/etc/profile.d/nix.sh
@@ -95,6 +101,12 @@ in
       # some keyboards use this:
       bindkey "^[OA" history-beginning-search-backward
       bindkey "^[OB" history-beginning-search-forward
+
+      # Fix binds clobbered by zsh-vim-mode
+      fzfkb_path=${pkgs.fzf}/share/fzf/key-bindings.zsh
+      zvm_after_init_commands+=('[ -f $fzfkb_path ] && source $fzfkb_path'
+                                'bindkey "^[[A" history-beginning-search-backward'
+                                'bindkey "^[[B" history-beginning-search-forward')
     '';
   };
 }
