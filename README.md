@@ -4,8 +4,10 @@ dotfiles
 
 Nix home-manager config, dotfiles and emacs.
 
-Emacs config [here](emacs.d/conf.org)
+Emacs config uses Doom [here](doom.d/)
 
-Most packages and dotfiles installed by Nix with home manager [Nix config](nixpkgs/)
+Most packages and dotfiles installed using Nix [flake](flake.nix) with home manager [Nix config](nixpkgs/)
 
-Rest installed with brew 
+`make hm-switch`
+
+Rest installed with brew
