@@ -18,14 +18,24 @@
     let
       inherit (home-manager.lib) homeManagerConfiguration;
       isDarwin = system: (builtins.elem system nixpkgs.lib.platforms.darwin);
+      M1Overlay = (final: prev:
+        let
+          pkgs_x86_64 = import nixpkgs { localSystem = "x86_64-darwin"; };
+        in
+        {
+          emacsMacport = pkgs_x86_64.emacsMacport;
+          babashka = pkgs_x86_64.babashka;
+          clj-kondo = pkgs_x86_64.clj-kondo;
+          kafkacat = pkgs_x86_64.kafkacat;
+        }
+      );
       homePrefix = system: if isDarwin system then "/Users" else "/home";
       mkOverlays = system: [
         emacs-overlay.overlay
         (final: prev: { doomEmacsRevision = doom-emacs.rev; })
         (final: prev: { home-manager = home-manager.packages.${system}.home-manager; })
         (import ./nixpkgs/overlays/bins.nix)
-        (import ./nixpkgs/apple_silicon.nix { nixpkgs = nixpkgs; })
-      ];
+      ] ++ (if system == "aarch64-darwin" then [ M1Overlay ] else [ ]);
       mkHomeConfig =
         { username
         , system ? "x86_64-linux"
