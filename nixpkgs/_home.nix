@@ -27,7 +27,7 @@
     fzf
     gawk
     getopt
-    git-crypt
+    gnumake
     gnused
     gnutar
     gnutls

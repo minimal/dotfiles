@@ -2,6 +2,12 @@
 {
   home.file.".config/git/git_commit_msg.txt".source = ../config/git/git_commit_msg.txt;
   # Git config using Home Manager modules
+
+  home.packages = with pkgs; [
+    git-crypt
+    git-lfs
+    git-extras
+  ];
   programs.git = {
     package = pkgs.gitAndTools.gitFull;
     enable = true;
@@ -75,7 +81,7 @@
         diff = "delta";
         log = "delta";
         reflog = "delta";
-        show ="delta";
+        show = "delta";
       };
       delta = {
         plus-style = "syntax #012800";
