@@ -24,6 +24,7 @@
 (use-package wakatime-mode
   :config (global-wakatime-mode))
 
+(+global-word-wrap-mode +1)
 ;; Some functionality uses this to identify you, e.g. GPG configuration, email
 ;; clients, file templates and snippets.
 (setq user-full-name "Chris McDevitt"
