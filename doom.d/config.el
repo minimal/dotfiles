@@ -24,6 +24,8 @@
 (use-package wakatime-mode
   :config (global-wakatime-mode))
 
+(use-package just-mode)
+
 (+global-word-wrap-mode +1)
 ;; Some functionality uses this to identify you, e.g. GPG configuration, email
 ;; clients, file templates and snippets.

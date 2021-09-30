@@ -34,6 +34,7 @@
     hello
     indent
     jq
+    just
     lsd # ls alt
     nox
     pet
