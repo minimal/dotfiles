@@ -1,7 +1,6 @@
 { config, lib, pkgs, ... }:
 
 let
-
   emacsSyncScript = pkgs.writeScriptBin "doom-sync-git" ''
     #!${pkgs.runtimeShell}
     export PATH=$PATH:${lib.makeBinPath [ pkgs.git pkgs.sqlite pkgs.unzip ]}
@@ -16,14 +15,15 @@ let
       YES=1 FORCE=1 $HOME/.emacs.d/bin/doom sync -u &
     fi
   '';
+  myEmacs = if pkgs.stdenv.isDarwin then pkgs.emacsGcc else pkgs.emacsPgtkGcc;
 in
-
 {
-
   home.packages = with pkgs; [
     # emacsMacport
-    emacsGcc
+    myEmacs
     emacsSyncScript
     ripgrep
+    fd
+    findutils
   ];
 }
