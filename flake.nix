@@ -11,7 +11,8 @@
     };
     doom-emacs.url = "github:hlissner/doom-emacs/develop";
     doom-emacs.flake = false;
-    emacs-overlay.url = "github:nix-community/emacs-overlay";
+    # emacs-overlay.url = "github:nix-community/emacs-overlay";
+    emacs-overlay.url = "github:mjlbach/emacs-overlay/feature/flakes";
   };
 
   outputs = { self, nixpkgs, flake-utils, doom-emacs, emacs-overlay, home-manager, devshell }:
