@@ -39,6 +39,12 @@ jobs:
           install_url: https://github.com/numtide/nix-unstable-installer/releases/download/${{ env.NIX_VERSION }}/install
           extra_nix_config: |
             experimental-features = nix-command flakes
+      - uses: cachix/cachix-action@v8
+        with:
+          name: nix-community
+      - uses: cachix/cachix-action@v8
+        with:
+          name: mjlbach
       # - name: Run Flake Checks
       #   if: ${{ matrix.os == 'ubuntu-latest' }}
       #   run: |
