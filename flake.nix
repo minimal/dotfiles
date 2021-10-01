@@ -72,7 +72,7 @@
           (system: {
             name = system;
             value = {
-              mac = self.homeConfigurations.MacBook-Prolocal.activationPackage;
+              mac = self.homeConfigurations.C02VJ07FHV2Jlocal.activationPackage;
             };
           })
           nixpkgs.lib.platforms.darwin)
