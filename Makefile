@@ -1,5 +1,4 @@
-prefix := '.\#'
-flake := $(prefix)`hostname | tr -d .`
+flake := '.\#'`hostname | tr -d .`
 
 nix-packages-tree:
 	nix-store -q --tree /nix/var/nix/profiles/per-user/${USER}/profile
@@ -15,6 +14,7 @@ hm-bootstrap: hm-config-setup hm-switch
 
 hm-firstrun: hm-config-setup
 	nix-shell -p nixUnstable --command "nix --experimental-features 'nix-command flakes' develop -c home-manager switch --flake $(flake)"
+
 hm-packages:
 	nix develop -c home-manager packages
 
