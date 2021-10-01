@@ -6,6 +6,7 @@
     ./_home.nix
     ./git.nix
     ./zsh.nix
+    ./emacs.nix
   ];
   home.packages = with pkgs; [
     unzip
