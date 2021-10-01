@@ -82,7 +82,7 @@
           username = "chris";
           baseModules = [ ./nixpkgs/linux.nix ];
         };
-        MacBook-Prolocal = mkHomeConfig {
+        C02VJ07FHV2Jlocal = mkHomeConfig {
           system = "x86_64-darwin";
           username = "cmcdevitt";
           baseModules = [ ./nixpkgs/mac.nix ];
