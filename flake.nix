@@ -54,6 +54,7 @@
           # extraSpecialArgs = { inherit inputs lib; };
           configuration = {
             imports = baseModules ++ extraModules
+              ++ (if isDarwin system then [ ./nixpkgs/mac.nix ] else [ ./nixpkgs/linux.nix ])
               ++ [{ nixpkgs.overlays = (mkOverlays system); }];
           };
         };
@@ -81,17 +82,23 @@
       homeConfigurations = {
         chris-3900x = mkHomeConfig {
           username = "chris";
-          baseModules = [ ./nixpkgs/linux.nix ];
+          baseModules = [
+            ./nixpkgs/emacs.nix
+            ./nixpkgs/profiles/personal.nix
+          ];
         };
         C02VJ07FHV2Jlocal = mkHomeConfig {
           system = "x86_64-darwin";
           username = "cmcdevitt";
-          baseModules = [ ./nixpkgs/mac.nix ];
+          baseModules = [
+            ./nixpkgs/emacs.nix
+            ./nixpkgs/profiles/work.nix
+          ];
         };
         Yuris-MacBook-Airlocal = mkHomeConfig {
           system = "aarch64-darwin";
           username = "chris";
-          baseModules = [ ./nixpkgs/mac.nix ];
+          baseModules = [ ./nixpkgs/profiles/personal.nix ];
         };
       };
     }

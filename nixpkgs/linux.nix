@@ -6,7 +6,6 @@
     ./_home.nix
     ./git.nix
     ./zsh.nix
-    ./emacs.nix
   ];
   home.packages = with pkgs; [
     unzip
@@ -19,7 +18,6 @@
   };
 
   programs = {
-    git.userEmail = "christophermcdevitt@gmail.com";
     zsh = {
       shellAliases = {
         code = "/mnt/c/Users/Chris/AppData/Local/Programs/Microsoft\\ VS\\ Code/bin/code";

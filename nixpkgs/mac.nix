@@ -10,7 +10,6 @@ in
     ./_home.nix
     ./git.nix
     ./zsh.nix
-    ./emacs.nix
   ];
   home.packages = with pkgs; [
     terminal-notifier
@@ -28,8 +27,8 @@ in
 
   home.file.".amethyst".source = config.lib.file.mkOutOfStoreSymlink ../config/amethyst;
   # home.file.".lein".source = ../.lein;
+
   programs = {
-    git.userEmail = "chris.mcdevitt@fundingcircle.com";
 
     zsh = {
       shellAliases = {
