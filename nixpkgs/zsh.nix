@@ -109,4 +109,22 @@ in
                                 'bindkey "^[[B" history-beginning-search-forward')
     '';
   };
+
+  programs.fzf = {
+    enable = true;
+    enableZshIntegration = true;
+    defaultOptions = [
+      "--preview 'fzfprev {}'"
+      # "--height 40%"
+      "--layout=reverse"
+      "--border"
+      "--inline-info"
+    ];
+  };
+
+  # autojump clone in rust
+  programs.pazi = {
+    enable = true;
+    enableZshIntegration = true;
+  };
 }

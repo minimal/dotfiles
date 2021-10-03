@@ -26,16 +26,5 @@
         if [[ $(pwd) != $HOME ]] then cd ~; fi
       '';
     };
-
-    fzf = {
-      enable = true;
-      enableZshIntegration = true;
-      defaultOptions = [
-        # "--height 40%"
-        "--layout=reverse"
-        "--border"
-        "--inline-info"
-      ];
-    };
   };
 }
