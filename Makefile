@@ -30,3 +30,9 @@ nix-install-unstable:
 nix-reg-pin-latest-nixpkgs:
 	nix registry remove nixpkgs
 	nix registry pin flake:nixpkgs
+
+doom-update-flake:
+	nix flake lock --update-input doom-emacs
+
+doom-update-sync: doom-update-flake hm-switch
+	doom-sync-git
