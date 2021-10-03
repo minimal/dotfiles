@@ -20,6 +20,7 @@ in
       # gka = "gitk --all&";
       rm-git-turds = "rm **/(*.orig|*(LOCAL|BASE|REMOTE|BACKUP)*)";
       switch = "cd ${HOME}/code/dotfiles && make hm-switch";
+      nsearch = "nix search nixpkgs";
     };
     prezto = {
       enable = true;
@@ -81,8 +82,8 @@ in
     # overrides some of nix bins etc. How to fix?
 
     initExtraBeforeCompInit = ''
-          fpath=(~/code/dotfiles/nixpkgs/zfunc $fpath)
-        '';
+      fpath=(~/code/dotfiles/nixpkgs/zfunc $fpath)
+    '';
 
     initExtra = ''
 
