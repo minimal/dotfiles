@@ -55,6 +55,7 @@
     zsh
 
     # programming langs
+    openjdk
     clojure
     leiningen
     # boot
