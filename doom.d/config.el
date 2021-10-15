@@ -14,9 +14,15 @@
        (:when (featurep! :tools magit)
         :desc "Magit status"              "s"   #'magit-status)))
 
-(evil-define-key nil cider-repl-mode-map
-  (kbd "C-k") 'cider-repl-backward-input
-  (kbd "C-j") 'cider-repl-forward-input)
+;; Lisp keybinds
+(map! (:map smartparens-mode-map ;; Some default paredit binds
+       :ni "C-)" #'sp-forward-slurp-sexp
+       :ni "C-}" #'sp-forward-barf-sexp
+       :ni "C-(" #'sp-backward-slurp-sexp
+       :ni "C-{" #'sp-backward-barf-sexp)
+      (:map cider-repl-mode-map
+       :n "C-k" #'cider-repl-backward-input
+       :n "C-j" #'cider-repl-forward-input))
 
 (use-package magit-delta
   :hook (magit-mode . magit-delta-mode))
