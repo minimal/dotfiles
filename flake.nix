@@ -68,7 +68,7 @@
               linux = self.homeConfigurations.chris-3900x.activationPackage;
             };
           })
-          nixpkgs.lib.platforms.linux) ++
+          [ "x86_64-linux" ]) ++
         (map
           (system: {
             name = system;
