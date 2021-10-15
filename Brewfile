@@ -1,0 +1,30 @@
+#!/usr/bin/env ruby
+
+# 'brew tap'
+tap "homebrew/cask"
+
+brew "terminal-notifier"
+brew "trash"
+brew "mas"
+
+cask "font-alegreya"
+cask "font-cardo"
+cask "font-hack-nerd-font"
+cask "font-open-sans"
+cask "font-cormorant"
+cask "font-hasklig"
+cask "font-source-code-pro"
+cask "font-alegreya"
+cask "font-fira-code"
+cask "font-inconsolata"
+cask "font-source-sans-pro"
+cask "font-alegreya-sans"
+cask "font-fira-mono"
+cask "font-lato"
+cask "font-source-serif-pro"
+cask "font-anonymous-pro"
+cask "font-fira-sans"
+cask "font-monoid"
+cask "font-vollkorn"
+cask "font-jetbrains-mono"
+cask "font-jetbrains-mono-nerd-font"

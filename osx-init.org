@@ -11,6 +11,11 @@ https://nixos.org/manual/nix/stable/#sect-macos-installation
   home-manager switch
 #+end_src
 
+* homebrew
+** install brew
+https://brew.sh/
+** run `brew bundle`
+
 * keyboard prefs
 -   keyboard -> modifier keys -> caps loc = control
 -   keyboard -> input sources -> british pc
