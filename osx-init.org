@@ -5,11 +5,17 @@ https://nixos.org/manual/nix/stable/#sect-macos-installation
 
 ** arrange configs and run
 #+begin_src sh
-  ln -s ~/code/dotfiles/nixpkgs ~/.config/
-  cd ~/code/dotfiles/nixpkgs
-  ln -s mac.nix home.nix
-  home-manager switch
+make hm-firstrun
 #+end_src
+
+Add nix zsh to shells an chsh:
+
+#+begin_src sh
+sudo dscl . change /users/$USER UserShell /bin/zsh $(which zsh)
+#+end_src
+
+Start new zsh session
+
 
 * homebrew
 ** install brew
