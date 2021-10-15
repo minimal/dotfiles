@@ -36,11 +36,11 @@
         (final: prev: { doomEmacsRevision = doom-emacs.rev; })
         (final: prev: { home-manager = home-manager.packages.${system}.home-manager; })
         (import ./nixpkgs/overlays/bins.nix)
-        (final: prev: {
-          awscli2 = prev.awscli2.overrideAttrs (oldAttrs: {
-            doCheck = false;
-          });
-        })
+        # (final: prev: {
+        #   awscli2 = prev.awscli2.overrideAttrs (oldAttrs: {
+        #     doCheck = false;
+        #   });
+        # })
       ] ++ (if system == "aarch64-darwin" then [ M1Overlay ] else [ ]);
       mkHomeConfig =
         { username
@@ -68,15 +68,16 @@
               linux = self.homeConfigurations.chris-3900x.activationPackage;
             };
           })
-          [ "x86_64-linux" ]) ++
-        (map
-          (system: {
-            name = system;
-            value = {
-              mac = self.homeConfigurations.C02VJ07FHV2Jlocal.activationPackage;
-            };
-          })
-          nixpkgs.lib.platforms.darwin)
+          [ "x86_64-linux" ])
+        # ++
+        # (map
+        #   (system: {
+        #     name = system;
+        #     value = {
+        #       mac = self.homeConfigurations.C02VJ07FHV2Jlocal.activationPackage;
+        #     };
+        #   })
+        #   nixpkgs.lib.platforms.darwin)
       );
 
       homeConfigurations = {
