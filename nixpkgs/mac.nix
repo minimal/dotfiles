@@ -8,10 +8,12 @@ in
     ./git.nix
     ./zsh.nix
   ];
+
   home.packages = with pkgs; [
     terminal-notifier
     tk
     # babashka # broken
+    babashka-bin
   ];
 
   home.sessionVariables = {

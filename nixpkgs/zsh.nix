@@ -45,7 +45,7 @@ in
         "node"
         # "homebrew"
         # "haskell"
-        "ruby"
+        # "ruby"
         "prompt"
       ];
       prompt = {
