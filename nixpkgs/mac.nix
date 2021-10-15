@@ -33,13 +33,5 @@ in
         mdfindname = "mdfind -name";
       };
     };
-
-    htop = {
-      enable = true;
-      settings.tree_view = true;
-    };
-
-    jq.enable = true;
-
   };
 }

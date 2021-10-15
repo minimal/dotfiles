@@ -90,9 +90,18 @@
     postgresql
   ];
 
-  programs.direnv.enable = true;
-  programs.direnv.nix-direnv.enable = true;
-  programs.direnv.nix-direnv.enableFlakes = true;
+  programs = {
+    direnv = {
+      enable = true;
+      nix-direnv.enable = true;
+      nix-direnv.enableFlakes = true;
+    };
+    htop = {
+      enable = true;
+      settings.tree_view = true;
+    };
+    jq.enable = true;
+  };
 
   # Raw configuration files
   home.file.".tmux.conf".source = ../config/tmux.conf;
