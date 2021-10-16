@@ -81,18 +81,20 @@ self: super: {
   babashka-bin =
     with super; stdenv.mkDerivation rec {
       name = "babashka-${version}";
-      version = "0.6.1";
+      version = "0.6.2";
       src =
         let
-          sources = {
-            "x86_64-darwin" = fetchzip {
-              url = "https://github.com/babashka/babashka/releases/download/v0.6.1/babashka-0.6.1-macos-amd64.tar.gz";
-              sha256 = "68UyVc2N+VkUhZs7d1Kqs0UbtSxYEU61B7nRlQPZD84=";
+          mac = fetchzip {
+              url = "https://github.com/babashka/babashka/releases/download/v0.6.2/babashka-0.6.2-macos-amd64.tar.gz";
+              sha256 = "l1hvgrYcUzTaC84WyOnMc4VvHBPpox6iW0H3rkzNuiQ=";
               name = "babashka";
             };
+          sources = {
+            "x86_64-darwin" = mac;
+            "aarch64-darwin" = mac;
             "x86_64-linux" = fetchzip {
-              url = "https://github.com/babashka/babashka/releases/download/v0.6.1/babashka-0.6.1-linux-amd64.tar.gz";
-              sha256 = "cB76V2uVbv9jhoZ4RumI4xOwnSuvZu70dogT68GWvdU=";
+              url = "https://github.com/babashka/babashka/releases/download/v0.6.2/babashka-0.6.2-linux-amd64.tar.gz";
+              sha256 = "FIXME";
               name = "babashka";
             };
           };
@@ -109,7 +111,7 @@ self: super: {
       meta = with lib; {
         description = "Native, fast starting Clojure interpreter for scripting";
         homepage = https://github.com/babashka/babashka;
-        platforms = [ "x86_64-darwin" "x86_64-linux" ];
+        platforms = [ "aarch64-darwin" "x86_64-darwin" "x86_64-linux" ];
       };
     };
 }
