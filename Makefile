@@ -36,3 +36,6 @@ doom-update-flake:
 
 doom-update-sync: doom-update-flake hm-switch
 	doom-sync-git
+
+git-submodules:
+	git submodule update --init

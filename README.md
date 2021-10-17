@@ -2,6 +2,8 @@ dotfiles
 ========
 [![CI](https://github.com/minimal/dotfiles/actions/workflows/build.yml/badge.svg)](https://github.com/minimal/dotfiles/actions/workflows/build.yml)
 
+    git clone --recurse-submodules git@github.com:minimal/dotfiles.git
+
 Nix home-manager config, dotfiles and emacs.
 
 Emacs config uses Doom [here](doom.d/)
