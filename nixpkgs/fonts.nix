@@ -23,5 +23,6 @@
     source-code-pro
     source-sans-pro
     source-serif-pro
+    (pkgs.callPackage ./pkgs/equity.nix { })
   ];
 }

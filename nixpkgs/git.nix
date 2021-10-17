@@ -64,6 +64,7 @@
       branch.autosetuprebase = "always";
       push.default = "simple";
       pull.default = "only";
+      init.defaultBranch = "main";
 
       commit = {
         template = "~/.config/git/git_commit_msg.txt";

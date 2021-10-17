@@ -1,8 +1,8 @@
 { lib, stdenv }:
 
 stdenv.mkDerivation {
-  pname = "pragmatapro";
-  version = "unstable-2021-05-19";
+  pname = "equity";
+  version = "unstable-2021-10";
 
   src = builtins.fetchGit {
     url = "ssh://git@github.com/minimal/fonts.git";
@@ -11,12 +11,12 @@ stdenv.mkDerivation {
   };
 
   installPhase = ''
-    install -m644 --target $out/share/fonts/truetype/pragmatapro -D $src/pragmata-pro-family/*.ttf
+    install -m644 --target $out/share/fonts/opentype/equity -D $src/equity/OpenType/*.otf
   '';
 
   meta = with lib; {
-    homepage = "https://www.fsd.it/shop/fonts/pragmatapro/";
-    description = "PragmataPro™ is a condensed monospaced font optimized for screen";
+    homepage = "https://practicaltypography.com/equity.html";
+    description = "Serif font";
     maintainers = with maintainers; [ minimal ];
     # license = licenses.unfree;
     platforms = platforms.all;
