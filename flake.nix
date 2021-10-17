@@ -96,7 +96,7 @@
           ];
         };
         workm1 = mkHomeConfig {
-          system =  "aarch64-darwin";
+          system = "aarch64-darwin";
           username = "cmcdevitt";
           baseModules = [
             ./nixpkgs/emacs.nix
@@ -106,7 +106,10 @@
         Yuris-MacBook-Airlocal = mkHomeConfig {
           system = "aarch64-darwin";
           username = "chris";
-          baseModules = [ ./nixpkgs/profiles/personal.nix ];
+          baseModules = [
+            ./nixpkgs/fonts.nix
+            ./nixpkgs/profiles/personal.nix
+          ];
         };
       };
     }
