@@ -1,7 +1,6 @@
 (defmacro comment (&rest body)
   "Comment out one or more s-expressions."
   nil)
-;; (cua-mode t nil (cua-base))
 ;; really make suspend frame get in the sea
 (global-unset-key (kbd "C-z"))
 (cua-mode)
@@ -14,23 +13,8 @@
 
 (persistent-scratch-setup-default) ;; use 1 for not auto restore
 
-
-
-;;(require 'flycheck-mypy)
-;; bindings
 ;; (setq x-super-keysym 'meta) ; make cmd key as meta - for apple keyboard on linux
 (setq mac-command-modifier 'meta) ;; on osx set command to meta
-;; (global-set-key "\r" 'newline-and-indent)
-;; http://xahlee.org/emacs/keyboard_shortcuts.html
-;; (setq debug-on-error t)
-
-(comment 
-(add-to-list 'safe-local-variable-values
-             '(flycheck-python-flake8-executable . "/Users/christophermcdevitt/Envs/invoice-dedupe-py3/bin/flake8"))
-
-(add-to-list 'safe-local-variable-values
-             '(flycheck-python-mypy-executable . "/Users/christophermcdevitt/Envs/invoice-dedupe-py3/bin/mypy"))
-)
 
 (defun my-update-env (fn)
   (message "in my custom render fn")
@@ -59,14 +43,10 @@
                  (display-buffer buf))))))
     (run-at-time time nil f message)))
 
-
 ;; from mac port emacs
-
 (mac-auto-operator-composition-mode)
 ;; end railwaycat
-
 (org-babel-load-file "/Users/christophermcdevitt/code/dotfiles/.emacs.d/conf.org")
-
 
 (defun align-repeat (start end regexp)
   "Repeat alignment with respect to
@@ -87,8 +67,6 @@
                            'beginning-of-line-or-indentation
                            (current-global-map)) ;; not working??
 (global-set-key [(control a)] 'beginning-of-line-or-indentation)
-
-
 
 (defun theme-dark ()
   "Flatland with smart modeline"
@@ -130,50 +108,8 @@
 ;; (theme-charcoal)
 ;; (theme-material) ;; causes crashes
 
-(defun coffee-custom ()
-  "coffee-mode-hook"
-  (set (make-local-variable 'tab-width) 2))
-
-(add-hook 'coffee-mode-hook
-          '(lambda() (coffee-custom)))
-
-(add-hook 'coffee-mode-hook
-  '(lambda() (coffee-custom)))
-(add-hook 'coffee-mode-hook 'flymake-coffee-load)
-
-;; (add-hook 'js-mode-hook 'flymake-jshint-load)
-
-(add-to-list 'auto-mode-alist '("\\.zsh\\'" . shell-script-mode))
-(add-to-list 'auto-mode-alist '("\\.gitconfig\\'" . conf-mode))
-(add-to-list 'auto-mode-alist '("\\.php\\'" . php-mode))
-(add-to-list 'auto-mode-alist '("\\.cs\\'" . coffee-mode)) ;; /sigh
-
-(comment
- (require 'web-mode)
- (add-to-list 'auto-mode-alist '("\\.phtml\\'" . web-mode))
- (add-to-list 'auto-mode-alist '("\\.tpl\\.php\\'" . web-mode))
- (add-to-list 'auto-mode-alist '("\\.jsp\\'" . web-mode))
- (add-to-list 'auto-mode-alist '("\\.as[cp]x\\'" . web-mode))
- (add-to-list 'auto-mode-alist '("\\.erb\\'" . web-mode))
- (add-to-list 'auto-mode-alist '("\\.mustache\\'" . web-mode))
- (add-to-list 'auto-mode-alist '("\\.djhtml\\'" . web-mode)))
-;; (add-to-list 'auto-mode-alist '("\\.html?\\'" . web-mode))
-
 (setq-default indicate-empty-lines t
         indicate-buffer-boundaries 'left)
-
-;;(idle-highlight-mode)
-(defun my-buffer-face-mode-variable ()
-  "Set different fonts in current buffer"
-  (interactive)
-  ;; (setq buffer-face-mode-face '(:font "Monaco-8"))
-  ;; (set-face-attribute 'default nil :font "Monaco-14")
-  (setq buffer-face-mode-face '(:height 122))
-  (buffer-face-mode))
-
-(add-hook 'erc-mode-hook
-          'my-buffer-face-mode-variable)
-;; (remove-hook 'erc-mode-hook  'my-buffer-face-mode-variable)
 
 ;;;;; Dedicated window
 (defadvice pop-to-buffer (before cancel-other-window first)
@@ -197,57 +133,8 @@
 (global-set-key [pause] 'toggle-window-dedicated)
 ;;;;;;;;;;;;; dedicated
 
-;;; change in next quotes. like vim: ci"
-;;; TODO: choosing of quote char
-(fset 'change-in
-      (lambda (&optional arg) "Keyboard macro."
-        (interactive "p")
-        (kmacro-exec-ring-item
-         (quote ([19 91 39 34 93 13 67108896 19 19 2] 0 "%d")) arg)))
-
-;;; win git location
-(if (eq system-type 'windows-nt)
-    (setq exec-path (append exec-path '("J:/downloads/git-portable/bin")))
-  )
-
 ;; Notifications
 ;; look at erc-track-exclude-types variable
-(comment
- (require 'todochiku)
- ;; (unless (posix-string-match "^\\** *Users on " message))
- (defun my-erc-hook (match-type nick message)
-   "Shows a todochiku notification, when user's nick was
-mentioned. If the buffer is currently not visible, makes it
-sticky."
-   (unless (or (posix-string-match "^\\*** " message)
-               (posix-string-match "localhost has changed mode for " message)
-               (posix-string-match "^<root>" message)
-               (posix-string-match "as changed mode for " message))
-     (todochiku-message
-      (concat "ERC: " nick " mentioned on " (buffer-name (current-buffer)))
-      message
-      (todochiku-icon 'compile)
-      )))
-
- (add-hook 'erc-text-matched-hook 'my-erc-hook)
-
- ;; (remove-hook 'erc-text-matched-hook  'my-erc-hook)
-
- (setq erc-dangerous-hosts '("localhost")))
-
-(use-package wrap-region
-  :ensure t
-  :config (wrap-region-global-mode t))
-
-
-;; (setq line-move-visual 'nil)
-
-(add-hook 'ibuffer-hook
-          (lambda ()
-            (ibuffer-vc-set-filter-groups-by-vc-root)
-            (unless (eq ibuffer-sorting-mode 'alphabetic)
-              (ibuffer-do-sort-by-alphabetic))))
-
 ;; Diminish modeline clutter
 (require 'diminish)
 (diminish 'wrap-region-mode)
@@ -255,38 +142,6 @@ sticky."
 ;; (diminish 'highlight-indentation-mode)
 ;; (diminish 'yas/minor-mode)
 ;; (diminish 'auto-fill-mode) ;; errors!
-
-(comment
- (setq erc-autojoin-channels-alist
-       '(;("irc.skimlinks.com" "#dev")
-                                        ;("localhost")
-         ("irc.freenode.net" "#typed-clojure"))))
-
-
-(defun toggle-window-split ()
-  (interactive)
-  (if (= (count-windows) 2)
-      (let* ((this-win-buffer (window-buffer))
-             (next-win-buffer (window-buffer (next-window)))
-             (this-win-edges (window-edges (selected-window)))
-             (next-win-edges (window-edges (next-window)))
-             (this-win-2nd (not (and (<= (car this-win-edges)
-                                         (car next-win-edges))
-                                     (<= (cadr this-win-edges)
-                                         (cadr next-win-edges)))))
-             (splitter
-              (if (= (car this-win-edges)
-                     (car (window-edges (next-window))))
-                  'split-window-horizontally
-                'split-window-vertically)))
-        (delete-other-windows)
-        (let ((first-win (selected-window)))
-          (funcall splitter)
-          (if this-win-2nd (other-window 1))
-          (set-window-buffer (selected-window) this-win-buffer)
-          (set-window-buffer (next-window) next-win-buffer)
-          (select-window first-win)
-          (if this-win-2nd (other-window 1))))))
 
 (defadvice yank-pop (around kill-ring-browse-maybe (arg))
   "If last action was not a yank, run `browse-kill-ring' instead."
@@ -303,28 +158,6 @@ sticky."
     ad-do-it))
 (ad-activate 'yank-pop)
 
-(use-package rainbow-delimiters
-  :ensure t)
-
-(add-hook #'prog-mode-hook #'rainbow-delimiters-mode)
-
-;; go
-(add-hook 'go-mode-hook 'flycheck-mode)
-(add-hook 'go-mode-hook
-          (lambda ()
-            (local-set-key [f5] 'flycheck-previous-error)
-            (local-set-key [f6] 'flycheck-next-error)))
-
-
-(with-eval-after-load 'flycheck
-  (flycheck-pos-tip-mode))
-(eval-after-load 'flycheck
-  '(custom-set-variables
-    '(flycheck-display-errors-function #'flycheck-pos-tip-error-messages)))
-
-
-;;(add-to-list 'dash-at-point-mode-alist '(python-mode . "python2")) ;; errors 2015-04-02
-
 (defun clone-buffer-and-narrow-to-function ()
   (interactive)
   (clone-indirect-buffer-other-window (which-function) 'pop-to-buffer)
@@ -334,53 +167,8 @@ sticky."
   (other-window 1))
 
 ;; (define-key global-map (kbd "C-x 4 n") 'clone-buffer-and-narrow-to-function) ; or whatever key you prefer
-
-
 ;; sudo stuff
-
 ;; (set-default 'tramp-default-proxies-alist (quote (("my-sudo-alias" nil "/ssh:chris@rogervm.skimlinks.com#17555:"))))
-
-;; Haskell WIP
-;; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-(add-to-list 'exec-path "~/.local/bin")
-;; (setenv "PATH" (concat "/Applications/ghc-7.8.3.app/Contents/bin:" "~/.cabal/bin:" (getenv "PATH")))
-;; (add-to-list 'exec-path "~/.cabal/bin")
-;; (add-to-list 'exec-path "/Applications/ghc-7.8.3.app/Contents/bin")
-;; (defun font-lock-replace-symbol (mode reg sym)
-;;   (font-lock-add-keywords
-;;    mode `((,reg
-;;            (0 (progn (compose-region (match-beginning 1) (match-end 1)
-;;                                      ,sym 'decompose-region)))))))
-
-(comment
- (add-hook 'haskell-mode-hook
-           (lambda ()
-             (auto-complete-mode -1)
-             (flycheck-mode)
-             (setq ghc-display-error 'minibuffer))))
-
-;; need to see if i need these again
-;;(autoload 'ghc-init "ghc" nil t)
-;;(autoload 'ghc-debug "ghc" nil)
-;;(add-hook 'haskell-mode-hook (lambda () (ghc-init))) ;; disabled for now
-
-;; (add-hook 'haskell-mode-hook 'company-mode)
-;; (add-to-list 'company-backends 'company-ghc)
-;; (custom-set-variables '(company-ghc-show-info t))
-
-;; (remove-hook #'haskell-mode-hook (lambda () (ghc-init)))
-
-;; run M-x haskell-process-load-or-reload
-;; M-? to show error at cursor
-
-;; end haskell
-;; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-;;; PureScript cheat mode
-(define-derived-mode purescript-mode haskell-mode "PureScript"
-  "Major mode for PureScript")
-(add-to-list 'auto-mode-alist (cons "\\.purs\\'" 'purescript-mode))
 
 ;; round quotes
 (eval-after-load 'org
@@ -404,58 +192,7 @@ If inside a code-block, simply calls `self-insert-command'."
       (forward-char -1))))
 ;; end round quotes
 
-
-;; (define-derived-mode purescript-mode haskell-mode "PureScript"
-;;   "Major mode for PureScript")
-;; (add-to-list 'auto-mode-alist (cons "\\.purs\\'" 'purescript-mode))
-
-(eval-after-load 'flycheck
-  '(progn
-     (flycheck-define-checker purs-check
-       "Use purscheck to flycheck PureScript code."
-       :command ("/Users/chris/code/scratch/purescript-chapter3/.cabal-sandbox/bin/purscheck" source source-original temporary-file-name)
-       :error-patterns
-       ((error line-start
-               (or (and "Error at " (file-name)    " line " line ", column " column ":" (zero-or-more " "))
-                   (and "\""        (file-name) "\" (line " line ", column " column "):"))
-               (or (message (one-or-more not-newline))
-                   (and "\n"
-                        (message
-                         (zero-or-more " ") (one-or-more not-newline)
-                         (zero-or-more "\n"
-                                       (zero-or-more " ")
-                                       (one-or-more not-newline)))))
-               line-end))
-       :modes purescript-mode)
-     (add-to-list 'flycheck-checkers 'purs-check)))
-
-(provide 'purscheck)
-
-;; (eval-after-load 'flycheck
-;;   '(add-hook 'flycheck-mode-hook #'flycheck-haskell-setup))
-;; (remove-hook 'flycheck-mode-hook #'flycheck-haskell-setup)
-
-;; (py-test-define-project
-;;  :name "Classifier"
-;;  :python-command "/Users/chris/Envs/classi/bin/python"
-;;  :base-directory (expand-file-name "~/code/product-enrichment/classifier-py/")
-;;  :test-runner (expand-file-name "/Users/chris/Envs/classi/bin/py.test")
-;;  :working-directory (expand-file-name "~/code/product-enrichment/classifier-py/"))
-
-
 ;; (pprint (sort (.split (System/getProperty "java.class.path") ":")))
-
-
-;; (use-package org-projectile
-;;   ;; :bind (("C-c n p" . org-projectile:project-todo-completing-read)
-;;   ;;        ("C-c c" . org-capture))
-;;   :config
-;;   (progn
-;;     (setq org-projectile:projects-file
-;;           "~/Dropbox/code/projects.org")
-;;     (add-to-list 'org-capture-templates (org-projectile:project-todo-entry "p")))
-;;   :ensure t)
-
 
 ;; http://www.emacswiki.org/emacs/TransposeWindows
 (defun rotate-windows (arg)
@@ -527,7 +264,6 @@ Version 2015-12-02"
     '(add-to-list 'edit-server-url-major-mode-alist
                   '("inbox\\.google\\." . gmail-message-edit-server-mode)))
 
-
 ;; org latex export
 (require 'ox-latex)
 (unless (boundp 'org-latex-classes)
@@ -547,6 +283,3 @@ Version 2015-12-02"
              ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
              ("\\paragraph{%s}" . "\\paragraph*{%s}")
              ("\\subparagraph{%s}" . "\\subparagraph*{%s}")))
-
-
-
