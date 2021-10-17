@@ -6,6 +6,7 @@
     # hack-nerd-font # not found
     # jetbrains-mono-nerd-font # not found
     # vollk rn # error
+    (pkgs.callPackage ./pkgs/pragmatapro.nix { })
     alegreya
     alegreya-sans
     anonymousPro
