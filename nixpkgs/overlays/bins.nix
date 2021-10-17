@@ -94,7 +94,7 @@ self: super: {
             "aarch64-darwin" = mac;
             "x86_64-linux" = fetchzip {
               url = "https://github.com/babashka/babashka/releases/download/v0.6.2/babashka-0.6.2-linux-amd64.tar.gz";
-              sha256 = "FIXME";
+              sha256 = "SnSNWTrPFqqiUY3MVX6uCYvayxQYd7s3liIWWbVeVGk=" ;
               name = "babashka";
             };
           };
