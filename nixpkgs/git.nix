@@ -1,4 +1,12 @@
 { config, pkgs, ... }:
+let
+  git-export-stash = pkgs.writeShellScriptBin "git-export-stash"
+    ''
+    mkdir -p stashes
+    n=$(git stash list | wc -l)
+    for i in $(seq 0  $((n-1))); do git stash show -p stash@"{$i}" > stashes/"$i".diff; done
+    '';
+in
 {
   home.file.".config/git/git_commit_msg.txt".source = ../config/git/git_commit_msg.txt;
   # Git config using Home Manager modules
@@ -7,6 +15,7 @@
     git-crypt
     git-lfs
     git-extras
+    git-export-stash
   ];
   programs.git = {
     package = pkgs.gitAndTools.gitFull;
