@@ -16,6 +16,7 @@ in
     git-lfs
     git-extras
     git-export-stash
+    git-absorb
   ];
   programs.git = {
     package = pkgs.gitAndTools.gitFull;
