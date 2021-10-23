@@ -104,4 +104,15 @@ in
       };
     };
   };
+
+  programs.gh = {
+    enable = true;
+    aliases = {
+      co = "pr checkout";
+      pv = "pr view";
+      prs = "pr list -A minimal";
+    };
+    editor = "code";
+    gitProtocol = "ssh";
+  };
 }
