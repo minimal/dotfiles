@@ -3,33 +3,14 @@
   nil)
 ;; really make suspend frame get in the sea
 (global-unset-key (kbd "C-z"))
-(cua-mode)
 (global-unset-key (kbd "C-x C-z"))
 (put 'suspend-frame 'disabled t)
 
-;(save-place t nil (saveplace))
 (setq auto-save-file-name-transforms
       `((".*" ,temporary-file-directory t)))
 
-(persistent-scratch-setup-default) ;; use 1 for not auto restore
-
 ;; (setq x-super-keysym 'meta) ; make cmd key as meta - for apple keyboard on linux
 (setq mac-command-modifier 'meta) ;; on osx set command to meta
-
-(defun my-update-env (fn)
-  (message "in my custom render fn")
-  (let ((str
-         (with-temp-buffer
-           (insert-file-contents fn)
-           (buffer-string))) lst)
-    (setq lst (split-string str "\000"))
-    (while lst
-      (setq cur (car lst))
-      (when (string-match "^\\(.*?\\)=\\(.*\\)" cur)
-        (setq var (match-string 1 cur))
-        (setq value (match-string 2 cur))
-        (setenv var value))
-      (setq lst (cdr lst)))))
 
 (defun alarm (time message)
   "Popup a buffer with message at given `time'. See docs for
@@ -54,19 +35,6 @@
   (interactive "r\nsAlign regexp: ")
   (align-regexp start end
                 (concat "\\(\\s-*\\)" regexp) 1 1 t))
-
-;; See http://www.emacswiki.org/cgi-bin/wiki/misc-cmds.el
-(defun beginning-of-line-or-indentation ()
-  "move to beginning of line, or indentation"
-  (interactive)
-  (if (bolp)
-      (back-to-indentation)
-    (beginning-of-line)))
-
-(substitute-key-definition 'beginning-of-line
-                           'beginning-of-line-or-indentation
-                           (current-global-map)) ;; not working??
-(global-set-key [(control a)] 'beginning-of-line-or-indentation)
 
 (defun theme-dark ()
   "Flatland with smart modeline"
@@ -103,14 +71,6 @@
   (smart-mode-line-enable)
   (sml/apply-theme "light"))
 
-;; (theme-dark)
-;; (theme-spacemacs-dark)
-;; (theme-charcoal)
-;; (theme-material) ;; causes crashes
-
-(setq-default indicate-empty-lines t
-        indicate-buffer-boundaries 'left)
-
 ;;;;; Dedicated window
 (defadvice pop-to-buffer (before cancel-other-window first)
   (ad-set-arg 1 nil))
@@ -132,16 +92,6 @@
 ;; Press [pause] key in each window you want to "freeze"
 (global-set-key [pause] 'toggle-window-dedicated)
 ;;;;;;;;;;;;; dedicated
-
-;; Notifications
-;; look at erc-track-exclude-types variable
-;; Diminish modeline clutter
-(require 'diminish)
-(diminish 'wrap-region-mode)
-;; (diminish 'aggressive-indent-mode)
-;; (diminish 'highlight-indentation-mode)
-;; (diminish 'yas/minor-mode)
-;; (diminish 'auto-fill-mode) ;; errors!
 
 (defadvice yank-pop (around kill-ring-browse-maybe (arg))
   "If last action was not a yank, run `browse-kill-ring' instead."
@@ -229,11 +179,6 @@ Version 2015-12-02"
   (interactive "*P\nr")
   (sort-regexp-fields reverse "\\w+" "\\&" beg end))
 
-
-(eval-after-load 'edit-server
-    '(add-to-list 'edit-server-url-major-mode-alist
-                  '("inbox\\.google\\." . gmail-message-edit-server-mode)))
-
 ;; org latex export
 (require 'ox-latex)
 (unless (boundp 'org-latex-classes)
@@ -243,7 +188,6 @@ Version 2015-12-02"
               '("article"
                 "\\documentclass{article}"
                 ("\\section{%s}" . "\\section*{%s}"))))
-
 
 (add-to-list 'org-latex-classes
           '("koma-article"
