@@ -159,30 +159,6 @@ Inspired by [[http://sachachua.com/blog/2012/06/literate-programming-emacs-confi
    necessary
    #+END_QUOTE
 
-** Paradox
-   Better package menu.
-
-   #+begin_src emacs-lisp :tangle yes
-     (use-package paradox
-       :ensure t
-       :commands (paradox-list-packages)
-       :config (paradox-enable))
-   #+end_src
-
-** ido
-   Not used much now after helm but make sure it is vertical and has
-   normal navigation.
-
-   #+BEGIN_SRC emacs-lisp
-	  (use-package ido-vertical-mode
-	    :ensure t
-	    :config (progn
-		      (setq ido-vertical-define-keys 'C-n-and-C-p-only)
-		      (setq ido-vertical-show-count t)
-		      (ido-vertical-mode 1)))
-
-   #+END_SRC
-
 ** helm
    Use for a lot of things, buffer swithing, finding files, searching
    for words.
@@ -233,23 +209,6 @@ Inspired by [[http://sachachua.com/blog/2012/06/literate-programming-emacs-confi
         :config
         (progn
           (define-key helm-swoop-map (kbd "M-i") #'helm-multi-swoop-all-from-helm-swoop)))
-    #+end_src
-
-*** Ag for helm
-
-    #+begin_src emacs-lisp :tangle yes
-      (use-package helm-ag
-        :ensure t
-        :commands (helm-ag))
-
-      ;; realtime
-      (use-package helm-ag-r
-        :ensure t
-        :commands (helm-ag-r))
-
-      ;; not sure if needed/used
-      (use-package ag
-        :ensure t)
     #+end_src
 
 *** projectile
@@ -552,21 +511,6 @@ Inspired by [[http://sachachua.com/blog/2012/06/literate-programming-emacs-confi
 
 * Languages
 
-** General
-
-   #+begin_src emacs-lisp :tangle yes
-
-     (use-package flycheck
-       :ensure t)
-
-     (use-package flycheck-pos-tip
-       :ensure t)
-
-     (use-package company
-       :ensure t)
-
-   #+end_src
-
 
 ** Clojure
    [[http://clojure.org/space/showimage/clojure-icon.gif]]
@@ -865,78 +809,6 @@ Inspired by [[http://sachachua.com/blog/2012/06/literate-programming-emacs-confi
 			  ))))
     #+end_src
 
-** Haskell
-   Haskell-mode with Intero gives the best experience. Intero uses Stack.
-
-   #+begin_src emacs-lisp :tangle yes
-     (use-package intero
-       :defer t
-       :hook (haskell-mode . intero-mode)
-       :ensure t)
-
-     (use-package hindent
-       :defer t
-       :hook (haskell-mode . hindent-mode)
-       :ensure t)
-
-     (use-package haskell-mode
-       :defer t
-       :ensure t
-       :config (progn
-                 (add-hook #'haskell-mode-hook
-                           (lambda ()
-                             (flycheck-add-next-checker 'intero
-                                                        '(warning . haskell-hlint))
-                             (highlight-indentation-mode)
-                             (rainbow-identifiers-mode)
-                             )))
-       )
-   #+end_src
-
-** Python
-   [[https://www.python.org/static/community_logos/python-logo-generic.svg]]
-
-   #+begin_src emacs-lisp :tangle yes
-     (use-package python
-       :mode ("\\.py\\'" . python-mode)
-       :ensure t
-       :config
-       (progn ;dont invoke flycheck on temporary buffers for the interpreter
-         (add-hook 'python-mode-hook
-                   (lambda ()
-                     (unless (eq buffer-file-name nil) (flycheck-mode 1))
-                     ;; if tabs make sure they are 4 spaces wide
-                     (set (make-local-variable 'tab-width) 4)
-                     (jedi:setup)
-                     (auto-complete-mode)
-                     (highlight-indentation-mode)
-                     (bind-keys :map python-mode-map
-                                ("<f5>" . flycheck-previous-error)
-                                ("<f6>" . flycheck-next-error)
-                                ("M-/" . hippie-expand)
-                                ("M-RET" . newline))
-                     (font-lock-add-keywords
-                      nil
-                      '(("\\<\\(FIXME\\|TODO\\|BUG\\|XXX\\):" 1 font-lock-warning-face t)))))
-
-        (setq ipython-command "/usr/local/bin/ipython")
-        (setq py-python-command "/usr/local/bin/ipython")))
-
-     (use-package jedi
-       :ensure t
-       :commands (jedi:setup))
-
-     (use-package jedi-direx
-       :ensure t
-       :commands (jedi-direx:setup)
-       :config (jedi-direx:setup))
-   #+end_src
-
-    To get jedi completion with a venv:
-
-:     M-x venv-workon <env>
-:     M-x jedi:stop-server
-
 ** Web
 
    Multi web mode can detect sublanguages inside html and others
@@ -954,26 +826,6 @@ Inspired by [[http://sachachua.com/blog/2012/06/literate-programming-emacs-confi
          (setq mweb-filename-extensions '("php" "htm" "html" "ctp" "phtml" "php4" "php5"))
          (multi-web-global-mode 1)))
    #+end_src
-** Shell
-   Enable flycheck (needs shellcheck installed)
-
-   #+begin_src emacs-lisp
-
-     (add-hook #'sh-mode-hook #'flycheck-mode)
-
-   #+end_src
-** Themes
-
-Doom themes are nice
-
-#+begin_src emacs-lisp :tangle yes
-  (use-package doom-themes
-    :ensure t
-    :config
-    (interactive)
-    (helm-themes--load-theme "doom-dracula"))
-#+end_src
-
 * evil mode
 Config derived from PJ
 
