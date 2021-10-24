@@ -65,7 +65,7 @@
           (system: {
             name = system;
             value = {
-              linux = self.homeConfigurations.chris-3900x.activationPackage;
+              linux = self.homeConfigurations.testConf.activationPackage;
             };
           })
           [ "x86_64-linux" ])
@@ -81,6 +81,7 @@
       );
 
       homeConfigurations = {
+        testConf = mkHomeConfig { username = "test"; };
         chris-3900x = mkHomeConfig {
           username = "chris";
           baseModules = [
