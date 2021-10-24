@@ -81,7 +81,14 @@
       );
 
       homeConfigurations = {
-        testConf = mkHomeConfig { username = "test"; };
+        testConf = homeManagerConfiguration rec {
+          username = "test";
+          system = "x86_64-linux";
+          homeDirectory = "${homePrefix system}/${username}";
+          configuration = {
+            imports = [ ];
+          };
+        };
         chris-3900x = mkHomeConfig {
           username = "chris";
           baseModules = [
