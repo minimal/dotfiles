@@ -19,10 +19,11 @@
        :ni "C-)" #'sp-forward-slurp-sexp
        :ni "C-}" #'sp-forward-barf-sexp
        :ni "C-(" #'sp-backward-slurp-sexp
-       :ni "C-{" #'sp-backward-barf-sexp)
+       :ni "C-{" #'sp-backward-barf-sexp
+       :ni "C-k" #'sp-kill-hybrid-sexp)
       (:map cider-repl-mode-map
-       :n "C-k" #'cider-repl-backward-input
-       :n "C-j" #'cider-repl-forward-input))
+       :n "s-k" #'cider-repl-backward-input
+       :n "s-j" #'cider-repl-forward-input))
 
 (use-package magit-delta
   :hook (magit-mode . magit-delta-mode))
