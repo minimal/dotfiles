@@ -31,6 +31,9 @@ nix-reg-pin-latest-nixpkgs:
 	nix registry remove nixpkgs
 	nix registry pin flake:nixpkgs
 
+nixpkgs-update-flake:
+	nix flake lock --update-input nixpkgs
+
 doom-update-flake:
 	nix flake lock --update-input doom-emacs
 
