@@ -69,10 +69,12 @@
     pipenv
     wakatime
     highlight
+    bat # fast syntax highlight
     httpie
     sourceHighlight
 
     awscli2
+    kubectl
     kafkacat
     neovim
     youtube-dl
@@ -94,7 +96,6 @@
     direnv = {
       enable = true;
       nix-direnv.enable = true;
-      nix-direnv.enableFlakes = true;
     };
     htop = {
       enable = true;

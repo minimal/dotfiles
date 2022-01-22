@@ -20,7 +20,7 @@ in
     EDITOR = "emacsclient --no-wait";
     VISUAL = "emacsclient --no-wait";
     PROJECT_HOME = "${HOME}/code";
-    CONFLUENT_HOME = "${HOME}/Downloads/confluent-6.1.1";
+    CONFLUENT_HOME = "${HOME}/Downloads/confluent-6.2.1";
   };
 
   home.file.".amethyst".source = config.lib.file.mkOutOfStoreSymlink ../config/amethyst;

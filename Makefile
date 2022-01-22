@@ -33,6 +33,7 @@ nix-reg-pin-latest-nixpkgs:
 
 nixpkgs-update-flake:
 	nix flake lock --update-input nixpkgs
+	nix flake lock --update-input home-manager
 
 doom-update-flake:
 	nix flake lock --update-input doom-emacs
