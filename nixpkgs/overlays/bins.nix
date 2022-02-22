@@ -81,19 +81,19 @@ self: super: {
   babashka-bin =
     with super; stdenv.mkDerivation rec {
       name = "babashka-${version}";
-      version = "0.6.2";
+      version = "0.7.5";
       src =
         let
           mac = fetchzip {
-              url = "https://github.com/babashka/babashka/releases/download/v0.6.2/babashka-0.6.2-macos-amd64.tar.gz";
-              sha256 = "l1hvgrYcUzTaC84WyOnMc4VvHBPpox6iW0H3rkzNuiQ=";
+              url = "https://github.com/babashka/babashka/releases/download/v0.7.5/babashka-0.7.5-macos-amd64.tar.gz";
+              sha256 = "bO4UparMVneoiaeVlBYbLfGeBZauzE9sH0Ih1PHT/Xk=";
               name = "babashka";
             };
           sources = {
             "x86_64-darwin" = mac;
             "aarch64-darwin" = mac;
             "x86_64-linux" = fetchzip {
-              url = "https://github.com/babashka/babashka/releases/download/v0.6.2/babashka-0.6.2-linux-amd64.tar.gz";
+              url = "https://github.com/babashka/babashka/releases/download/v0.7.5/babashka-0.7.5-linux-amd64.tar.gz";
               sha256 = "SnSNWTrPFqqiUY3MVX6uCYvayxQYd7s3liIWWbVeVGk=" ;
               name = "babashka";
             };

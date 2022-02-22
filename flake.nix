@@ -104,11 +104,12 @@
             ./nixpkgs/profiles/work.nix
           ];
         };
-        workm1 = mkHomeConfig {
+        FVFG608QQ05Qlocal = mkHomeConfig { # workm1
           system = "aarch64-darwin";
-          username = "cmcdevitt";
+          username = "chris.mcdevitt";
           baseModules = [
             ./nixpkgs/emacs.nix
+            ./nixpkgs/fonts.nix
             ./nixpkgs/profiles/work.nix
           ];
         };

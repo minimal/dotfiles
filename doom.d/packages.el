@@ -53,3 +53,4 @@
 (package! magit-delta)
 (package! wakatime-mode)
 (package! just-mode)
+(package! blamer :recipe (:host github :repo "artawower/blamer.el"))

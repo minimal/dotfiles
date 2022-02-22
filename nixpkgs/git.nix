@@ -108,12 +108,14 @@ in
 
   programs.gh = {
     enable = true;
+    settings = {
     aliases = {
       co = "pr checkout";
       pv = "pr view";
       prs = "pr list -A minimal";
     };
     editor = "code";
-    gitProtocol = "ssh";
+    git_protocol = "ssh";
+    };
   };
 }
