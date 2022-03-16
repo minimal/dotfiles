@@ -67,7 +67,6 @@ in
     };
 
     profileExtra = ''
-      . ${HOME}/.nix-profile/etc/profile.d/nix.sh
 
       if [[ -s ${HOME}/.secrets ]]; then
         source "${HOME}/.secrets"
