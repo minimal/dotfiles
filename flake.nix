@@ -87,14 +87,6 @@
             ./nixpkgs/profiles/personal.nix
           ];
         };
-        C02VJ07FHV2Jlocal = mkHomeConfig {
-          system = "x86_64-darwin";
-          username = "cmcdevitt";
-          baseModules = [
-            ./nixpkgs/emacs.nix
-            ./nixpkgs/profiles/work.nix
-          ];
-        };
         FVFG608QQ05Qlocal = mkHomeConfig { # workm1
           system = "aarch64-darwin";
           username = "chris.mcdevitt";
