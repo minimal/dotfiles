@@ -12,6 +12,7 @@
   home.packages = with pkgs; [
     # pkgs is the set of all packages in the default home.nix implementation
     home-manager
+    nix
 
     # cmdline / system programs
     aspell
@@ -20,6 +21,7 @@
     coreutils
     curl
     delta
+    difftastic
     exa # ls alt
     fd
     findutils
@@ -84,6 +86,7 @@
     prettyping
     fontconfig
     htop
+    btop
     # dhall
     # dhall-json
     # dhall-text
