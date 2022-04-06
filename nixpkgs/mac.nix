@@ -21,6 +21,7 @@ in
     VISUAL = "emacsclient --no-wait";
     PROJECT_HOME = "${HOME}/code";
     CONFLUENT_HOME = "${HOME}/Downloads/confluent-6.2.1";
+    EMACS = "/Applications/Emacs.app/Contents/MacOS/Emacs";
   };
 
   home.file.".amethyst".source = config.lib.file.mkOutOfStoreSymlink ../config/amethyst;
@@ -31,6 +32,10 @@ in
     zsh = {
       shellAliases = {
         mdfindname = "mdfind -name";
+        emacs = "/Applications/Emacs.app/Contents/MacOS/Emacs";
+        emacsclient = "/Applications/Emacs.app/Contents/MacOS/bin/emacsclient";
+        e = "emacsclient --no-wait"; # override for broken zprezto
+
       };
     };
   };

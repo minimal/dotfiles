@@ -19,10 +19,9 @@ in
 {
   home.packages = with pkgs; [
     # emacsMacport
-    myEmacs
     emacsSyncScript
     ripgrep
     fd
     findutils
-  ];
+  ] ++ (if pkgs.stdenv.isDarwin then [ ] else [ myEmacs ]);
 }
