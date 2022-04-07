@@ -14,6 +14,7 @@ in
     tk
     # babashka # broken
     babashka-bin
+    pinentry_mac
   ];
 
   home.sessionVariables = {

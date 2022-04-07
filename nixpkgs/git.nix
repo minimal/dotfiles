@@ -23,10 +23,6 @@ in
     enable = true;
     userName = "Chris McDevitt";
 
-    signing = {
-      key = "3A042C6B67C88936D05AD968288F081B1A54FB2A";
-      signByDefault = false;
-    };
 
     aliases = {
       lol               = "log --oneline --graph --decorate";
@@ -78,7 +74,6 @@ in
 
       commit = {
         template = "~/.config/git/git_commit_msg.txt";
-        gpgsign = false;
       };
 
       github = {
