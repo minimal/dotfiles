@@ -74,7 +74,10 @@ in
 
       path=(${HOME}/bin
             ${HOME}/.local/bin
-            ${HOME}/Downloads/confluent-6.1.1/bin/
+            ${HOME}/.cargo/bin
+            ${HOME}/Downloads/confluent-6.2.1/bin/
+            /opt/homebrew/bin
+            /opt/homebrew/sbin
             $path)
     '';
     # /usr/local/bin gets added at the front after the above so

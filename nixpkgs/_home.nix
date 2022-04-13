@@ -21,7 +21,7 @@
     coreutils
     curl
     delta
-    difftastic
+    # difftastic # using cargo until 0.25 available
     exa # ls alt
     fd
     findutils
@@ -74,6 +74,7 @@
     bat # fast syntax highlight
     httpie
     sourceHighlight
+    cargo
 
     awscli2
     kubectl
