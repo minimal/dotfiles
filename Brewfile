@@ -3,6 +3,7 @@
 # 'brew tap'
 tap "homebrew/cask"
 tap "homebrew/cask-fonts"
+tap "railwaycat/emacsmacport"
 
 brew "terminal-notifier"
 brew "trash"
