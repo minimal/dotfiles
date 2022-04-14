@@ -42,6 +42,7 @@
     pet
     ripgrep
     silver-searcher
+    tealdeer # fast tldr
     tree
     # unrar # slow compile, nonfree
     wget
@@ -50,6 +51,7 @@
     direnv
     nix-prefetch-git
     nixpkgs-fmt
+    alejandra # nix formatter
     pgcli
     poppler_utils # pdftools
     prettyping
