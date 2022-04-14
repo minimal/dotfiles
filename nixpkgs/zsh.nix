@@ -105,11 +105,24 @@ in
       bindkey "^[OA" history-beginning-search-backward
       bindkey "^[OB" history-beginning-search-forward
 
+      function pet-select() {
+        BUFFER=$(pet search --query "$LBUFFER")
+        CURSOR=$#BUFFER
+        zle redisplay
+      }
+      zle -N pet-select
+      stty -ixon
+
       # Fix binds clobbered by zsh-vim-mode
       fzfkb_path=${pkgs.fzf}/share/fzf/key-bindings.zsh
       zvm_after_init_commands+=('[ -f $fzfkb_path ] && source $fzfkb_path'
                                 'bindkey "^[[A" history-beginning-search-backward'
-                                'bindkey "^[[B" history-beginning-search-forward')
+                                'bindkey "^[[B" history-beginning-search-forward'
+                                'bindkey "^O" pet-select')
+
+
+
+
     '';
   };
 
