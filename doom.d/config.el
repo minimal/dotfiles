@@ -25,6 +25,8 @@
        :n "s-k" #'cider-repl-backward-input
        :n "s-j" #'cider-repl-forward-input))
 
+(setq cider-print-fn "puget")
+
 (use-package magit-delta
   :hook (magit-mode . magit-delta-mode))
 
@@ -102,3 +104,11 @@
 
 (map! [mouse-4] [wheel-up])
 (map! [mouse-5] [wheel-down])
+
+(defun native-running? ()
+  (interactive)
+  (if (and (fboundp 'native-comp-available-p)
+           (native-comp-available-p))
+      (message "Native compilation is available")
+    (message "Native complation is *not* available")))
+
