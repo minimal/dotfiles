@@ -72,7 +72,7 @@
           (system: {
             name = system;
             value = {
-              mac = self.homeConfigurations.C02VJ07FHV2Jlocal.activationPackage;
+              mac = self.homeConfigurations.Yuris-MacBook-Airlocal.activationPackage;
             };
           })
           nixpkgs.lib.platforms.darwin)

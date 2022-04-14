@@ -39,9 +39,6 @@ jobs:
       - uses: cachix/cachix-action@v10
         with:
           name: nix-community
-      - uses: cachix/cachix-action@v10
-        with:
-          name: mjlbach
       # - name: Run Flake Checks
       #   if: ${{ matrix.os == 'ubuntu-latest' }}
       #   run: |
