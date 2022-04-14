@@ -49,6 +49,7 @@ in
       pu                = "push --follow-tags";
       permission-reset  = "!git diff -p -R | grep -E \"^(diff|(old|new) mode)\" | git apply";
       sync              = "!git stash && git pull --rebase && git stash pop";
+      dft               = "difftool";
     };
     extraConfig = {
       color = {
@@ -83,11 +84,16 @@ in
       url."git@github.com:".pushInsteadOf = "https://github.com/";
       diff."clojure".xfuncname = "(^\\(.*|\\s*\\(defn.*)";
 
+      diff.tool = "difftastic";
+      difftool.prompt = false;
+      difftool."difftastic".cmd = "difft \"$LOCAL\" \"$REMOTE\"";
+
       pager = {
         diff = "delta";
         log = "delta";
         reflog = "delta";
         show = "delta";
+        difftool = true;
       };
       delta = {
         plus-style = "syntax #012800";

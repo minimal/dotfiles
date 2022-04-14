@@ -21,7 +21,7 @@
     coreutils
     curl
     delta
-    # difftastic # using cargo until 0.25 available
+    difftastic # using cargo until 0.25 available
     exa # ls alt
     fd
     findutils
