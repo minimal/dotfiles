@@ -21,7 +21,7 @@
     coreutils
     curl
     delta
-    difftastic # using cargo until 0.25 available
+    difftastic
     exa # ls alt
     fd
     findutils
@@ -61,7 +61,7 @@
     clojure
     leiningen
     # boot
-    clj-kondo # if fails run `sudo chmod 1777 /tmp`
+    clj-kondo # broken waiting for fix to merge
     # joker
     rlwrap
     shellcheck
