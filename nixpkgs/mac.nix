@@ -35,7 +35,6 @@ in
         mdfindname = "mdfind -name";
         emacs = "/opt/homebrew/opt/emacs-mac/Emacs.app/Contents/MacOS/Emacs";
         emacsclient = "/opt/homebrew/bin/emacsclient";
-        e = "emacsclient --no-wait"; # override for broken zprezto
       };
     };
   };
