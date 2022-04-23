@@ -112,3 +112,11 @@
       (message "Native compilation is available")
     (message "Native complation is *not* available")))
 
+(use-package! tree-sitter
+  :config
+  (cl-pushnew (expand-file-name "~/.tree-sitter") tree-sitter-load-path)
+  (require 'tree-sitter-langs)
+  (global-tree-sitter-mode)
+  (add-hook 'tree-sitter-after-on-hook #'tree-sitter-hl-mode)
+  (add-to-list 'tree-sitter-major-mode-language-alist '(clojure-mode . clojure)))
+
