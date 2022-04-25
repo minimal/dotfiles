@@ -13,3 +13,10 @@ Most packages and dotfiles installed using Nix [flake](flake.nix) with home mana
 `make hm-switch`
 
 Rest installed with brew
+
+## See also
+
+Nix config borrowed heavily from:
+
+- https://github.com/Mic92/dotfiles
+- https://github.com/kclejeune/system 
