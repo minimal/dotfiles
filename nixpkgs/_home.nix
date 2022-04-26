@@ -1,13 +1,10 @@
-{ config, pkgs, ... }:
-
 {
+  config,
+  pkgs,
+  ...
+}: {
   # Let Home Manager install and manage itself.
   programs.home-manager.enable = false;
-
-  # Home Manager needs a bit of information about you and the
-  # paths it should manage.
-  # home.username = builtins.getEnv "USER";
-  # home.homeDirectory = builtins.getEnv "HOME";
 
   home.packages = with pkgs; [
     # pkgs is the set of all packages in the default home.nix implementation

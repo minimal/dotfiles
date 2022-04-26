@@ -1,5 +1,7 @@
-{ lib, stdenv }:
-
+{
+  lib,
+  stdenv,
+}:
 stdenv.mkDerivation {
   pname = "pragmatapro";
   version = "unstable-2021-05-19";
@@ -17,7 +19,7 @@ stdenv.mkDerivation {
   meta = with lib; {
     homepage = "https://www.fsd.it/shop/fonts/pragmatapro/";
     description = "PragmataPro™ is a condensed monospaced font optimized for screen";
-    maintainers = with maintainers; [ minimal ];
+    maintainers = with maintainers; [minimal];
     # license = licenses.unfree;
     platforms = platforms.all;
   };

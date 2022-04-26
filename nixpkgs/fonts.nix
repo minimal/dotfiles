@@ -1,13 +1,17 @@
-{ config, lib, pkgs, ... }:
 {
+  config,
+  lib,
+  pkgs,
+  ...
+}: {
   home.packages = with pkgs; [
     # cardo # not found
     # cormorant # not found
     # hack-nerd-font # not found
     # jetbrains-mono-nerd-font # not found
     # vollk rn # error
-    (pkgs.callPackage ./pkgs/pragmatapro.nix { })
-    (pkgs.callPackage ./pkgs/equity.nix { })
+    (pkgs.callPackage ./pkgs/pragmatapro.nix {})
+    (pkgs.callPackage ./pkgs/equity.nix {})
     # alegreya
     # alegreya-sans
     # anonymousPro

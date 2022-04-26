@@ -1,6 +1,5 @@
 {
   colors = rec {
-
     Black = "2E3440"; #2E3440
 
     DarkGrey = "3B4252"; #3B4252

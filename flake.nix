@@ -14,50 +14,71 @@
     emacs-overlay.url = "github:nix-community/emacs-overlay";
   };
 
-  outputs = { self, nixpkgs, flake-utils, doom-emacs, emacs-overlay, home-manager, devshell }:
-    let
-      inherit (home-manager.lib) homeManagerConfiguration;
-      isDarwin = system: (builtins.elem system nixpkgs.lib.platforms.darwin);
-      M1Overlay = (final: prev:
-        let
-          pkgs_x86_64 = import nixpkgs { localSystem = "x86_64-darwin"; };
-        in
-        {
-          emacsMacport = pkgs_x86_64.emacsMacport;
-          babashka = pkgs_x86_64.babashka;
-          clj-kondo = pkgs_x86_64.clj-kondo;
-          kafkacat = pkgs_x86_64.kafkacat;
-        }
-      );
-      homePrefix = system: if isDarwin system then "/Users" else "/home";
-      mkOverlays = system: [
+  outputs = {
+    self,
+    nixpkgs,
+    flake-utils,
+    doom-emacs,
+    emacs-overlay,
+    home-manager,
+    devshell,
+  }: let
+    inherit (home-manager.lib) homeManagerConfiguration;
+    isDarwin = system: (builtins.elem system nixpkgs.lib.platforms.darwin);
+    M1Overlay = (
+      final: prev: let
+        pkgs_x86_64 = import nixpkgs {localSystem = "x86_64-darwin";};
+      in {
+        emacsMacport = pkgs_x86_64.emacsMacport;
+        babashka = pkgs_x86_64.babashka;
+        clj-kondo = pkgs_x86_64.clj-kondo;
+        kafkacat = pkgs_x86_64.kafkacat;
+      }
+    );
+    homePrefix = system:
+      if isDarwin system
+      then "/Users"
+      else "/home";
+    mkOverlays = system:
+      [
         emacs-overlay.overlay
-        (final: prev: { doomEmacsRevision = doom-emacs.rev; })
-        (final: prev: { home-manager = home-manager.packages.${system}.home-manager; })
+        (final: prev: {doomEmacsRevision = doom-emacs.rev;})
+        (final: prev: {home-manager = home-manager.packages.${system}.home-manager;})
         (import ./nixpkgs/overlays/bins.nix)
         (final: prev: {
           awscli2 = prev.awscli2.overrideAttrs (oldAttrs: {
             doCheck = false;
           });
         })
-      ] ++ (if system == "aarch64-darwin" then [ M1Overlay ] else [ ]);
-      mkHomeConfig =
-        { username
-        , system ? "x86_64-linux"
-        , baseModules ? [ ]
-        , extraModules ? [ ]
-        }:
-        homeManagerConfiguration rec {
-          inherit system username;
-          homeDirectory = "${homePrefix system}/${username}";
-          # extraSpecialArgs = { inherit inputs lib; };
-          configuration = {
-            imports = baseModules ++ extraModules
-              ++ (if isDarwin system then [ ./nixpkgs/mac.nix ] else [ ./nixpkgs/linux.nix ])
-              ++ [{ nixpkgs.overlays = (mkOverlays system); }];
-          };
+      ]
+      ++ (
+        if system == "aarch64-darwin"
+        then [M1Overlay]
+        else []
+      );
+    mkHomeConfig = {
+      username,
+      system ? "x86_64-linux",
+      baseModules ? [],
+      extraModules ? [],
+    }:
+      homeManagerConfiguration rec {
+        inherit system username;
+        homeDirectory = "${homePrefix system}/${username}";
+        # extraSpecialArgs = { inherit inputs lib; };
+        configuration = {
+          imports =
+            baseModules
+            ++ extraModules
+            ++ (
+              if isDarwin system
+              then [./nixpkgs/mac.nix]
+              else [./nixpkgs/linux.nix]
+            )
+            ++ [{nixpkgs.overlays = mkOverlays system;}];
         };
-    in
+      };
+  in
     {
       checks = builtins.listToAttrs (
         (map
@@ -67,8 +88,8 @@
               linux = self.homeConfigurations.chris-3900x.activationPackage;
             };
           })
-          [ "x86_64-linux" ]) ++
-        (map
+          ["x86_64-linux"])
+        ++ (map
           (system: {
             name = system;
             value = {
@@ -86,7 +107,8 @@
             ./nixpkgs/profiles/personal.nix
           ];
         };
-        FVFG608QQ05Qlocal = mkHomeConfig { # workm1
+        FVFG608QQ05Qlocal = mkHomeConfig {
+          # workm1
           system = "aarch64-darwin";
           username = "chris.mcdevitt";
           baseModules = [
@@ -105,30 +127,26 @@
         };
       };
     }
-    //
-    flake-utils.lib.eachDefaultSystem (system:
-      let
-        pkgs = import nixpkgs {
-          inherit system;
-          overlays = (mkOverlays system) ++ [ devshell.overlay ];
-        };
-        nixBin = pkgs.writeShellScriptBin "nix" ''
-          ${pkgs.nixFlakes}/bin/nix --option experimental-features "nix-command flakes" "$@"
+    // flake-utils.lib.eachDefaultSystem (system: let
+      pkgs = import nixpkgs {
+        inherit system;
+        overlays = (mkOverlays system) ++ [devshell.overlay];
+      };
+      nixBin = pkgs.writeShellScriptBin "nix" ''
+        ${pkgs.nixFlakes}/bin/nix --option experimental-features "nix-command flakes" "$@"
+      '';
+
+      devShellOld = pkgs.mkShell {
+        nativeBuildInputs = [pkgs.bashInteractive];
+        packages = with pkgs; [nixUnstable];
+        buildInputs = with pkgs; [pkgs.home-manager];
+        shellHook = ''
+          export NIX_PATH="nixpkgs=${nixpkgs}:home-manager=${home-manager}"
         '';
-
-        devShellOld = pkgs.mkShell {
-          nativeBuildInputs = [ pkgs.bashInteractive ];
-          packages = with pkgs; [ nixUnstable ];
-          buildInputs = with pkgs; [ pkgs.home-manager ];
-          shellHook = ''
-            export NIX_PATH="nixpkgs=${nixpkgs}:home-manager=${home-manager}"
-          '';
-        };
-      in
-      {
-
-        devShell = pkgs.devshell.mkShell {
-          packages = with pkgs; [ pkgs.home-manager ];
-        };
-      });
+      };
+    in {
+      devShell = pkgs.devshell.mkShell {
+        packages = with pkgs; [pkgs.home-manager];
+      };
+    });
 }

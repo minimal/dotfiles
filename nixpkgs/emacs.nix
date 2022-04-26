@@ -1,10 +1,15 @@
-{ config, lib, pkgs, ... }:
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}:
 # most lifted from:
 # https://github.com/Mic92/dotfiles/blob/master/nixpkgs-config/modules/emacs/default.nix
 let
   emacsSyncScript = pkgs.writeScriptBin "doom-sync-git" ''
     #!${pkgs.runtimeShell}
-    export PATH=$PATH:${lib.makeBinPath [ pkgs.git pkgs.sqlite pkgs.unzip ]}
+    export PATH=$PATH:${lib.makeBinPath [pkgs.git pkgs.sqlite pkgs.unzip]}
     if [ ! -d $HOME/.emacs.d/.git ]; then
       mkdir -p $HOME/.emacs.d
       git -C $HOME/.emacs.d init
@@ -15,13 +20,16 @@ let
       YES=1 FORCE=1 $HOME/.emacs.d/bin/doom sync -u || true
     fi
   '';
-  myEmacs = if pkgs.stdenv.isDarwin then pkgs.emacsGcc else pkgs.emacsPgtkGcc;
+  myEmacs =
+    if pkgs.stdenv.isDarwin
+    then pkgs.emacsGcc
+    else pkgs.emacsPgtkGcc;
 
   treeSitterGrammars = pkgs.runCommandLocal "grammars" {} ''
     mkdir -p $out/bin
     ${
       lib.concatStringsSep "\n"
-        (lib.mapAttrsToList (name: src: "ln -s ${src}/parser $out/bin/${name}.so") pkgs.tree-sitter.builtGrammars)
+      (lib.mapAttrsToList (name: src: "ln -s ${src}/parser $out/bin/${name}.so") pkgs.tree-sitter.builtGrammars)
     };
   '';
   # list taken from here: https://github.com/emacs-tree-sitter/tree-sitter-langs/tree/e7b8db7c4006c04a4bc1fc6865ec31f223843192/repos
@@ -65,20 +73,25 @@ let
     "typescript"
   ];
   grammars = lib.getAttrs (map (lang: "tree-sitter-${lang}") langs) pkgs.tree-sitter.builtGrammars;
-in
-{
+in {
   home.file.".tree-sitter".source = pkgs.runCommand "grammars" {} ''
     mkdir -p $out/bin
     ${
       lib.concatStringsSep "\n"
-        (lib.mapAttrsToList (name: src: "name=${name}; ln -s ${src}/parser $out/bin/\${name#tree-sitter-}.so") grammars)
+      (lib.mapAttrsToList (name: src: "name=${name}; ln -s ${src}/parser $out/bin/\${name#tree-sitter-}.so") grammars)
     };
   '';
-  home.packages = with pkgs; [
-    # emacsMacport
-    emacsSyncScript
-    ripgrep
-    fd
-    findutils
-  ] ++ (if pkgs.stdenv.isDarwin then [ ] else [ myEmacs ]);
+  home.packages = with pkgs;
+    [
+      # emacsMacport
+      emacsSyncScript
+      ripgrep
+      fd
+      findutils
+    ]
+    ++ (
+      if pkgs.stdenv.isDarwin
+      then []
+      else [myEmacs]
+    );
 }

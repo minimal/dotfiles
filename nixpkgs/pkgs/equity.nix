@@ -1,5 +1,7 @@
-{ lib, stdenv }:
-
+{
+  lib,
+  stdenv,
+}:
 stdenv.mkDerivation {
   pname = "equity";
   version = "unstable-2021-10";
@@ -17,7 +19,7 @@ stdenv.mkDerivation {
   meta = with lib; {
     homepage = "https://practicaltypography.com/equity.html";
     description = "Serif font";
-    maintainers = with maintainers; [ minimal ];
+    maintainers = with maintainers; [minimal];
     # license = licenses.unfree;
     platforms = platforms.all;
   };

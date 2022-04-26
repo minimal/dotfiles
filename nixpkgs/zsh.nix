@@ -1,8 +1,10 @@
-{ config, pkgs, ... }:
-let
-  HOME = config.home.homeDirectory;
-in
 {
+  config,
+  pkgs,
+  ...
+}: let
+  HOME = config.home.homeDirectory;
+in {
   programs.zsh = {
     enable = true;
     autocd = true;
@@ -63,7 +65,7 @@ in
     zplug = {
       enable = true;
       plugins = [
-        { name = "jeffreytse/zsh-vi-mode"; }
+        {name = "jeffreytse/zsh-vi-mode";}
       ];
     };
 

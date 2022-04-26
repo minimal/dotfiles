@@ -1,8 +1,10 @@
-{ config, pkgs, ... }:
-let
-  HOME = config.home.homeDirectory;
-in
 {
+  config,
+  pkgs,
+  ...
+}: let
+  HOME = config.home.homeDirectory;
+in {
   imports = [
     ./_home.nix
     ./git.nix
@@ -29,7 +31,6 @@ in
   # home.file.".lein".source = ../.lein;
 
   programs = {
-
     zsh = {
       shellAliases = {
         mdfindname = "mdfind -name";
