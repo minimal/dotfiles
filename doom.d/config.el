@@ -120,3 +120,5 @@
   (add-hook 'tree-sitter-after-on-hook #'tree-sitter-hl-mode)
   (add-to-list 'tree-sitter-major-mode-language-alist '(clojure-mode . clojure)))
 
+
+(set-formatter! 'alejandra "alejandra --quiet" :modes '(nix-mode))
