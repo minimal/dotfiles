@@ -21,6 +21,7 @@ in
       rm-git-turds = "rm **/(*.orig|*(LOCAL|BASE|REMOTE|BACKUP)*)";
       switch = "cd ${HOME}/code/dotfiles && make hm-switch";
       nsearch = "nix search nixpkgs";
+      rgclj = "rg --type clojure";
     };
     prezto = {
       enable = true;
@@ -130,8 +131,8 @@ in
     enable = true;
     enableZshIntegration = true;
     defaultOptions = [
-      "--preview 'fzfprev {}'"
-      # "--height 40%"
+      "--preview 'bat -p -f {}'"
+      "--height 50%"
       "--layout=reverse"
       "--border"
       "--inline-info"

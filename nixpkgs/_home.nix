@@ -64,6 +64,7 @@
     leiningen
     # boot
     clj-kondo # broken waiting for fix to merge
+    neil
     clojure-lsp
     # joker
     rlwrap
