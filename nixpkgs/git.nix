@@ -52,6 +52,9 @@ in {
       permission-reset = "!git diff -p -R | grep -E \"^(diff|(old|new) mode)\" | git apply";
       sync = "!git stash && git pull --rebase && git stash pop";
       dft = "difftool";
+      dftc = "difftool --cached";
+      logdft = "!GIT_EXTERNAL_DIFF=difft git log -p --ext-diff";
+      showdft = "!GIT_EXTERNAL_DIFF=difft git show $1 --ext-diff";
     };
     extraConfig = {
       color = {
@@ -63,7 +66,7 @@ in {
         sh = "auto";
       };
       core = {
-        editor = "emacsclient  -nw";
+        editor = "emacsclient -nw";
         excludesfile = "~/.config/git/gitignore";
         attributesfile = "~/.config/git/gitattributes";
       };
@@ -98,9 +101,9 @@ in {
         difftool = true;
       };
       delta = {
-        plus-style = "syntax #012800";
-        minus-style = "syntax #340001";
-        syntax-theme = "Monokai Extended";
+        # plus-style = "syntax #012800";
+        # minus-style = "syntax #340001";
+        syntax-theme = "Dracula";
         navigate = true;
       };
       interactive = {
