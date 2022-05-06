@@ -56,3 +56,4 @@
 (package! blamer :recipe (:host github :repo "artawower/blamer.el"))
 (package! tree-sitter)
 (package! tree-sitter-langs)
+(package! justl)

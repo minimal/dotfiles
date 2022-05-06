@@ -45,7 +45,8 @@
   :custom-face
   (blamer-face ((t :foreground "#7a88cf"
                    :background nil
-                   :height 140
+                   :family "san-serif"
+                   :height 120
                    :italic t)))
   :config
   (global-blamer-mode 1))
@@ -53,8 +54,7 @@
 ;; Some functionality uses this to identify you, e.g. GPG configuration, email
 ;; clients, file templates and snippets.
 (setq user-full-name "Chris McDevitt"
-        user-mail-address "")
-
+      user-mail-address "")
 ;; Doom exposes five (optional) variables for controlling fonts in Doom. Here
 ;; are the three important ones:
 ;;
@@ -122,3 +122,7 @@
 
 
 (set-formatter! 'alejandra "alejandra --quiet" :modes '(nix-mode))
+
+(setq! electric-pair-mode t)
+
+(use-package! justl)
