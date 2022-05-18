@@ -14,8 +14,7 @@ in {
   home.packages = with pkgs; [
     terminal-notifier
     tk
-    # babashka # broken
-    babashka-bin
+    babashka
     pinentry_mac
   ];
 

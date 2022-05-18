@@ -30,9 +30,6 @@
         pkgs_x86_64 = import nixpkgs {localSystem = "x86_64-darwin";};
       in {
         emacsMacport = pkgs_x86_64.emacsMacport;
-        babashka = pkgs_x86_64.babashka;
-        clj-kondo = pkgs_x86_64.clj-kondo;
-        kafkacat = pkgs_x86_64.kafkacat;
         httpie = pkgs_x86_64.httpie;
         # httpie currently broken on m1 due to pyopenssl https://github.com/NixOS/nixpkgs/pull/172397
       }
