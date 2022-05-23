@@ -15,7 +15,7 @@ let
       git -C $HOME/.emacs.d init
     fi
     if [ $(git -C $HOME/.emacs.d rev-parse HEAD) != ${pkgs.doomEmacsRevision} ]; then
-      git -C $HOME/.emacs.d fetch https://github.com/hlissner/doom-emacs.git || true
+      git -C $HOME/.emacs.d fetch https://github.com/doomemacs/doomemacs.git || true
       git -C $HOME/.emacs.d checkout ${pkgs.doomEmacsRevision} || true
       YES=1 FORCE=1 $HOME/.emacs.d/bin/doom sync -u || true
     fi
