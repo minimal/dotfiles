@@ -35,7 +35,6 @@
     jq
     just
     lsd # ls alt
-    nox
     pet
     ripgrep
     silver-searcher
@@ -49,6 +48,7 @@
     nix-prefetch-git
     nixpkgs-fmt
     alejandra # nix formatter
+    shfmt
     pgcli
     poppler_utils # pdftools
     prettyping
@@ -59,11 +59,9 @@
     openjdk
     clojure
     leiningen
-    # boot
-    clj-kondo # broken waiting for fix to merge
+    clj-kondo
     neil
     clojure-lsp
-    # joker
     rlwrap
     shellcheck
     cloc

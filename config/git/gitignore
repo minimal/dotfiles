@@ -65,3 +65,4 @@ tags
 
 .cpcache
 /.dir-locals.el
+/.direnv/
