@@ -69,7 +69,7 @@ let
     "ruby"
     "rust"
     "scala"
-    "swift"
+    # "swift"
     "typescript"
   ];
   grammars = lib.getAttrs (map (lang: "tree-sitter-${lang}") langs) pkgs.tree-sitter.builtGrammars;

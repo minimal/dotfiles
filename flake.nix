@@ -31,7 +31,8 @@
       in {
         emacsMacport = pkgs_x86_64.emacsMacport;
         httpie = pkgs_x86_64.httpie;
-        # httpie currently broken on m1 due to pyopenssl https://github.com/NixOS/nixpkgs/pull/172397
+        awscli2 = pkgs_x86_64.awscli2;
+        # httpie, awcli currently broken on m1 due to pyopenssl https://github.com/NixOS/nixpkgs/pull/172397
       }
     );
     homePrefix = system:
