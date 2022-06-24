@@ -64,6 +64,7 @@
     }:
       homeManagerConfiguration rec {
         inherit system username;
+        pkgs = nixpkgs.legacyPackages.${system};
         homeDirectory = "${homePrefix system}/${username}";
         # extraSpecialArgs = { inherit inputs lib; };
         configuration = {
