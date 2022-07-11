@@ -63,21 +63,25 @@
       extraModules ? [],
     }:
       homeManagerConfiguration rec {
-        inherit system username;
         pkgs = nixpkgs.legacyPackages.${system};
-        homeDirectory = "${homePrefix system}/${username}";
-        # extraSpecialArgs = { inherit inputs lib; };
-        configuration = {
-          imports =
-            baseModules
-            ++ extraModules
-            ++ (
-              if isDarwin system
-              then [./nixpkgs/mac.nix]
-              else [./nixpkgs/linux.nix]
-            )
-            ++ [{nixpkgs.overlays = mkOverlays system;}];
-        };
+        modules =
+          [
+            {
+              home = {
+                inherit username;
+                homeDirectory = "${homePrefix system}/${username}";
+                stateVersion = "22.05";
+              };
+            }
+          ]
+          ++ baseModules
+          ++ extraModules
+          ++ (
+            if isDarwin system
+            then [./nixpkgs/mac.nix]
+            else [./nixpkgs/linux.nix]
+          )
+          ++ [{nixpkgs.overlays = mkOverlays system;}];
       };
   in
     {
