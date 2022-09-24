@@ -1,5 +1,9 @@
 ;;; $DOOMDIR/config.el -*- lexical-binding: t; -*-
 
+(defmacro comment (&rest body)
+  "Comment out one or more s-expressions."
+  nil)
+
 ;; Place your private configuration here! Remember, you do not need to run 'doom
 ;; sync' after modifying this file!
 
@@ -34,6 +38,7 @@
   :config (global-wakatime-mode))
 
 (use-package just-mode)
+(use-package! feature-mode)
 
 (+global-word-wrap-mode +1)
 
