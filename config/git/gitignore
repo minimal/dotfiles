@@ -61,7 +61,8 @@ Thumbs.db
 .lein-failures
 .nrepl-port
 tags
-
+*.lock
+.irb_history
 
 .cpcache
 /.dir-locals.el
