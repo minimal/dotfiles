@@ -4,6 +4,7 @@
   ...
 }: let
   HOME = config.home.homeDirectory;
+  justfile = config.home.file.".config/user.justfile".source;
 in {
   programs.zsh = {
     enable = true;
@@ -24,6 +25,7 @@ in {
       switch = "cd ${HOME}/code/dotfiles && make hm-switch";
       nsearch = "nix search nixpkgs";
       rgclj = "rg --type clojure";
+      j = "just --justfile ${justfile} --working-directory .";
     };
     prezto = {
       enable = true;
@@ -123,8 +125,12 @@ in {
                                 'bindkey "^[[B" history-beginning-search-forward'
                                 'bindkey "^O" pet-select')
 
-
-
+      refresh-just-aliases() {
+        for recipe in `just --justfile ${justfile} --summary`; do
+          alias $recipe="just --justfile ${justfile} --working-directory . $recipe"
+        done
+      }
+      refresh-just-aliases
 
     '';
   };
