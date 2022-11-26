@@ -98,7 +98,7 @@ in {
       [[ ! -f ~/.config/zsh/.p10k.zsh ]] || source ~/.config/zsh/.p10k.zsh
 
       function grep-port {
-          lsof -n -i4TCP:$1 | grep LISTEN
+          lsof -n -i4TCP:$1 | grep LISTEN && nc -z localhost $1
       }
 
       function cdgroot () { cd `git root`; } # relies on a git alias `root = !pwd`
@@ -118,6 +118,7 @@ in {
       zle -N pet-select
       stty -ixon
 
+      ZVM_VI_INSERT_ESCAPE_BINDKEY=jk
       # Fix binds clobbered by zsh-vim-mode
       fzfkb_path=${pkgs.fzf}/share/fzf/key-bindings.zsh
       zvm_after_init_commands+=('[ -f $fzfkb_path ] && source $fzfkb_path'
