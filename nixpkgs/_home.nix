@@ -74,6 +74,7 @@
     httpie
     sourceHighlight
     cargo
+    haskell-language-server
 
     awscli2
     kubectl

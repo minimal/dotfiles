@@ -58,3 +58,4 @@
 (package! tree-sitter-langs)
 (package! justl)
 (package! feature-mode)
+(package! lsp-haskell)
