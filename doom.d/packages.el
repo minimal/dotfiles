@@ -59,3 +59,7 @@
 (package! justl)
 (package! feature-mode)
 (package! lsp-haskell)
+(package! clean-kill-ring
+  :recipe (:type git
+           :host github
+           :repo "NicholasBHubbard/clean-kill-ring.el"))

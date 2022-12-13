@@ -131,3 +131,6 @@
 (setq! electric-pair-mode t)
 
 (use-package! justl)
+
+(use-package! clean-kill-ring
+  :config (clean-kill-ring-mode 1))
