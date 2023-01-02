@@ -5,7 +5,7 @@
 }: {
   # Let Home Manager install and manage itself.
   programs.home-manager.enable = false;
-
+  manual.manpages.enable = false; # https://github.com/nix-community/home-manager/issues/3344
   home.packages = with pkgs; [
     # pkgs is the set of all packages in the default home.nix implementation
     home-manager
@@ -74,7 +74,7 @@
     httpie
     sourceHighlight
     cargo
-    haskell-language-server
+    # haskell-language-server
 
     awscli2
     kubectl
