@@ -125,6 +125,15 @@
   (add-hook 'tree-sitter-after-on-hook #'tree-sitter-hl-mode)
   (add-to-list 'tree-sitter-major-mode-language-alist '(clojure-mode . clojure)))
 
+(after! clojure-mode
+  (put 'defrule 'clojure-doc-string-elt 2)
+
+  (font-lock-add-keywords 'clojure-mode
+                          `((,(concat "(\\(?:" clojure--sym-regexp "/\\)?"
+                                      "\\(defrule\\)\\>")
+                             1 font-lock-keyword-face)))
+  (setq cider-font-lock-dynamically '(macro core function var)))
+
 
 (set-formatter! 'alejandra "alejandra --quiet" :modes '(nix-mode))
 
