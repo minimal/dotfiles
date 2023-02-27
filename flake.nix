@@ -46,11 +46,6 @@
         (final: prev: {doomEmacsRevision = doom-emacs.rev;})
         (final: prev: {home-manager = home-manager.packages.${system}.home-manager;})
         (import ./nixpkgs/overlays/bins.nix)
-        (final: prev: {
-          awscli2 = prev.awscli2.overrideAttrs (oldAttrs: {
-            doCheck = false;
-          });
-        })
       ]
       ++ (
         if system == "aarch64-darwin"
