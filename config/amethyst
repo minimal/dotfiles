@@ -161,6 +161,6 @@
     },
 
     "MISC": "----------------------",
-    "floating": ["wish"],
+    "floating": ["wish", "com.catonetworks.mac.CatoClient", "com.audient.evo"],
     "ignore-menu-bar": "false"
 }
