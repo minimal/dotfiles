@@ -28,17 +28,11 @@ jobs:
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-      - uses: actions/checkout@v2.4.0
+      - uses: actions/checkout@v3
         with:
           # Shallow clones won't work
           fetch-depth: 0
-      - uses: cachix/install-nix-action@v17
-        with:
-          extra_nix_config: |
-            experimental-features = nix-command flakes
-      - uses: cachix/cachix-action@v10
-        with:
-          name: nix-community
+      - uses: cachix/install-nix-action@v22
       # - name: Run Flake Checks
       #   if: ${{ matrix.os == 'ubuntu-latest' }}
       #   run: |
