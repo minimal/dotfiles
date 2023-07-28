@@ -35,6 +35,9 @@ nixpkgs-update-flake:
 	nix flake lock --update-input nixpkgs
 	nix flake lock --update-input home-manager
 
+nix-fix-zshrc:
+	./bin/nix-fix-zshrc
+
 doom-update-flake:
 	nix flake lock --update-input doom-emacs
 

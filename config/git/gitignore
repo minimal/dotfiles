@@ -60,6 +60,7 @@ Thumbs.db
 
 .lein-failures
 .nrepl-port
+.rebl
 tags
 .irb_history
 
