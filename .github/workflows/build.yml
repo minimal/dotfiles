@@ -33,11 +33,11 @@ jobs:
           # Shallow clones won't work
           fetch-depth: 0
       - uses: cachix/install-nix-action@v22
-      # - name: Run Flake Checks
+      - name: Run Flake Checks
       #   if: ${{ matrix.os == 'ubuntu-latest' }}
-      #   run: |
-      #     nix flake check -v --show-trace --no-build
-      #   timeout-minutes: 240
+        run: |
+          nix flake check
+        timeout-minutes: 30
       - name: Run Flake show
         run: |
           nix flake show
