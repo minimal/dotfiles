@@ -19,7 +19,7 @@
     curl
     delta
     difftastic
-    exa # ls alt
+    eza # exa fork
     fd
     findutils
     fpp
