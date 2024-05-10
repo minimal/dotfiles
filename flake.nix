@@ -118,7 +118,7 @@
           system = "aarch64-darwin";
           username = "chris";
           baseModules = [
-            ./nixpkgs/fonts.nix
+            # ./nixpkgs/fonts.nix
             ./nixpkgs/profiles/personal.nix
           ];
         };
