@@ -44,6 +44,7 @@
     wget
     xz
 
+    # devenv
     direnv
     nix-prefetch-git
     nixpkgs-fmt
@@ -79,9 +80,12 @@
     awscli2
     kubectl
     kubectx
-    kafkacat
+    kubelogin-oidc
+    krew
+
+    kcat
     neovim
-    youtube-dl
+    yt-dlp
     gnupg
     #pinentry
     #sshrc
