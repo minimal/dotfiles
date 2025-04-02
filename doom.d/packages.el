@@ -63,3 +63,14 @@
   :recipe (:type git
            :host github
            :repo "NicholasBHubbard/clean-kill-ring.el"))
+(package! clean-kill-ring
+  :recipe (:type git
+           :host github
+           :repo "davep/boxquote.el"))
+(package! editorconfig)
+
+(package! copilot
+  :recipe (:host github :repo "copilot-emacs/copilot.el" :files ("*.el" "dist")))
+
+(package! difftastic)
+(package! pcre2el)

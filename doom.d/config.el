@@ -13,6 +13,7 @@
   (remove-hook 'org-load-hook #'+org-init-keybinds-h)
   (doom-init-ui-hook . spacemacs/home))
 
+(setq-default evil-escape-key-sequence "jk")
 (map! :leader :desc "M-x" "SPC" #'execute-extended-command
       (:prefix-map ("g" . "git")
        (:when (featurep! :tools magit)
@@ -38,7 +39,13 @@
   :config (global-wakatime-mode))
 
 (use-package just-mode)
-(use-package! feature-mode)
+(use-package! feature-mode
+  :config
+  (map! (:localleader
+         (:map feature-mode-map
+               "s"  #'de-run-scenario-test-at-point
+               "f"  #'de-run-feature))))
+
 
 (+global-word-wrap-mode +1)
 
@@ -54,7 +61,7 @@
                    :height 120
                    :italic t)))
   :config
-  (global-blamer-mode 1))
+  (global-blamer-mode 0))
 
 ;; Some functionality uses this to identify you, e.g. GPG configuration, email
 ;; clients, file templates and snippets.
@@ -254,3 +261,6 @@
 
 (use-package! clean-kill-ring
   :config (clean-kill-ring-mode 1))
+
+(use-package! pcre2el)
+(use-package! rxt)
