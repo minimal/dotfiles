@@ -1,0 +1,41 @@
+#+title: Doom Tips
+
+* emacs / doom key bindings to remember
+C-n evil-complete-next
+C-p evil-complete-previous
+C-x C-n comp
+< > dedent indent region
+SPC * search project with text under cursor
+SPC c j (consult-lsp-symbols) which will search only valid LSP vars/symbols on whole project
+SPC s d Search dir
+C-; embark dwiw
+Search/replace in project: SPC /, then C-c C-e to make the results buffer editable, then search and replace "locally"/there :%s/foo/bar
+SPC o p treemacs-toggle
+d ] ) delete to evil-next-close-paren
+SPC g f f magit-find-file good for getting the working tree file from a diff view
+SPC ' (resume last search) runs vertico-repeat
+
+SPC g o o - browse-at-remote
+yss"   surrounds a line with quotes.
+ds"    deletes the closest surrounding quotes.
+cs'"   change single to double quotes
+     See also this tutorial for more examples of what you can do with this plugin. http://www.catonmat.net/blog/vim-plugins-surround-vim/
+     https://github.com/emacs-evil/evil-surround
+
+SPC r y   consult-yank-from-kill-ring
+== evil-indent -- set to correct indentation
+=  evil-indent (region)
+
+Registers:
+SPC #  consult-register
+:reg   view registers (same as consult-register)
+"      evil-use-register
+"ayw   yank word to register a
+"ap    paste from register a
+"0p.   paste from register 0. Normal yanks go in reg 0. https://emacs.stackexchange.com/questions/12279/evil-is-there-a-default-register-that-does-not-get-overwritten-by-later-yanks-t
+SPC i r  paste from evil register
+
+, e E  cider insert last sexepr in repl
+
+C-o better-jumper-jump-backward
+C-i better-jumper-jump-forward
