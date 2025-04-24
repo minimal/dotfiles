@@ -39,7 +39,7 @@
         ]
       },
       "locked": {
-        "lastModified": 1744015200, # Approx timestamp for 2025-04-07
+        "lastModified": 1744015200,
         "narHash": "sha256-eccCwW7GQVSk/WOCxt5izY5VdVknheI3oAXa0Xg9k9U=",
         "owner": "slotThe",
         "repo": "emacs-lsp-booster-flake",
