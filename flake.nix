@@ -5,6 +5,12 @@
     flake-utils.url = "github:numtide/flake-utils";
     devshell.url = "github:numtide/devshell";
 
+    # Add the emacs-lsp-booster input
+    emacs-lsp-booster = {
+      url = "github:slotThe/emacs-lsp-booster-flake";
+      # Ensure it uses the same nixpkgs as the rest of your flake
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
     home-manager = {
       url = "github:nix-community/home-manager/master";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -21,6 +27,7 @@
     doom-emacs,
     emacs-overlay,
     home-manager,
+    emacs-lsp-booster, # Pass the new input to outputs
     devshell,
   }: let
     inherit (home-manager.lib) homeManagerConfiguration;
@@ -39,6 +46,7 @@
     mkOverlays = system:
       [
         emacs-overlay.overlay
+        emacs-lsp-booster.overlays.default # Add the booster overlay
         (final: prev: {doomEmacsRevision = doom-emacs.rev;})
         (final: prev: {home-manager = home-manager.packages.${system}.home-manager;})
         (import ./nixpkgs/overlays/bins.nix)

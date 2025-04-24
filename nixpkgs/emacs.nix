@@ -85,6 +85,7 @@ in {
     [
       # emacsMacport
       emacsSyncScript
+      emacs-lsp-booster # Add the booster package
       ripgrep
       fd
       findutils
