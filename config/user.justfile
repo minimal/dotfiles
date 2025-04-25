@@ -29,7 +29,7 @@ kafka-delete-topic topic:
     kafka-topics --bootstrap-server {{ broker }} --delete --topic {{ topic }}
 
 elgato-base payload:
-    http PUT http://192.168.0.21:9123/elgato/lights  <<< '{"numberOfLights":1,"lights":[{{ payload }}]}'
+    /Users/chris.mcdevitt/.nix-profile/bin/http PUT http://192.168.0.38:9123/elgato/lights  <<< '{"numberOfLights":1,"lights":[{{ payload }}]}'
 
 elgato-on: (elgato-base '{"on":1}')
 

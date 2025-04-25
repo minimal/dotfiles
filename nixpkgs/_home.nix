@@ -75,9 +75,11 @@
     httpie
     sourceHighlight
     cargo
-    # haskell-language-server
+    nodejs
+    # haskell-language-server # started trying to compile ormolu and failing
 
     awscli2
+
     kubectl
     kubectx
     kubelogin-oidc

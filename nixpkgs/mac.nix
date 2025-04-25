@@ -22,7 +22,6 @@ in {
     EDITOR = "emacsclient --no-wait";
     VISUAL = "emacsclient --no-wait";
     PROJECT_HOME = "${HOME}/code";
-    CONFLUENT_HOME = "${HOME}/Downloads/confluent-6.2.1";
     EMACS = "/opt/homebrew/opt/emacs-mac/Emacs.app/Contents/MacOS/Emacs";
   };
 

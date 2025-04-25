@@ -10,7 +10,7 @@ in {
     enable = true;
     autocd = true;
     dotDir = ".config/zsh";
-    enableAutosuggestions = true;
+    autosuggestion.enable = true;
     enableCompletion = true;
     history.path = "${HOME}/.zhistory";
     shellAliases = {
@@ -26,6 +26,7 @@ in {
       nsearch = "nix search nixpkgs";
       rgclj = "rg --type clojure";
       j = "just --justfile ${justfile} --working-directory .";
+      assume = "source /opt/homebrew/bin/assume";
     };
     prezto = {
       enable = true;
@@ -80,7 +81,8 @@ in {
       path=(${HOME}/bin
             ${HOME}/.local/bin
             ${HOME}/.cargo/bin
-            ${HOME}/Downloads/confluent-6.2.1/bin/
+            ${HOME}/.emacs.d/bin
+            ${HOME}/.krew/bin
             /opt/homebrew/bin
             /opt/homebrew/sbin
             $path)
