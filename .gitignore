@@ -35,3 +35,4 @@
 
 home.nix
 /.direnv/
+/doom.d/custom.el

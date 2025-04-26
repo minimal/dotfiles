@@ -18,6 +18,7 @@ g w evil-fill
 
 SPC g o o - browse-at-remote
 yss"   surrounds a line with quotes.
+ysiw"  surrounds the word with quotes
 ds"    deletes the closest surrounding quotes.
 cs'"   change single to double quotes
      See also this tutorial for more examples of what you can do with this plugin. http://www.catonmat.net/blog/vim-plugins-surround-vim/
