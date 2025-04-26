@@ -132,19 +132,7 @@
     // flake-utils.lib.eachDefaultSystem (system: let
       pkgs = import nixpkgs {
         inherit system;
-        overlays = (mkOverlays system); # Remove devshell.overlay here
-      };
-      nixBin = pkgs.writeShellScriptBin "nix" ''
-        ${pkgs.nixFlakes}/bin/nix --option experimental-features "nix-command flakes" "$@"
-      '';
-
-      devShellOld = pkgs.mkShell {
-        nativeBuildInputs = [pkgs.bashInteractive];
-        packages = with pkgs; [nixUnstable];
-        buildInputs = with pkgs; [pkgs.home-manager];
-        shellHook = ''
-          export NIX_PATH="nixpkgs=${nixpkgs}:home-manager=${home-manager}"
-        '';
+        overlays = mkOverlays system; # Remove devshell.overlay here
       };
     in {
       # Use devshell's own mkShell function, accessed directly from the input
