@@ -311,3 +311,29 @@ Use `set-region-read-only' to set this property."
         ("S" "Difftastic show" difftastic-magit-show)])))
 (use-package! pcre2el)
 (use-package! rxt)
+(use-package! epoch-view
+  :defer t
+  :config
+  (defun epoch-view--render-time (text)
+    "Render the time portion of an epoch match from TEXT.
+     Override to work with ms timestamps."
+    (let ((epoch-time (/ (car (read-from-string text)) 1000.0)))
+      (format-time-string
+       epoch-view-time-format
+       (seconds-to-time epoch-time))))
+
+  (defun epoch-view--render (text)
+    "Override `epoch-view--render' to avoid showing non-decoded text"
+    (epoch-view--render-time text))
+
+  (defun epoch-view-render ()
+    "Override `epoch-view-render' to set a different face"
+    (let ((text (match-string-no-properties 0)))
+      `(face bold
+        display ,(epoch-view--render text)))))
+
+;; defvar doesn't work from :config ?
+(defvar epoch-view-font-lock-keywords
+  '(("\\<[0-9]\\{13\\}\\>"
+     (0 (epoch-view-render))))
+  "Font-lock keywords of epoch timestamps.")
