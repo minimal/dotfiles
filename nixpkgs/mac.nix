@@ -16,6 +16,7 @@ in {
     tk
     babashka
     pinentry_mac
+    granted
   ];
 
   home.sessionVariables = {
@@ -23,6 +24,7 @@ in {
     VISUAL = "emacsclient --no-wait";
     PROJECT_HOME = "${HOME}/code";
     EMACS = "/opt/homebrew/opt/emacs-mac/Emacs.app/Contents/MacOS/Emacs";
+    GRANTED_ALIAS_CONFIGURED = "true";
   };
 
   home.file.".amethyst".source = config.lib.file.mkOutOfStoreSymlink ../config/amethyst;
