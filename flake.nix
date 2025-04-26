@@ -132,11 +132,11 @@
     // flake-utils.lib.eachDefaultSystem (system: let
       pkgs = import nixpkgs {
         inherit system;
-        overlays = mkOverlays system; # Remove devshell.overlay here
+        overlays = mkOverlays system ++ [devshell.overlays.default];
       };
     in {
       # Use devshell's own mkShell function, accessed directly from the input
-      devShell = devshell.legacyPackages.${system}.mkShell {
+      devShells.default = pkgs.devshell.mkShell {
         packages = [pkgs.home-manager]; # Add packages directly here
       };
     });
