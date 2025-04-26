@@ -14,6 +14,7 @@ SPC o p treemacs-toggle
 d ] ) delete to evil-next-close-paren
 SPC g f f magit-find-file good for getting the working tree file from a diff view
 SPC ' (resume last search) runs vertico-repeat
+g w evil-fill
 
 SPC g o o - browse-at-remote
 yss"   surrounds a line with quotes.
@@ -39,3 +40,13 @@ SPC i r  paste from evil register
 
 C-o better-jumper-jump-backward
 C-i better-jumper-jump-forward
+
+
+Diff regions:
+ediff-regions-linewise
+ediff-regions-wordwise
+These commands "run Ediff on a pair of regions in specified buffers".
+
+They prompt you first to specify which buffer(s) the regions come from, and then
+to mark and/or confirm the region to use in each of those buffers in turn, and
+then finally the ediff session is started to compare the two.
