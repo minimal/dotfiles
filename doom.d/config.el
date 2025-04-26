@@ -261,6 +261,53 @@
 
 (use-package! clean-kill-ring
   :config (clean-kill-ring-mode 1))
+(use-package! boxquote)
+(comment
+ (use-package! editorconfig
+   :config
+   (editorconfig-mode 1)))
 
+
+;; accept completion from copilot and fallback to company
+(use-package! copilot
+  :hook (prog-mode . copilot-mode)
+  :bind (:map copilot-completion-map
+              ("<tab>" . 'copilot-accept-completion)
+              ("TAB" . 'copilot-accept-completion)
+              ("C-TAB" . 'copilot-accept-completion-by-word)
+              ("C-<tab>" . 'copilot-accept-completion-by-word)))
+
+(setq copilot-node-executable "/Users/chris.mcdevitt/.nix-profile/bin/node")
+
+(defun set-region-read-only (begin end)
+  "Sets the read-only text property on the marked region.
+
+Use `set-region-writeable' to remove this property."
+  ;; See https://stackoverflow.com/questions/7410125
+  (interactive "r")
+  (with-silent-modifications
+    (put-text-property begin end 'read-only t)))
+
+(defun set-region-writeable (begin end)
+  "Removes the read-only text property from the marked region.
+
+Use `set-region-read-only' to set this property."
+  ;; See https://stackoverflow.com/questions/7410125
+  (interactive "r")
+  (with-silent-modifications
+    (remove-text-properties begin end '(read-only t))))
+(setq! copilot-indent-offset-warning-disable t)
+
+
+(use-package! difftastic
+  ;; :demand t
+  :bind (:map magit-blame-read-only-mode-map
+              ("D" . difftastic-magit-show)
+              ("S" . difftastic-magit-show))
+  :config
+  (eval-after-load 'magit-diff
+    '(transient-append-suffix 'magit-diff '(-1 -1)
+       [("D" "Difftastic diff (dwim)" difftastic-magit-diff)
+        ("S" "Difftastic show" difftastic-magit-show)])))
 (use-package! pcre2el)
 (use-package! rxt)
