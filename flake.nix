@@ -17,7 +17,6 @@
     };
     doom-emacs.url = "github:doomemacs/doomemacs/master";
     doom-emacs.flake = false;
-    emacs-overlay.url = "github:nix-community/emacs-overlay";
   };
 
   outputs = {
@@ -25,7 +24,6 @@
     nixpkgs,
     flake-utils,
     doom-emacs,
-    emacs-overlay,
     home-manager,
     emacs-lsp-booster, # Pass the new input to outputs
     devshell,
@@ -45,7 +43,6 @@
       else "/home";
     mkOverlays = system:
       [
-        emacs-overlay.overlay
         emacs-lsp-booster.overlays.default # Add the booster overlay
         (final: prev: {doomEmacsRevision = doom-emacs.rev;})
         (final: prev: {home-manager = home-manager.packages.${system}.home-manager;})
