@@ -74,3 +74,4 @@
 
 (package! difftastic)
 (package! pcre2el)
+(package! epoch-view)
