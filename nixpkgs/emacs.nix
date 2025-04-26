@@ -95,4 +95,7 @@ in {
       then []
       else [myEmacs]
     );
+  home.sessionVariables = {
+    LSP_USE_PLISTS = "true";
+  };
 }
