@@ -150,8 +150,8 @@
         '';
       };
     in {
-      # Use devshell's own mkShell function
-      devShell = pkgs.devshell.mkShell {
+      # Use devshell's own mkShell function, accessed directly from the input
+      devShell = devshell.legacyPackages.${system}.mkShell {
         packages = [pkgs.home-manager]; # Add packages directly here
       };
     });
