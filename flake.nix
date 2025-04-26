@@ -135,7 +135,7 @@
     // flake-utils.lib.eachDefaultSystem (system: let
       pkgs = import nixpkgs {
         inherit system;
-        overlays = (mkOverlays system) ++ [devshell.overlay];
+        overlays = (mkOverlays system); # Remove devshell.overlay here
       };
       nixBin = pkgs.writeShellScriptBin "nix" ''
         ${pkgs.nixFlakes}/bin/nix --option experimental-features "nix-command flakes" "$@"
@@ -150,8 +150,9 @@
         '';
       };
     in {
+      # Use devshell's own mkShell function
       devShell = pkgs.devshell.mkShell {
-        packages = with pkgs; [pkgs.home-manager];
+        packages = [pkgs.home-manager]; # Add packages directly here
       };
     });
 }
