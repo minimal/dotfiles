@@ -10,7 +10,8 @@
   [["-t" "--toggle" "Toggle light on/off"]
    ["-b" "--brightness VALUE" "Change brightness by VALUE (delta)" :parse-fn #(Integer/parseInt %)]
    ["-s" "--set-brightness VALUE" "Set absolute brightness" :parse-fn #(Integer/parseInt %)]
-   ["-c" "--color-temp VALUE" "Change color temperature by VALUE" :parse-fn #(Integer/parseInt %)]
+   ["-c" "--color-temp VALUE" "Change color temperature by VALUE (delta)" :parse-fn #(Integer/parseInt %)]
+   ["-T" "--set-temperature VALUE" "Set absolute color temperature (100-400)" :parse-fn #(Integer/parseInt %)]
    ["-h" "--help" "Show help message"]])
 
 (defn fetch-lights []
@@ -71,6 +72,18 @@
           (println "Error changing temperature:" (.getMessage e)))))
     (println "Failed to fetch light status.")))
 
+(defn set-temperature [value]
+  ;; Note: Using range 100-400 based on existing change-temperature function.
+  ;; Standard Elgato range might differ (e.g., 143-344).
+  (let [new-temperature (max 100 (min 400 value))
+        payload (json/generate-string {"numberOfLights" 1
+                                       "lights"          [{"temperature" new-temperature}]})]
+    (try
+      (http/put url {:body payload :headers {"Content-Type" "application/json"}})
+      (println (str "Temperature set to " new-temperature))
+      (catch Exception e
+        (println "Error setting temperature:" (.getMessage e))))))
+
 (defn print-help []
   (println "Usage: script [options]")
   (println "")
@@ -85,4 +98,5 @@
       (when (:toggle options) (toggle-light))
       (when (:brightness options) (change-brightness (:brightness options)))
       (when (:set-brightness options) (set-brightness (:set-brightness options)))
-      (when (:color-temp options) (change-temperature (:color-temp options))))))
+      (when (:color-temp options) (change-temperature (:color-temp options)))
+      (when (:set-temperature options) (set-temperature (:set-temperature options))))))
