@@ -254,3 +254,6 @@
       (:server options) (start-server (:port options))
       (empty? options) (print-help) ; Default to help if no options are provided
       :else (client-mode options))))
+
+(when (= *file* (System/getProperty "babashka.file"))
+  (apply -main *command-line-args*))
