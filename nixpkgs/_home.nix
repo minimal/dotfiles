@@ -121,6 +121,7 @@
   home.file."bin/fzfprev".source = ../bin/fzfprev;
   home.file."bin/qfind".source = ../bin/fzfprev;
   home.file."bin/cmd_exists".source = ../bin/cmd_exists;
+  home.file."bin/elgato".source = config.lib.file.mkOutOfStoreSymlink "${config.home.homeDirectory}/code/dotfiles/bin/elgato";
   home.file.".config/nix/nix.conf".source = config.lib.file.mkOutOfStoreSymlink "${config.home.homeDirectory}/code/dotfiles/config/nix/nix.conf";
   home.file.".config/user.justfile".source = config.lib.file.mkOutOfStoreSymlink "${config.home.homeDirectory}/code/dotfiles/config/user.justfile";
 

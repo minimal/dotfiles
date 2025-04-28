@@ -1,0 +1,88 @@
+#!/usr/bin/env bb
+
+(require '[babashka.http-client :as http]
+         '[cheshire.core :as json]
+         '[clojure.tools.cli :refer [parse-opts]])
+
+(def url "http://192.168.0.38:9123/elgato/lights")
+
+(def cli-options
+  [["-t" "--toggle" "Toggle light on/off"]
+   ["-b" "--brightness VALUE" "Change brightness by VALUE (delta)" :parse-fn #(Integer/parseInt %)]
+   ["-s" "--set-brightness VALUE" "Set absolute brightness" :parse-fn #(Integer/parseInt %)]
+   ["-c" "--color-temp VALUE" "Change color temperature by VALUE" :parse-fn #(Integer/parseInt %)]
+   ["-h" "--help" "Show help message"]])
+
+(defn fetch-lights []
+  (try
+    (let [response (http/get url)
+          body (json/parse-string (:body response) true)
+          lights (:lights body)]
+      (first lights))
+    (catch Exception e
+      (println "Error fetching lights:" (.getMessage e)))))
+
+(defn toggle-light []
+  (if-let [light (fetch-lights)]
+    (let [current-state (:on light)
+          new-state (if (= current-state 1) 0 1)
+          payload (json/generate-string {"numberOfLights" 1
+                                         "lights"          [{"on" new-state}]})]
+      (try
+        (http/put url {:body payload :headers {"Content-Type" "application/json"}})
+        (println (str "Light toggled " (if (= new-state 1) "on" "off")))
+        (catch Exception e
+          (println "Error toggling light:" (.getMessage e)))))
+    (println "Failed to fetch light status.")))
+
+(defn change-brightness [delta]
+  (if-let [light (fetch-lights)]
+    (let [current-brightness (:brightness light)
+          new-brightness (max 0 (min 100 (+ current-brightness delta)))
+          payload (json/generate-string {"numberOfLights" 1
+                                         "lights"          [{"brightness" new-brightness}]})]
+      (try
+        (http/put url {:body payload :headers {"Content-Type" "application/json"}})
+        (println (str "Brightness changed to " new-brightness))
+        (catch Exception e
+          (println "Error changing brightness:" (.getMessage e)))))
+    (println "Failed to fetch light status.")))
+
+(defn set-brightness [value]
+  (let [new-brightness (max 0 (min 100 value))
+        payload (json/generate-string {"numberOfLights" 1
+                                       "lights"          [{"brightness" new-brightness}]})]
+    (try
+      (http/put url {:body payload :headers {"Content-Type" "application/json"}})
+      (println (str "Brightness set to " new-brightness))
+      (catch Exception e
+        (println "Error setting brightness:" (.getMessage e))))))
+
+(defn change-temperature [delta]
+  (if-let [light (fetch-lights)]
+    (let [current-temperature (:temperature light)
+          new-temperature (max 100 (min 400 (+ current-temperature delta)))
+          payload (json/generate-string {"numberOfLights" 1
+                                         "lights"          [{"temperature" new-temperature}]})]
+      (try
+        (http/put url {:body payload :headers {"Content-Type" "application/json"}})
+        (println (str "Temperature changed to " new-temperature))
+        (catch Exception e
+          (println "Error changing temperature:" (.getMessage e)))))
+    (println "Failed to fetch light status.")))
+
+(defn print-help []
+  (println "Usage: script [options]")
+  (println "")
+  (println "Options:")
+  (doseq [[opt long desc] cli-options]
+    (println (format "  %-25s %s" (str opt ", " long) desc))))
+
+(let [{:keys [options]} (parse-opts *command-line-args* cli-options)]
+  (if (or (:help options) (empty? options))
+    (print-help)
+    (do
+      (when (:toggle options) (toggle-light))
+      (when (:brightness options) (change-brightness (:brightness options)))
+      (when (:set-brightness options) (set-brightness (:set-brightness options)))
+      (when (:color-temp options) (change-temperature (:color-temp options))))))
