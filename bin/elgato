@@ -6,12 +6,18 @@
 
 (def url "http://192.168.0.38:9123/elgato/lights")
 
+(defn kelvin->mired [k]
+  (int (/ 1000000.0 k)))
+
+(defn mired->kelvin [m]
+  (int (/ 1000000.0 m)))
+
 (def cli-options
   [["-t" "--toggle" "Toggle light on/off"]
    ["-b" "--brightness VALUE" "Change brightness by VALUE (delta)" :parse-fn #(Integer/parseInt %)]
    ["-s" "--set-brightness VALUE" "Set absolute brightness" :parse-fn #(Integer/parseInt %)]
    ["-c" "--color-temp VALUE" "Change color temperature by VALUE (delta)" :parse-fn #(Integer/parseInt %)]
-   ["-T" "--set-temperature VALUE" "Set absolute color temperature (143-344 Mired)" :parse-fn #(Integer/parseInt %)]
+   ["-T" "--set-temperature VALUE" "Set absolute color temperature (2900-7000 Kelvin)" :parse-fn #(Integer/parseInt %)]
    ["-h" "--help" "Show help message"]])
 
 (defn fetch-lights []
@@ -72,14 +78,15 @@
           (println "Error changing temperature:" (.getMessage e)))))
     (println "Failed to fetch light status.")))
 
-(defn set-temperature [value]
-  ;; Use correct Mired range 143 (7000K) - 344 (2900K)
-  (let [new-temperature (max 143 (min 344 value))
+(defn set-temperature [kelvin-value]
+  ;; Accept Kelvin (2900K-7000K), convert to Mired (344-143) for API
+  (let [clamped-kelvin (max 2900 (min 7000 kelvin-value))
+        mired-value (kelvin->mired clamped-kelvin)
         payload (json/generate-string {"numberOfLights" 1
-                                       "lights"          [{"temperature" new-temperature}]})]
+                                       "lights"          [{"temperature" mired-value}]})]
     (try
       (http/put url {:body payload :headers {"Content-Type" "application/json"}})
-      (println (str "Temperature set to " new-temperature))
+      (println (str "Temperature set to " clamped-kelvin " K (" mired-value " Mired)"))
       (catch Exception e
         (println "Error setting temperature:" (.getMessage e))))))
 
