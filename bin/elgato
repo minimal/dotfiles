@@ -62,6 +62,7 @@
     (try
       (http/put url {:body payload :headers {"Content-Type" "application/json"}})
       (println (str "Brightness set to " new-brightness))
+      (spit "/tmp/foomoo" (str value))
       (catch Exception e
         (println "Error setting brightness:" (.getMessage e))))))
 
