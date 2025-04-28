@@ -49,3 +49,6 @@ doom-trash-packages:
 
 git-submodules:
     git submodule update --init
+
+brew-bundle:
+    brew bundle

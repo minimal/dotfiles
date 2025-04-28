@@ -1,7 +1,6 @@
 #!/usr/bin/env ruby
 
 # 'brew tap'
-tap "homebrew/cask"
 tap "homebrew/cask-fonts"
 tap "railwaycat/emacsmacport"
 
@@ -32,3 +31,6 @@ cask "font-monoid"
 # cask "font-source-sans-pro"
 # cask "font-source-serif-pro"
 cask "font-vollkorn"
+
+
+brew "emacs-mac", args: ["with-native-comp", "with-tree-sitter", "with-imagemagick", "with-imagemagick", "with-librsvg", "with-glib", "with-libxml2"]
