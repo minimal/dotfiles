@@ -11,7 +11,7 @@
    ["-b" "--brightness VALUE" "Change brightness by VALUE (delta)" :parse-fn #(Integer/parseInt %)]
    ["-s" "--set-brightness VALUE" "Set absolute brightness" :parse-fn #(Integer/parseInt %)]
    ["-c" "--color-temp VALUE" "Change color temperature by VALUE (delta)" :parse-fn #(Integer/parseInt %)]
-   ["-T" "--set-temperature VALUE" "Set absolute color temperature (100-400)" :parse-fn #(Integer/parseInt %)]
+   ["-T" "--set-temperature VALUE" "Set absolute color temperature (143-344 Mired)" :parse-fn #(Integer/parseInt %)]
    ["-h" "--help" "Show help message"]])
 
 (defn fetch-lights []
@@ -62,7 +62,7 @@
 (defn change-temperature [delta]
   (if-let [light (fetch-lights)]
     (let [current-temperature (:temperature light)
-          new-temperature (max 100 (min 400 (+ current-temperature delta)))
+          new-temperature (max 143 (min 344 (+ current-temperature delta))) # Use correct Mired range
           payload (json/generate-string {"numberOfLights" 1
                                          "lights"          [{"temperature" new-temperature}]})]
       (try
@@ -73,9 +73,8 @@
     (println "Failed to fetch light status.")))
 
 (defn set-temperature [value]
-  ;; Note: Using range 100-400 based on existing change-temperature function.
-  ;; Standard Elgato range might differ (e.g., 143-344).
-  (let [new-temperature (max 100 (min 400 value))
+  ;; Use correct Mired range 143 (7000K) - 344 (2900K)
+  (let [new-temperature (max 143 (min 344 value))
         payload (json/generate-string {"numberOfLights" 1
                                        "lights"          [{"temperature" new-temperature}]})]
     (try
