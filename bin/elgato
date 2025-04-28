@@ -62,7 +62,7 @@
 (defn change-temperature [delta]
   (if-let [light (fetch-lights)]
     (let [current-temperature (:temperature light)
-          new-temperature (max 143 (min 344 (+ current-temperature delta))) # Use correct Mired range
+          new-temperature (max 143 (min 344 (+ current-temperature delta))) ; Use correct Mired range
           payload (json/generate-string {"numberOfLights" 1
                                          "lights"          [{"temperature" new-temperature}]})]
       (try
