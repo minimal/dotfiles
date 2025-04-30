@@ -170,6 +170,22 @@
       (catch Exception e
         (println "Error setting temperature:" (.getMessage e))))))
 
+;;; Parameter Parsing
+
+(defn parse-query-param [query-string param-name]
+  (try
+    (if query-string
+      (let [param-pair (first (filter #(string/starts-with? % (str param-name "="))
+                                      (string/split query-string #"&")))
+            param-str (second (string/split param-pair #"="))]
+        (if param-str
+          (Integer/parseInt param-str)
+          nil))
+      nil)
+    (catch Exception e
+      (println "Error parsing query parameter:" (.getMessage e))
+      nil)))
+
 ;;; HTTP Handlers
 
 (defn get-light-handler [request]
@@ -182,24 +198,52 @@
   {:status 200 :body "Toggled"})
 
 (defn change-brightness-handler [request]
-  (let [delta (Integer/parseInt (get-in request [:query-params "delta"]))]
-    (server-change-brightness delta)
-    {:status 200 :body (str "Brightness changed by " delta)}))
+  (println "change-brightness-handler called")
+  (if-let [delta (parse-query-param (:query-string request) "delta")]
+    (do
+      (println "Parsed delta:" delta)
+      (server-change-brightness delta)
+      {:status 200 :body (str "Brightness changed by " delta)})
+    (do
+      (println "Missing or invalid delta parameter")
+      {:status 400 :body "Missing or invalid delta parameter"}))
+  (println "change-brightness-handler completed"))
 
 (defn set-brightness-handler [request]
-  (let [value (Integer/parseInt (get-in request [:query-params "value"]))]
-    (server-set-brightness value)
-    {:status 200 :body (str "Brightness set to " value)}))
+  (println "set-brightness-handler called")
+  (if-let [value (parse-query-param (:query-string request) "value")]
+    (do
+      (println "Parsed value:" value)
+      (server-set-brightness value)
+      {:status 200 :body (str "Brightness set to " value)})
+    (do
+      (println "Missing or invalid value parameter")
+      {:status 400 :body "Missing or invalid value parameter"}))
+  (println "set-brightness-handler completed"))
 
 (defn change-temperature-handler [request]
-  (let [delta (Integer/parseInt (get-in request [:query-params "delta"]))]
-    (server-change-temperature delta)
-    {:status 200 :body (str "Temperature changed by " delta)}))
+  (println "change-temperature-handler called")
+  (if-let [delta (parse-query-param (:query-string request) "delta")]
+    (do
+      (println "Parsed delta:" delta)
+      (server-change-temperature delta)
+      {:status 200 :body (str "Temperature changed by " delta)})
+    (do
+      (println "Missing or invalid delta parameter")
+      {:status 400 :body "Missing or invalid delta parameter"}))
+  (println "change-temperature-handler completed"))
 
 (defn set-temperature-handler [request]
-  (let [value (Integer/parseInt (get-in request [:query-params "value"]))]
-    (server-set-temperature value)
-    {:status 200 :body (str "Temperature set to " value)}))
+  (println "set-temperature-handler called")
+  (if-let [value (parse-query-param (:query-string request) "value")]
+    (do
+      (println "Parsed value:" value)
+      (server-set-temperature value)
+      {:status 200 :body (str "Temperature set to " value)})
+    (do
+      (println "Missing or invalid value parameter")
+      {:status 400 :body "Missing or invalid value parameter"}))
+  (println "set-temperature-handler completed"))
 
 ;;; Routing
 
@@ -213,7 +257,7 @@
 
 (defn handler [request]
   (if-let [route (get routes (:uri request))]
-    (if-let [method-handler (get route (keyword (string/lower-case (:request-method request))))]
+    (if-let [method-handler (get route (:request-method request))]
       (method-handler request)
       {:status 405 :body "Method Not Allowed"})
     {:status 404 :body "Not Found"}))
@@ -221,13 +265,17 @@
 ;;; Server Start
 
 (defn start-server [port]
-  (update-light-state!)
-  (go
-    (while true
-      (async/<! (async/timeout 60000))
-      (update-light-state!)))
-  (server/run-server handler {:port port})
-  (println (str "Server started on port " port)))
+  (try
+    (update-light-state!)
+    (go
+      (while true
+        (async/<! (async/timeout 60000))
+        (update-light-state!)))
+    (server/run-server handler {:port port})
+    (println (str "Server started on port " port))
+    (Thread/sleep Long/MAX_VALUE) ; Keep the server running
+  (catch Exception e
+    (println "Error starting server:" (.getMessage e)))))
 
 ;;; Client Mode
 
