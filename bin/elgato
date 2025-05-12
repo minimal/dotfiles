@@ -7,7 +7,8 @@
          '[clojure.core.async :as async :refer [go]]
          '[clojure.string :as string])
 
-(def url "http://192.168.0.38:9123/elgato/lights")
+(def url "http://169.254.89.246:9123/elgato/lights")
+(def timeout-ms 3000) ; 3 second timeout for HTTP requests
 
 (def light-state (atom nil))
 
@@ -25,151 +26,142 @@
    ["-T" "--set-temperature VALUE" "Set absolute color temperature (2900-7000 Kelvin) (client mode)" :parse-fn #(Integer/parseInt %)]
    ["-S" "--server" "Run in server mode"]
    ["-p" "--port VALUE" "Port to run the server on" :default 3000 :parse-fn #(Integer/parseInt %)]
+   ["-i" "--ip-address VALUE" "IP address of the Elgato light (overrides default)"]
    ["-h" "--help" "Show help message"]])
 
-(defn fetch-lights []
+;;; Core Light Functions
+
+(defn fetch-lights
+  "Fetch current light state directly from API"
+  []
   (try
-    (let [response (http/get url)
+    (let [response (http/get url {:timeout timeout-ms})
           body (json/parse-string (:body response) true)
           lights (:lights body)]
       (first lights))
+    (catch java.net.SocketTimeoutException e
+      (println "Error: Timeout connecting to Elgato light. Please check IP address and connectivity.")
+      (System/exit 1))
+    (catch java.net.UnknownHostException e
+      (println "Error: Cannot resolve host address. Please check the IP address.")
+      (System/exit 1))
+    (catch java.net.ConnectException e
+      (println "Error: Connection refused. The Elgato light is not responding at the specified address.")
+      (System/exit 1))
     (catch Exception e
-      (println "Error fetching lights:" (.getMessage e)))))
+      (println "Error fetching lights:" (.getMessage e))
+      nil)))
 
-(defn toggle-light []
+(defn update-light-state!
+  "Update in-memory light state from API"
+  []
   (if-let [light (fetch-lights)]
+    (do
+      (swap! light-state (constantly light))
+      true)
+    (do
+      (println "Error updating light state")
+      false)))
+
+(defn get-light-state
+  "Get light state from either in-memory cache or fresh API fetch"
+  [use-cached?]
+  (if use-cached?
+    @light-state
+    (fetch-lights)))
+
+(defn apply-light-command
+  "Send command to the light and optionally update local state"
+  [command use-cached?]
+  (let [payload (json/generate-string {"numberOfLights" 1
+                                       "lights" [command]})]
+    (try
+      (http/put url {:body payload
+                     :headers {"Content-Type" "application/json"}
+                     :timeout timeout-ms})
+      (when use-cached?
+        (doseq [[k v] command]
+          (swap! light-state assoc k v)))
+      true
+      (catch java.net.SocketTimeoutException e
+        (println "Error: Timeout connecting to Elgato light. Please check IP address and connectivity.")
+        (System/exit 1))
+      (catch java.net.UnknownHostException e
+        (println "Error: Cannot resolve host address. Please check the IP address.")
+        (System/exit 1))
+      (catch java.net.ConnectException e
+        (println "Error: Connection refused. The Elgato light is not responding at the specified address.")
+        (System/exit 1))
+      (catch Exception e
+        (println "Error applying light command:" (.getMessage e))
+        false))))
+
+;; Unified control functions that work for both client and server mode
+
+(defn control-light-toggle
+  "Toggle light on/off - works for both client and server mode"
+  [use-cached?]
+  (if-let [light (get-light-state use-cached?)]
     (let [current-state (:on light)
-          new-state (if (= current-state 1) 0 1)
-          payload (json/generate-string {"numberOfLights" 1
-                                         "lights"          [{"on" new-state}]})]
-      (try
-        (http/put url {:body payload :headers {"Content-Type" "application/json"}})
+          new-state (if (= current-state 1) 0 1)]
+      (if (apply-light-command {"on" new-state} use-cached?)
         (println (str "Light toggled " (if (= new-state 1) "on" "off")))
-        (catch Exception e
-          (println "Error toggling light:" (.getMessage e)))))
-    (println "Failed to fetch light status.")))
+        (println "Failed to toggle light")))
+    (println "Failed to get light state")))
 
-(defn change-brightness [delta]
-  (if-let [light (fetch-lights)]
+(defn control-light-brightness-change
+  "Change brightness by delta amount - works for both client and server mode"
+  [delta use-cached?]
+  (if-let [light (get-light-state use-cached?)]
     (let [current-brightness (:brightness light)
-          new-brightness (max 0 (min 100 (+ current-brightness delta)))
-          payload (json/generate-string {"numberOfLights" 1
-                                         "lights"          [{"brightness" new-brightness}]})]
-      (try
-        (http/put url {:body payload :headers {"Content-Type" "application/json"}})
+          new-brightness (max 0 (min 100 (+ current-brightness delta)))]
+      (if (apply-light-command {"brightness" new-brightness} use-cached?)
         (println (str "Brightness changed to " new-brightness))
-        (catch Exception e
-          (println "Error changing brightness:" (.getMessage e)))))
-    (println "Failed to fetch light status.")))
+        (println "Failed to change brightness")))
+    (println "Failed to get light state")))
 
-(defn set-brightness [value]
-  (let [new-brightness (max 0 (min 100 value))
-        payload (json/generate-string {"numberOfLights" 1 "lights"          [{"brightness" new-brightness}]})]
-    (try
-      (http/put url {:body payload :headers {"Content-Type" "application/json"}})
-      (println (str "Brightness set to " new-brightness))
-      (catch Exception e (println "Error setting brightness:" (.getMessage e))))))
+(defn control-light-brightness-set
+  "Set absolute brightness - works for both client and server mode"
+  [value use-cached?]
+  (if value
+    (let [new-brightness (max 0 (min 100 value))]
+      (if (apply-light-command {"brightness" new-brightness} use-cached?)
+        (println (str "Brightness set to " new-brightness))
+        (println "Failed to set brightness")))
+    (println "Invalid brightness value")))
 
-(defn change-temperature [delta]
-  (if-let [light (fetch-lights)]
+(defn control-light-temperature-change
+  "Change color temperature by delta - works for both client and server mode"
+  [delta use-cached?]
+  (if-let [light (get-light-state use-cached?)]
     (let [current-temperature (:temperature light)
-          new-temperature (max 143 (min 344 (+ current-temperature delta))) ; Use correct Mired range
-          payload (json/generate-string {"numberOfLights" 1
-                                         "lights"          [{"temperature" new-temperature}]})]
-      (try
-        (http/put url {:body payload :headers {"Content-Type" "application/json"}})
-        (println (str "Temperature changed to " new-temperature))
-        (catch Exception e
-          (println "Error changing temperature:" (.getMessage e)))))
-    (println "Failed to fetch light status.")))
+          new-temperature (max 143 (min 344 (+ current-temperature delta)))]
+      (if (apply-light-command {"temperature" new-temperature} use-cached?)
+        (println (str "Temperature changed to " new-temperature " mired (" (mired->kelvin new-temperature) "K)"))
+        (println "Failed to change temperature")))
+    (println "Failed to get light state")))
 
-(defn set-temperature [kelvin-value]
-  (let [clamped-kelvin (max 2900 (min 7000 kelvin-value))
-        mired-value (kelvin->mired clamped-kelvin)
-        payload (json/generate-string {"numberOfLights" 1 "lights"
-                                       [{"temperature" mired-value}]})]
-    (try (http/put url {:body payload :headers {"Content-Type" "application/json"}})
-         (println (str "Temperature set to " clamped-kelvin " K (" mired-value " Mired)"))
-         (catch Exception e (println "Error setting temperature:" (.getMessage e))))))
-
-;;; Server Functions
-
-(defn update-light-state! []
-  (try
-    (let [response (http/get url)
-          body (json/parse-string (:body response) true)
-          lights (:lights body)]
-      (swap! light-state (constantly (first lights))))
-    (catch Exception e
-      (println "Error fetching lights:" (.getMessage e)))))
-
-(defn server-toggle-light []
-  (let [current-state (:on @light-state)
-        new-state (if (= current-state 1) 0 1)
-        payload (json/generate-string {"numberOfLights" 1
-                                       "lights"          [{"on" new-state}]})]
-    (try
-      (http/put url {:body payload :headers {"Content-Type" "application/json"}})
-      (swap! light-state assoc :on new-state)
-      (println (str "Light toggled " (if (= new-state 1) "on" "off")))
-      (catch Exception e
-        (println "Error toggling light:" (.getMessage e))))))
-
-(defn server-change-brightness [delta]
-  (let [current-brightness (:brightness @light-state)
-        new-brightness (max 0 (min 100 (+ current-brightness delta)))
-        payload (json/generate-string {"numberOfLights" 1
-                                       "lights"          [{"brightness" new-brightness}]})]
-    (try
-      (http/put url {:body payload :headers {"Content-Type" "application/json"}})
-      (swap! light-state assoc :brightness new-brightness)
-      (println (str "Brightness changed to " new-brightness))
-      (catch Exception e
-        (println "Error changing brightness:" (.getMessage e))))))
-
-(defn server-set-brightness [value]
-  (let [new-brightness (max 0 (min 100 value))
-        payload (json/generate-string {"numberOfLights" 1
-                                       "lights"          [{"brightness" new-brightness}]})]
-    (try
-      (http/put url {:body payload :headers {"Content-Type" "application/json"}})
-      (swap! light-state assoc :brightness new-brightness)
-      (println (str "Brightness set to " new-brightness))
-      (catch Exception e
-        (println "Error setting brightness:" (.getMessage e))))))
-
-(defn server-change-temperature [delta]
-  (let [current-temperature (:temperature @light-state)
-        new-temperature (max 143 (min 344 (+ current-temperature delta)))
-        payload (json/generate-string {"numberOfLights" 1
-                                       "lights"          [{"temperature" new-temperature}]})]
-    (try
-      (http/put url {:body payload :headers {"Content-Type" "application/json"}})
-      (swap! light-state assoc :temperature new-temperature)
-      (println (str "Temperature changed to " new-temperature))
-      (catch Exception e
-        (println "Error changing temperature:" (.getMessage e))))))
-
-(defn server-set-temperature [kelvin-value]
-  (let [clamped-kelvin (max 2900 (min 7000 kelvin-value))
-        mired-value (kelvin->mired clamped-kelvin)
-        payload (json/generate-string {"numberOfLights" 1
-                                       "lights"          [{"temperature" mired-value}]})]
-    (try
-      (http/put url {:body payload :headers {"Content-Type" "application/json"}})
-      (swap! light-state assoc :temperature mired-value)
-      (println (str "Temperature set to " clamped-kelvin " K (" mired-value " Mired)"))
-      (catch Exception e
-        (println "Error setting temperature:" (.getMessage e))))))
+(defn control-light-temperature-set
+  "Set absolute color temperature in Kelvin - works for both client and server mode"
+  [kelvin-value use-cached?]
+  (if kelvin-value
+    (let [clamped-kelvin (max 2900 (min 7000 kelvin-value))
+          mired-value (kelvin->mired clamped-kelvin)]
+      (if (apply-light-command {"temperature" mired-value} use-cached?)
+        (println (str "Temperature set to " clamped-kelvin "K (" mired-value " mired)"))
+        (println "Failed to set temperature")))
+    (println "Invalid temperature value")))
 
 ;;; Parameter Parsing
 
-(defn parse-query-param [query-string param-name]
+(defn parse-query-param
+  "Parse a query parameter value from a query string"
+  [query-string param-name]
   (try
     (if query-string
       (let [param-pair (first (filter #(string/starts-with? % (str param-name "="))
                                       (string/split query-string #"&")))
-            param-str (second (string/split param-pair #"="))]
+            param-str (when param-pair (second (string/split param-pair #"=")))]
         (if param-str
           (Integer/parseInt param-str)
           nil))
@@ -186,56 +178,36 @@
    :body    (json/generate-string @light-state)})
 
 (defn toggle-light-handler [request]
-  (server-toggle-light)
+  (control-light-toggle true)
   {:status 200 :body "Toggled"})
 
 (defn change-brightness-handler [request]
-  (println "change-brightness-handler called")
   (if-let [delta (parse-query-param (:query-string request) "delta")]
     (do
-      (println "Parsed delta:" delta)
-      (server-change-brightness delta)
+      (control-light-brightness-change delta true)
       {:status 200 :body (str "Brightness changed by " delta)})
-    (do
-      (println "Missing or invalid delta parameter")
-      {:status 400 :body "Missing or invalid delta parameter"}))
-  (println "change-brightness-handler completed"))
+    {:status 400 :body "Missing or invalid delta parameter"}))
 
 (defn set-brightness-handler [request]
-  (println "set-brightness-handler called")
   (if-let [value (parse-query-param (:query-string request) "value")]
     (do
-      (println "Parsed value:" value)
-      (server-set-brightness value)
+      (control-light-brightness-set value true)
       {:status 200 :body (str "Brightness set to " value)})
-    (do
-      (println "Missing or invalid value parameter")
-      {:status 400 :body "Missing or invalid value parameter"}))
-  (println "set-brightness-handler completed"))
+    {:status 400 :body "Missing or invalid value parameter"}))
 
 (defn change-temperature-handler [request]
-  (println "change-temperature-handler called")
   (if-let [delta (parse-query-param (:query-string request) "delta")]
     (do
-      (println "Parsed delta:" delta)
-      (server-change-temperature delta)
+      (control-light-temperature-change delta true)
       {:status 200 :body (str "Temperature changed by " delta)})
-    (do
-      (println "Missing or invalid delta parameter")
-      {:status 400 :body "Missing or invalid delta parameter"}))
-  (println "change-temperature-handler completed"))
+    {:status 400 :body "Missing or invalid delta parameter"}))
 
 (defn set-temperature-handler [request]
-  (println "set-temperature-handler called")
   (if-let [value (parse-query-param (:query-string request) "value")]
     (do
-      (println "Parsed value:" value)
-      (server-set-temperature value)
+      (control-light-temperature-set value true)
       {:status 200 :body (str "Temperature set to " value)})
-    (do
-      (println "Missing or invalid value parameter")
-      {:status 400 :body "Missing or invalid value parameter"}))
-  (println "set-temperature-handler completed"))
+    {:status 400 :body "Missing or invalid value parameter"}))
 
 ;;; Routing
 
@@ -256,39 +228,60 @@
 
 ;;; Server Start
 
-(defn start-server [port]
+(defn start-server
+  "Start the HTTP server for controlling lights"
+  [port]
   (try
-    (update-light-state!)
-    (go
-      (while true
-        (async/<! (async/timeout 60000))
-        (update-light-state!)))
-    (server/run-server handler {:port port})
-    (println (str "Server started on port " port))
-    (Thread/sleep Long/MAX_VALUE) ; Keep the server running
-  (catch Exception e
-    (println "Error starting server:" (.getMessage e)))))
+    (println "Connecting to Elgato light at" url "...")
+    (if (update-light-state!)
+      (do
+        (println "Connection successful!")
+        (go
+          (while true
+            (async/<! (async/timeout 60000))
+            (update-light-state!)))
+        (server/run-server handler {:port port})
+        (println (str "Server started on port " port))
+        (Thread/sleep Long/MAX_VALUE)) ; Keep the server running
+      (do
+        (println "Failed to connect to Elgato light. Server not started.")
+        (System/exit 1)))
+    (catch Exception e
+      (println "Error starting server:" (.getMessage e))
+      (System/exit 1))))
 
 ;;; Client Mode
 
-(defn print-help []
+(defn print-help
+  "Display help information about available CLI options"
+  []
   (println "Usage: script [options]")
   (println "")
   (println "Options:")
   (doseq [[opt long desc] cli-options]
-    (println (format "  %-25s %s" (str opt ", " long) desc))))
+    (println (format "  %-25s %s" (str opt ", " long) desc)))
+  (println "")
+  (println (format "Current Elgato light IP: %s" (second (re-find #"http://([^:]+)" url)))))
 
-(defn client-mode [options]
-  (when (:toggle options) (toggle-light))
-  (when (:brightness options) (change-brightness (:brightness options)))
-  (when (:set-brightness options) (set-brightness (:set-brightness options)))
-  (when (:color-temp options) (change-temperature (:color-temp options)))
-  (when (:set-temperature options) (set-temperature (:set-temperature options))))
+(defn client-mode
+  "Run in client mode to execute light control actions based on CLI options"
+  [options]
+  (when (:toggle options) (control-light-toggle false))
+  (when (:brightness options) (control-light-brightness-change (:brightness options) false))
+  (when (:set-brightness options) (control-light-brightness-set (:set-brightness options) false))
+  (when (:color-temp options) (control-light-temperature-change (:color-temp options) false))
+  (when (:set-temperature options) (control-light-temperature-set (:set-temperature options) false)))
 
 ;;; Main Function
 
-(defn -main [& args]
+(defn -main
+  "Main entry point for the application"
+  [& args]
   (let [{:keys [options]} (parse-opts args cli-options)]
+    ;; Override the URL if IP address is provided
+    (when (:ip-address options)
+      (alter-var-root #'url (constantly (str "http://" (:ip-address options) ":9123/elgato/lights"))))
+
     (cond
       (:help options) (print-help)
       (:server options) (start-server (:port options))
