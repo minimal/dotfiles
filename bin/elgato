@@ -63,16 +63,12 @@
     (println "Failed to fetch light status.")))
 
 (defn set-brightness [value]
-  (if-let [light (fetch-lights)]
-    (let [new-brightness (max 0 (min 100 value))
-          payload (json/generate-string {"numberOfLights" 1
-                                         "lights"          [{"brightness" new-brightness}]})]
-      (try
-        (http/put url {:body payload :headers {"Content-Type" "application/json"}})
-        (println (str "Brightness set to " new-brightness))
-        (catch Exception e
-          (println "Error setting brightness:" (.getMessage e)))))
-    (println "Failed to fetch light status.")))
+  (let [new-brightness (max 0 (min 100 value))
+        payload (json/generate-string {"numberOfLights" 1 "lights"          [{"brightness" new-brightness}]})]
+    (try
+      (http/put url {:body payload :headers {"Content-Type" "application/json"}})
+      (println (str "Brightness set to " new-brightness))
+      (catch Exception e (println "Error setting brightness:" (.getMessage e))))))
 
 (defn change-temperature [delta]
   (if-let [light (fetch-lights)]
@@ -88,17 +84,13 @@
     (println "Failed to fetch light status.")))
 
 (defn set-temperature [kelvin-value]
-  (if-let [light (fetch-lights)]
-    (let [clamped-kelvin (max 2900 (min 7000 kelvin-value))
-          mired-value (kelvin->mired clamped-kelvin)
-          payload (json/generate-string {"numberOfLights" 1
-                                         "lights"          [{"temperature" mired-value}]})]
-      (try
-        (http/put url {:body payload :headers {"Content-Type" "application/json"}})
-        (println (str "Temperature set to " clamped-kelvin " K (" mired-value " Mired)"))
-        (catch Exception e
-          (println "Error setting temperature:" (.getMessage e)))))
-    (println "Failed to fetch light status.")))
+  (let [clamped-kelvin (max 2900 (min 7000 kelvin-value))
+        mired-value (kelvin->mired clamped-kelvin)
+        payload (json/generate-string {"numberOfLights" 1 "lights"
+                                       [{"temperature" mired-value}]})]
+    (try (http/put url {:body payload :headers {"Content-Type" "application/json"}})
+         (println (str "Temperature set to " clamped-kelvin " K (" mired-value " Mired)"))
+         (catch Exception e (println "Error setting temperature:" (.getMessage e))))))
 
 ;;; Server Functions
 
