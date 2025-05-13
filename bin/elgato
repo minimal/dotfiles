@@ -76,13 +76,21 @@
   (let [payload (json/generate-string {"numberOfLights" 1
                                        "lights" [command]})]
     (try
-      (http/put url {:body payload
-                     :headers {"Content-Type" "application/json"}
-                     :timeout timeout-ms})
-      (when use-cached?
-        (doseq [[k v] command]
-          (swap! light-state assoc k v)))
-      true
+      ;; Send command and get response with updated state
+      (let [response (http/put url {:body payload
+                                    :headers {"Content-Type" "application/json"}
+                                    :timeout timeout-ms})
+            ;; Parse the response body to get updated state
+            updated-state (-> (:body response)
+                              (json/parse-string true)
+                              (:lights)
+                              (first))]
+
+        ;; Update our cache with the full returned state
+        (when (and use-cached? updated-state)
+          (swap! light-state (constantly updated-state)))
+
+        true)
       (catch java.net.SocketTimeoutException e
         (println "Error: Timeout connecting to Elgato light. Please check IP address and connectivity.")
         (System/exit 1))
