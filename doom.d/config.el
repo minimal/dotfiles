@@ -7,6 +7,10 @@
 ;; Place your private configuration here! Remember, you do not need to run 'doom
 ;; sync' after modifying this file!
 
+;; Load private scenario test helpers if they exist
+(when (file-exists-p (expand-file-name "private/scenario-helpers.el" doom-user-dir))
+  (load-file (expand-file-name "private/scenario-helpers.el" doom-user-dir)))
+
 ;; (remove-hook 'org-load-hook #'+org-init-keybinds-h)
 
 (when (featurep! spacemacs)
