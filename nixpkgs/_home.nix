@@ -69,6 +69,7 @@
     scc # fast loc counter
     python3
     pipenv
+    uv
     wakatime
     highlight
     bat # fast syntax highlight
@@ -76,6 +77,7 @@
     sourceHighlight
     cargo
     nodejs
+    pre-commit
     # haskell-language-server # started trying to compile ormolu and failing
 
     awscli2

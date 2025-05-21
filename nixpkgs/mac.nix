@@ -36,6 +36,7 @@ in {
         mdfindname = "mdfind -name";
         emacs = "/opt/homebrew/opt/emacs-mac/Emacs.app/Contents/MacOS/Emacs";
         emacsclient = "/opt/homebrew/bin/emacsclient";
+        assume = "source /opt/homebrew/bin/assume";
       };
     };
   };

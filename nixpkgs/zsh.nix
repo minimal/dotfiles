@@ -15,10 +15,10 @@ in {
     enableCompletion = true;
     history.path = "${HOME}/.zhistory";
     shellAliases = {
-      sl = "exa";
-      l = "exa";
-      ll = "exa -l";
-      la = "exa -la";
+      sl = "eza";
+      l = "eza";
+      ll = "eza -l";
+      la = "eza -la";
       ip = "ip --color=auto";
       gita = "git archive --format=zip `git reflog | grep 'HEAD@{0}' | cut -d \" \" -f1 | sed 's/[.]*//g'` > archive.zip";
       # gka = "gitk --all&";
@@ -27,7 +27,7 @@ in {
       nsearch = "nix search nixpkgs";
       rgclj = "rg --type clojure";
       j = "just --justfile ${justfile} --working-directory .";
-      assume = "source /opt/homebrew/bin/assume";
+
     };
     prezto = {
       enable = true;
@@ -41,7 +41,6 @@ in {
         "directory"
         "spectrum"
         # "fasd"
-        "spectrum"
         "utility"
         "ssh"
         "completion"

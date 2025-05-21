@@ -55,6 +55,7 @@ in {
       dftc = "difftool --cached";
       logdft = "!GIT_EXTERNAL_DIFF=difft git log -p --ext-diff";
       showdft = "!GIT_EXTERNAL_DIFF=difft git show $1 --ext-diff";
+      undo-soft = "reset --soft HEAD~1";
     };
     extraConfig = {
       color = {
