@@ -35,11 +35,12 @@ nix-reg-pin-latest-nixpkgs:
     nix registry pin flake:nixpkgs
 
 nixpkgs-update-flake:
-    nix flake lock --update-input nixpkgs
-    nix flake lock --update-input home-manager
+    nix flake lock
+    nix flake update nixpkgs home-manager
 
 doom-update-flake:
-    nix flake lock --update-input doom-emacs
+    nix flake lock
+    nix flake doom-emacs
 
 doom-update-sync: doom-update-flake hm-switch
     doom-sync-git
