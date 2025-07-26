@@ -27,7 +27,6 @@ in {
       nsearch = "nix search nixpkgs";
       rgclj = "rg --type clojure";
       j = "just --justfile ${justfile} --working-directory .";
-
     };
     prezto = {
       enable = true;
@@ -131,15 +130,15 @@ in {
       '')
 
       (lib.mkOrder 700 ''
-        refresh-just-aliases() {
-          for recipe in `just --justfile ${justfile} --summary`; do
-            alias $recipe="just --justfile ${justfile} --working-directory . $recipe"
-          done
-        }
-        refresh-just-aliases
+            refresh-just-aliases() {
+              for recipe in `just --justfile ${justfile} --summary`; do
+                alias $recipe="just --justfile ${justfile} --working-directory . $recipe"
+              done
+            }
+            refresh-just-aliases
 
-    # Initialize the completion system
-    autoload -U compinit && compinit
+        # Initialize the completion system
+        autoload -U compinit && compinit
       '')
 
       (lib.mkOrder 800 ''

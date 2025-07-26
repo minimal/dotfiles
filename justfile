@@ -1,3 +1,4 @@
+set shell := ["zsh", "-uc"]
 flake := ".#" +`hostname | tr -d .`
 
 default:
@@ -34,12 +35,16 @@ nix-reg-pin-latest-nixpkgs:
     nix registry remove nixpkgs
     nix registry pin flake:nixpkgs
 
-nixpkgs-update-flake:
+@_nix-flake-lock:
     nix flake lock
+
+nixpkgs-update-flake: _nix-flake-lock
     nix flake update nixpkgs home-manager
 
-doom-update-flake:
-    nix flake lock
+nix-check-format:
+    alejandra --check **/*nix
+
+doom-update-flake: _nix-flake-lock
     nix flake doom-emacs
 
 doom-update-sync: doom-update-flake hm-switch
@@ -53,3 +58,9 @@ git-submodules:
 
 brew-bundle:
     brew bundle
+
+nix-latest-git-version:
+    curl -s https://raw.githubusercontent.com/NixOS/nixpkgs/master/pkgs/applications/version-management/git/default.nix | grep '^  version ='
+
+save-space: nix-gc-30d
+    doom gc
