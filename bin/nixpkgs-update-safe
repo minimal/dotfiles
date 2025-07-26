@@ -1,0 +1,129 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+# Colors for output
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+NC='\033[0m' # No Color
+
+# Function to print colored output
+print_status() {
+    echo -e "${GREEN}[INFO]${NC} $1"
+}
+
+print_warning() {
+    echo -e "${YELLOW}[WARN]${NC} $1"
+}
+
+print_error() {
+    echo -e "${RED}[ERROR]${NC} $1"
+}
+
+# Check if we're in a git repository
+if ! git rev-parse --git-dir > /dev/null 2>&1; then
+    print_error "Not in a git repository"
+    exit 1
+fi
+
+# Check if flake.lock exists
+if [[ ! -f flake.lock ]]; then
+    print_error "flake.lock not found in current directory"
+    exit 1
+fi
+
+# Check if flake.lock is dirty (has uncommitted changes)
+if ! git diff --quiet flake.lock 2>/dev/null; then
+    print_error "flake.lock has uncommitted changes. Please commit or stash them first."
+    exit 1
+fi
+
+# Check if flake.lock is staged
+if git diff --cached --quiet flake.lock 2>/dev/null; then
+    : # flake.lock is not staged, which is what we want
+else
+    print_error "flake.lock is staged. Please unstage it first."
+    exit 1
+fi
+
+# Check if just command is available
+if ! command -v just &> /dev/null; then
+    print_error "just command not found. Please install justfile."
+    exit 1
+fi
+
+print_status "Starting safe Nix flake update..."
+
+# Backup current flake.lock
+BACKUP_FILE="flake.lock.backup.$(date +%s)"
+cp flake.lock "$BACKUP_FILE"
+print_status "Created backup: $BACKUP_FILE"
+
+# Function to rollback on failure
+rollback() {
+    print_warning "Rolling back flake.lock..."
+    cp "$BACKUP_FILE" flake.lock
+    rm -f "$BACKUP_FILE"
+    print_status "Rollback completed"
+}
+
+# Set trap to rollback on script failure
+trap 'rollback; exit 1' ERR
+
+# Update the flake
+print_status "Running nixpkgs-update-flake..."
+just nixpkgs-update-flake
+
+# Check if flake.lock actually changed
+if git diff --quiet flake.lock 2>/dev/null; then
+    print_status "flake.lock unchanged, nothing to do"
+    rm -f "$BACKUP_FILE"
+    exit 0
+fi
+
+print_status "flake.lock changed, proceeding with switch..."
+
+# Try home-manager switch
+print_status "Running hm-switch..."
+if just hm-switch; then
+    print_status "hm-switch succeeded"
+else
+    print_error "hm-switch failed"
+    rollback
+    exit 1
+fi
+
+# Get nixpkgs commit date from flake.lock
+NIXPKGS_REV=$(jq -r '.nodes.nixpkgs.locked.rev' flake.lock)
+if [[ "$NIXPKGS_REV" == "null" || -z "$NIXPKGS_REV" ]]; then
+    print_error "Could not extract nixpkgs revision from flake.lock"
+    rollback
+    exit 1
+fi
+
+print_status "Nixpkgs revision: $NIXPKGS_REV"
+
+# Get the commit date from GitHub API
+print_status "Fetching commit date from GitHub..."
+COMMIT_DATE=$(curl -s "https://api.github.com/repos/NixOS/nixpkgs/commits/$NIXPKGS_REV" | jq -r '.commit.committer.date')
+
+if [[ "$COMMIT_DATE" == "null" || -z "$COMMIT_DATE" ]]; then
+    print_warning "Could not fetch commit date from GitHub API, using current date"
+    COMMIT_DATE=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+fi
+
+# Format the date for the commit message
+FORMATTED_DATE=$(date -d "$COMMIT_DATE" +"%Y-%m-%d" 2>/dev/null || date -j -f "%Y-%m-%dT%H:%M:%SZ" "$COMMIT_DATE" +"%Y-%m-%d" 2>/dev/null || date +"%Y-%m-%d")
+
+print_status "Commit date: $FORMATTED_DATE"
+
+# Stage and commit flake.lock
+git add flake.lock
+git commit -m "nix: update flake.lock ($FORMATTED_DATE)"
+
+# Clean up backup
+rm -f "$BACKUP_FILE"
+
+print_status "✅ Successfully updated and committed flake.lock with nixpkgs from $FORMATTED_DATE"
+print_status "Commit: $(git rev-parse --short HEAD)"
