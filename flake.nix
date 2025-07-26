@@ -59,7 +59,7 @@
       baseModules ? [],
       extraModules ? [],
     }:
-      homeManagerConfiguration rec {
+      homeManagerConfiguration {
         pkgs = nixpkgs.legacyPackages.${system};
         modules =
           [

@@ -23,7 +23,7 @@ self: super: {
 
       meta = with stdenv.lib; {
         description = "[github page 404] bring your .bashrc, .vimrc, etc. with you when you ssh";
-        homepage = https://github.com/Russell91/sshrc;
+        homepage = "https://github.com/Russell91/sshrc";
         license = licenses.mit;
         platforms = platforms.unix;
       };
@@ -74,7 +74,7 @@ self: super: {
 
       meta = with lib; {
         description = "prettyping` is a wrapper around the standard `ping` tool, making the output prettier, more colorful, more compact, and easier to read.";
-        homepage = http://denilsonsa.github.io/prettyping/;
+        homepage = "http://denilsonsa.github.io/prettyping/";
         license = licenses.mit;
         platforms = platforms.unix;
       };

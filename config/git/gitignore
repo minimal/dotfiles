@@ -6,7 +6,6 @@
 
 *~
 \#*
-*.komodoproject
 .emacs.desktop*
 \.\#*
 *\.orig
@@ -18,7 +17,6 @@ node_modules
 build/
 .ropeproject/
 coverage.xml
-skimlinks.zsh
 .idea
 .cache
 
@@ -66,5 +64,5 @@ tags
 
 .cpcache
 /.dir-locals.el
-/.direnv/
+.direnv/
 .aider*
