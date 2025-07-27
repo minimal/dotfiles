@@ -71,6 +71,10 @@ rollback() {
 # Set trap to rollback on script failure
 trap 'rollback; exit 1' ERR
 
+# Get current revisions before update
+OLD_NIXPKGS_REV=$(jq -r '.nodes.nixpkgs.locked.rev // empty' flake.lock)
+OLD_HM_REV=$(jq -r '.nodes."home-manager".locked.rev // empty' flake.lock)
+
 # Update the flake
 print_status "Running nixpkgs-update-flake..."
 just nixpkgs-update-flake
@@ -94,36 +98,86 @@ else
     exit 1
 fi
 
-# Get nixpkgs commit date from flake.lock
-NIXPKGS_REV=$(jq -r '.nodes.nixpkgs.locked.rev' flake.lock)
-if [[ "$NIXPKGS_REV" == "null" || -z "$NIXPKGS_REV" ]]; then
-    print_error "Could not extract nixpkgs revision from flake.lock"
-    rollback
-    exit 1
+# Get new revisions after update
+NEW_NIXPKGS_REV=$(jq -r '.nodes.nixpkgs.locked.rev // empty' flake.lock)
+NEW_HM_REV=$(jq -r '.nodes."home-manager".locked.rev // empty' flake.lock)
+
+# Determine what changed
+NIXPKGS_CHANGED=false
+HM_CHANGED=false
+
+if [[ "$OLD_NIXPKGS_REV" != "$NEW_NIXPKGS_REV" ]]; then
+    NIXPKGS_CHANGED=true
+    print_status "Nixpkgs updated: $OLD_NIXPKGS_REV -> $NEW_NIXPKGS_REV"
 fi
 
-print_status "Nixpkgs revision: $NIXPKGS_REV"
-
-# Get the commit date from GitHub API
-print_status "Fetching commit date from GitHub..."
-COMMIT_DATE=$(curl -s "https://api.github.com/repos/NixOS/nixpkgs/commits/$NIXPKGS_REV" | jq -r '.commit.committer.date')
-
-if [[ "$COMMIT_DATE" == "null" || -z "$COMMIT_DATE" ]]; then
-    print_warning "Could not fetch commit date from GitHub API, using current date"
-    COMMIT_DATE=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+if [[ "$OLD_HM_REV" != "$NEW_HM_REV" ]]; then
+    HM_CHANGED=true
+    print_status "Home-manager updated: $OLD_HM_REV -> $NEW_HM_REV"
 fi
 
-# Format the date for the commit message
-FORMATTED_DATE=$(date -d "$COMMIT_DATE" +"%Y-%m-%d" 2>/dev/null || date -j -f "%Y-%m-%dT%H:%M:%SZ" "$COMMIT_DATE" +"%Y-%m-%d" 2>/dev/null || date +"%Y-%m-%d")
+# Function to get commit date from GitHub
+get_commit_date() {
+    local repo=$1
+    local rev=$2
+    local date=$(curl -s "https://api.github.com/repos/$repo/commits/$rev" | jq -r '.commit.committer.date')
+    if [[ "$date" == "null" || -z "$date" ]]; then
+        echo ""
+    else
+        echo "$date"
+    fi
+}
 
-print_status "Commit date: $FORMATTED_DATE"
+# Get appropriate commit date and message
+if [[ "$NIXPKGS_CHANGED" == true && "$HM_CHANGED" == true ]]; then
+    print_status "Both nixpkgs and home-manager changed, fetching dates..."
+    NIXPKGS_DATE=$(get_commit_date "NixOS/nixpkgs" "$NEW_NIXPKGS_REV")
+    HM_DATE=$(get_commit_date "nix-community/home-manager" "$NEW_HM_REV")
+    
+    if [[ -n "$NIXPKGS_DATE" && -n "$HM_DATE" ]]; then
+        NIXPKGS_FORMATTED=$(date -d "$NIXPKGS_DATE" +"%Y-%m-%d" 2>/dev/null || date -j -f "%Y-%m-%dT%H:%M:%SZ" "$NIXPKGS_DATE" +"%Y-%m-%d" 2>/dev/null || date +"%Y-%m-%d")
+        HM_FORMATTED=$(date -d "$HM_DATE" +"%Y-%m-%d" 2>/dev/null || date -j -f "%Y-%m-%dT%H:%M:%SZ" "$HM_DATE" +"%Y-%m-%d" 2>/dev/null || date +"%Y-%m-%d")
+        COMMIT_MSG="nix: update nixpkgs & home-manager ($NIXPKGS_FORMATTED, $HM_FORMATTED)"
+    else
+        CURRENT_DATE=$(date +"%Y-%m-%d")
+        COMMIT_MSG="nix: update nixpkgs & home-manager ($CURRENT_DATE)"
+    fi
+elif [[ "$NIXPKGS_CHANGED" == true ]]; then
+    print_status "Only nixpkgs changed, fetching date..."
+    NIXPKGS_DATE=$(get_commit_date "NixOS/nixpkgs" "$NEW_NIXPKGS_REV")
+    
+    if [[ -n "$NIXPKGS_DATE" ]]; then
+        FORMATTED_DATE=$(date -d "$NIXPKGS_DATE" +"%Y-%m-%d" 2>/dev/null || date -j -f "%Y-%m-%dT%H:%M:%SZ" "$NIXPKGS_DATE" +"%Y-%m-%d" 2>/dev/null || date +"%Y-%m-%d")
+        COMMIT_MSG="nix: update nixpkgs ($FORMATTED_DATE)"
+    else
+        CURRENT_DATE=$(date +"%Y-%m-%d")
+        COMMIT_MSG="nix: update nixpkgs ($CURRENT_DATE)"
+    fi
+elif [[ "$HM_CHANGED" == true ]]; then
+    print_status "Only home-manager changed, fetching date..."
+    HM_DATE=$(get_commit_date "nix-community/home-manager" "$NEW_HM_REV")
+    
+    if [[ -n "$HM_DATE" ]]; then
+        FORMATTED_DATE=$(date -d "$HM_DATE" +"%Y-%m-%d" 2>/dev/null || date -j -f "%Y-%m-%dT%H:%M:%SZ" "$HM_DATE" +"%Y-%m-%d" 2>/dev/null || date +"%Y-%m-%d")
+        COMMIT_MSG="nix: update home-manager ($FORMATTED_DATE)"
+    else
+        CURRENT_DATE=$(date +"%Y-%m-%d")
+        COMMIT_MSG="nix: update home-manager ($CURRENT_DATE)"
+    fi
+else
+    print_status "Other flake inputs changed"
+    CURRENT_DATE=$(date +"%Y-%m-%d")
+    COMMIT_MSG="nix: update flake.lock ($CURRENT_DATE)"
+fi
+
+print_status "Commit message: $COMMIT_MSG"
 
 # Stage and commit flake.lock
 git add flake.lock
-git commit -m "nix: update flake.lock ($FORMATTED_DATE)"
+git commit -m "$COMMIT_MSG"
 
 # Clean up backup
 rm -f "$BACKUP_FILE"
 
-print_status "✅ Successfully updated and committed flake.lock with nixpkgs from $FORMATTED_DATE"
+print_status "✅ Successfully updated and committed flake.lock"
 print_status "Commit: $(git rev-parse --short HEAD)"
