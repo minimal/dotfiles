@@ -1,4 +1,28 @@
 #!/usr/bin/env bash
+#
+# nixpkgs-update-safe - Safely update Nix flake inputs with automatic rollback
+#
+# This script updates nixpkgs and home-manager inputs, applies the changes with 
+# home-manager switch, and commits the result with appropriate date information.
+# If any step fails, it automatically rolls back the flake.lock to its original state.
+#
+# Features:
+# - Checks for uncommitted changes before starting
+# - Creates backup and rolls back on failure
+# - Detects which inputs actually changed (nixpkgs, home-manager, or both)
+# - Fetches real commit dates from GitHub for accurate commit messages
+# - Skips update if no changes are detected
+# - Handles nixpkgs node indirection in flake.lock
+#
+# Usage:
+#   ./bin/nixpkgs-update-safe
+#   just nix-update-safe
+#
+# Requirements:
+# - git repository with clean flake.lock
+# - jq, curl, just commands available
+# - Internet access for GitHub API calls
+#
 
 set -euo pipefail
 
