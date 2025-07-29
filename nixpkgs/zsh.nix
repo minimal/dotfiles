@@ -10,7 +10,7 @@ in {
   programs.zsh = {
     enable = true;
     autocd = true;
-    dotDir = ".config/zsh";
+    dotDir = "${HOME}/.config/zsh";
     autosuggestion.enable = true;
     enableCompletion = true;
     history.path = "${HOME}/.zhistory";

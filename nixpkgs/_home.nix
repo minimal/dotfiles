@@ -101,8 +101,6 @@
     # dhall
     # dhall-json
     # dhall-text
-    lastpass-cli
-
     postgresql
   ];
 
