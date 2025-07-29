@@ -71,9 +71,16 @@ rollback() {
 # Set trap to rollback on script failure
 trap 'rollback; exit 1' ERR
 
+# Function to resolve nixpkgs node (handles indirection)
+get_nixpkgs_rev() {
+    local file=$1
+    local nixpkgs_target=$(jq -r '.nodes.root.inputs.nixpkgs // "nixpkgs"' "$file")
+    jq -r ".nodes.\"$nixpkgs_target\".locked.rev // empty" "$file"
+}
+
 # Get current revisions before update
-OLD_NIXPKGS_REV=$(jq -r '.nodes.nixpkgs.locked.rev // empty' flake.lock)
-OLD_HM_REV=$(jq -r '.nodes."home-manager".locked.rev // empty' flake.lock)
+OLD_NIXPKGS_REV=$(get_nixpkgs_rev "$BACKUP_FILE")
+OLD_HM_REV=$(jq -r '.nodes."home-manager".locked.rev // empty' "$BACKUP_FILE")
 
 # Update the flake
 print_status "Running nixpkgs-update-flake..."
@@ -99,20 +106,20 @@ else
 fi
 
 # Get new revisions after update
-NEW_NIXPKGS_REV=$(jq -r '.nodes.nixpkgs.locked.rev // empty' flake.lock)
+NEW_NIXPKGS_REV=$(get_nixpkgs_rev flake.lock)
 NEW_HM_REV=$(jq -r '.nodes."home-manager".locked.rev // empty' flake.lock)
 
 # Determine what changed
-NIXPKGS_CHANGED=false
-HM_CHANGED=false
+NIXPKGS_CHANGED=0
+HM_CHANGED=0
 
 if [[ "$OLD_NIXPKGS_REV" != "$NEW_NIXPKGS_REV" ]]; then
-    NIXPKGS_CHANGED=true
+    NIXPKGS_CHANGED=1
     print_status "Nixpkgs updated: $OLD_NIXPKGS_REV -> $NEW_NIXPKGS_REV"
 fi
 
 if [[ "$OLD_HM_REV" != "$NEW_HM_REV" ]]; then
-    HM_CHANGED=true
+    HM_CHANGED=1
     print_status "Home-manager updated: $OLD_HM_REV -> $NEW_HM_REV"
 fi
 
@@ -129,7 +136,7 @@ get_commit_date() {
 }
 
 # Get appropriate commit date and message
-if [[ "$NIXPKGS_CHANGED" == true && "$HM_CHANGED" == true ]]; then
+if [[ $NIXPKGS_CHANGED -eq 1 && $HM_CHANGED -eq 1 ]]; then
     print_status "Both nixpkgs and home-manager changed, fetching dates..."
     NIXPKGS_DATE=$(get_commit_date "NixOS/nixpkgs" "$NEW_NIXPKGS_REV")
     HM_DATE=$(get_commit_date "nix-community/home-manager" "$NEW_HM_REV")
@@ -142,7 +149,7 @@ if [[ "$NIXPKGS_CHANGED" == true && "$HM_CHANGED" == true ]]; then
         CURRENT_DATE=$(date +"%Y-%m-%d")
         COMMIT_MSG="nix: update nixpkgs & home-manager ($CURRENT_DATE)"
     fi
-elif [[ "$NIXPKGS_CHANGED" == true ]]; then
+elif [[ $NIXPKGS_CHANGED -eq 1 ]]; then
     print_status "Only nixpkgs changed, fetching date..."
     NIXPKGS_DATE=$(get_commit_date "NixOS/nixpkgs" "$NEW_NIXPKGS_REV")
     
@@ -153,7 +160,7 @@ elif [[ "$NIXPKGS_CHANGED" == true ]]; then
         CURRENT_DATE=$(date +"%Y-%m-%d")
         COMMIT_MSG="nix: update nixpkgs ($CURRENT_DATE)"
     fi
-elif [[ "$HM_CHANGED" == true ]]; then
+elif [[ $HM_CHANGED -eq 1 ]]; then
     print_status "Only home-manager changed, fetching date..."
     HM_DATE=$(get_commit_date "nix-community/home-manager" "$NEW_HM_REV")
     
