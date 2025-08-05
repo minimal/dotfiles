@@ -88,6 +88,15 @@ print_status "Created backup: $BACKUP_FILE"
 rollback() {
     print_warning "Rolling back flake.lock..."
     cp "$BACKUP_FILE" flake.lock
+    
+    print_warning "Running hm-switch to restore previous configuration..."
+    if just hm-switch; then
+        print_status "Successfully restored previous configuration"
+    else
+        print_error "Failed to restore previous configuration with hm-switch"
+        print_error "You may need to manually run 'just hm-switch' to fix your system"
+    fi
+    
     rm -f "$BACKUP_FILE"
     print_status "Rollback completed"
 }
