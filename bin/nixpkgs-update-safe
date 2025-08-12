@@ -13,6 +13,7 @@
 # - Fetches real commit dates from GitHub for accurate commit messages
 # - Skips update if no changes are detected
 # - Handles nixpkgs node indirection in flake.lock
+# - Maintains skip list for problematic nixpkgs commits
 #
 # Usage:
 #   ./bin/nixpkgs-update-safe
@@ -25,6 +26,9 @@
 #
 
 set -euo pipefail
+
+# Skip list file for problematic nixpkgs commits
+SKIP_LIST_FILE=".nix-skip-commits"
 
 # Colors for output
 RED='\033[0;31m'
@@ -84,9 +88,21 @@ BACKUP_FILE="flake.lock.backup.$(date +%s)"
 cp flake.lock "$BACKUP_FILE"
 print_status "Created backup: $BACKUP_FILE"
 
+# Initialize skip list if it doesn't exist
+touch "$SKIP_LIST_FILE"
+
 # Function to rollback on failure
 rollback() {
     print_warning "Rolling back flake.lock..."
+    
+    # Add problematic nixpkgs commit to skip list if it exists
+    if [[ -n "${NEW_NIXPKGS_REV:-}" && "$NEW_NIXPKGS_REV" != "null" && "$NEW_NIXPKGS_REV" != "" ]]; then
+        if ! grep -q "^$NEW_NIXPKGS_REV$" "$SKIP_LIST_FILE" 2>/dev/null; then
+            echo "$NEW_NIXPKGS_REV" >> "$SKIP_LIST_FILE"
+            print_warning "Added problematic nixpkgs commit to skip list: $NEW_NIXPKGS_REV"
+        fi
+    fi
+    
     cp "$BACKUP_FILE" flake.lock
     
     print_warning "Running hm-switch to restore previous configuration..."
@@ -141,6 +157,16 @@ fi
 # Get new revisions after update
 NEW_NIXPKGS_REV=$(get_nixpkgs_rev flake.lock)
 NEW_HM_REV=$(jq -r '.nodes."home-manager".locked.rev // empty' flake.lock)
+
+# Check if the new nixpkgs commit is in the skip list
+if [[ -n "$NEW_NIXPKGS_REV" && "$NEW_NIXPKGS_REV" != "null" && "$NEW_NIXPKGS_REV" != "" ]]; then
+    if grep -q "^$NEW_NIXPKGS_REV$" "$SKIP_LIST_FILE" 2>/dev/null; then
+        print_warning "Nixpkgs commit $NEW_NIXPKGS_REV is in skip list (known problematic)"
+        print_warning "Skipping this update. Remove from $SKIP_LIST_FILE to retry."
+        rm -f "$BACKUP_FILE"
+        exit 0
+    fi
+fi
 
 # Determine what changed
 NIXPKGS_CHANGED=0
