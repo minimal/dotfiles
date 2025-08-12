@@ -142,7 +142,21 @@ if git diff --quiet flake.lock 2>/dev/null; then
     exit 0
 fi
 
-print_status "flake.lock changed, proceeding with switch..."
+print_status "flake.lock changed, proceeding with checks..."
+
+# Get new revisions after update
+NEW_NIXPKGS_REV=$(get_nixpkgs_rev flake.lock)
+NEW_HM_REV=$(jq -r '.nodes."home-manager".locked.rev // empty' flake.lock)
+
+# Check if the new nixpkgs commit is in the skip list before proceeding
+if [[ -n "$NEW_NIXPKGS_REV" && "$NEW_NIXPKGS_REV" != "null" && "$NEW_NIXPKGS_REV" != "" ]]; then
+    if grep -q "^$NEW_NIXPKGS_REV$" "$SKIP_LIST_FILE" 2>/dev/null; then
+        print_warning "Nixpkgs commit $NEW_NIXPKGS_REV is in skip list (known problematic)"
+        print_warning "Skipping this update. Remove from $SKIP_LIST_FILE to retry."
+        rm -f "$BACKUP_FILE"
+        exit 0
+    fi
+fi
 
 # Try home-manager switch
 print_status "Running hm-switch..."
@@ -154,19 +168,6 @@ else
     exit 1
 fi
 
-# Get new revisions after update
-NEW_NIXPKGS_REV=$(get_nixpkgs_rev flake.lock)
-NEW_HM_REV=$(jq -r '.nodes."home-manager".locked.rev // empty' flake.lock)
-
-# Check if the new nixpkgs commit is in the skip list
-if [[ -n "$NEW_NIXPKGS_REV" && "$NEW_NIXPKGS_REV" != "null" && "$NEW_NIXPKGS_REV" != "" ]]; then
-    if grep -q "^$NEW_NIXPKGS_REV$" "$SKIP_LIST_FILE" 2>/dev/null; then
-        print_warning "Nixpkgs commit $NEW_NIXPKGS_REV is in skip list (known problematic)"
-        print_warning "Skipping this update. Remove from $SKIP_LIST_FILE to retry."
-        rm -f "$BACKUP_FILE"
-        exit 0
-    fi
-fi
 
 # Determine what changed
 NIXPKGS_CHANGED=0
