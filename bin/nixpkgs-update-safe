@@ -152,8 +152,10 @@ NEW_HM_REV=$(jq -r '.nodes."home-manager".locked.rev // empty' flake.lock)
 if [[ -n "$NEW_NIXPKGS_REV" && "$NEW_NIXPKGS_REV" != "null" && "$NEW_NIXPKGS_REV" != "" ]]; then
     if grep -q "^$NEW_NIXPKGS_REV$" "$SKIP_LIST_FILE" 2>/dev/null; then
         print_warning "Nixpkgs commit $NEW_NIXPKGS_REV is in skip list (known problematic)"
-        print_warning "Skipping this update. Remove from $SKIP_LIST_FILE to retry."
+        print_warning "Restoring previous flake.lock and skipping this update"
+        cp "$BACKUP_FILE" flake.lock
         rm -f "$BACKUP_FILE"
+        print_warning "Remove commit from $SKIP_LIST_FILE to retry."
         exit 0
     fi
 fi
