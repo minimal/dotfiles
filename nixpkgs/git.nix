@@ -22,7 +22,7 @@ in {
     git-absorb
   ];
   programs.git = {
-    package = pkgs.gitAndTools.gitFull;
+    package = pkgs.gitAndTools.gitMinimal;
     enable = true;
     userName = "Chris McDevitt";
 
