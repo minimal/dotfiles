@@ -32,7 +32,7 @@ jobs:
         with:
           # Shallow clones won't work
           fetch-depth: 0
-      - uses: cachix/install-nix-action@v22
+      - uses: cachix/install-nix-action@v31
       - name: Run Flake Checks
         if: ${{ matrix.os != 'ubuntu-latest' }}
         run: |
