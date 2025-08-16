@@ -48,7 +48,7 @@ nix-check-format:
     alejandra --check **/*nix
 
 doom-update-flake: _nix-flake-lock
-    nix flake doom-emacs
+    nix flake update doom-emacs
 
 doom-update-sync: doom-update-flake hm-switch
     doom-sync-git
