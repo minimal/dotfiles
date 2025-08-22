@@ -41,8 +41,11 @@ nix-reg-pin-latest-nixpkgs:
 nixpkgs-update-flake: _nix-flake-lock
     nix flake update nixpkgs home-manager
 
-nixpkgs-update-safe:
+nix-update-safe:
     ./bin/nixpkgs-update-safe
+
+nix-update-safe-nixpkgs-only:
+    ./bin/nixpkgs-update-safe --nixpkgs-only
 
 nix-check-format:
     alejandra --check **/*nix

@@ -14,9 +14,11 @@
 # - Skips update if no changes are detected
 # - Handles nixpkgs node indirection in flake.lock
 # - Maintains skip list for problematic nixpkgs commits
+# - Option to update only nixpkgs (skip home-manager)
 #
 # Usage:
-#   ./bin/nixpkgs-update-safe
+#   ./bin/nixpkgs-update-safe              # Update both nixpkgs and home-manager
+#   ./bin/nixpkgs-update-safe --nixpkgs-only  # Update only nixpkgs
 #   just nix-update-safe
 #
 # Requirements:
@@ -29,6 +31,12 @@ set -euo pipefail
 
 # Skip list file for problematic nixpkgs commits
 SKIP_LIST_FILE=".nix-skip-commits"
+
+# Parse command line arguments
+NIXPKGS_ONLY=false
+if [[ "${1:-}" == "--nixpkgs-only" ]]; then
+    NIXPKGS_ONLY=true
+fi
 
 # Colors for output
 RED='\033[0;31m'
@@ -129,11 +137,20 @@ get_nixpkgs_rev() {
 
 # Get current revisions before update
 OLD_NIXPKGS_REV=$(get_nixpkgs_rev "$BACKUP_FILE")
-OLD_HM_REV=$(jq -r '.nodes."home-manager".locked.rev // empty' "$BACKUP_FILE")
+if [[ "$NIXPKGS_ONLY" == true ]]; then
+    OLD_HM_REV=""
+else
+    OLD_HM_REV=$(jq -r '.nodes."home-manager".locked.rev // empty' "$BACKUP_FILE")
+fi
 
 # Update the flake
-print_status "Running nixpkgs-update-flake..."
-just nixpkgs-update-flake
+if [[ "$NIXPKGS_ONLY" == true ]]; then
+    print_status "Running nixpkgs-only update..."
+    nix flake update nixpkgs
+else
+    print_status "Running nixpkgs-update-flake..."
+    just nixpkgs-update-flake
+fi
 
 # Check if flake.lock actually changed
 if git diff --quiet flake.lock 2>/dev/null; then
@@ -146,7 +163,11 @@ print_status "flake.lock changed, proceeding with checks..."
 
 # Get new revisions after update
 NEW_NIXPKGS_REV=$(get_nixpkgs_rev flake.lock)
-NEW_HM_REV=$(jq -r '.nodes."home-manager".locked.rev // empty' flake.lock)
+if [[ "$NIXPKGS_ONLY" == true ]]; then
+    NEW_HM_REV=""
+else
+    NEW_HM_REV=$(jq -r '.nodes."home-manager".locked.rev // empty' flake.lock)
+fi
 
 # Check if the new nixpkgs commit is in the skip list before proceeding
 if [[ -n "$NEW_NIXPKGS_REV" && "$NEW_NIXPKGS_REV" != "null" && "$NEW_NIXPKGS_REV" != "" ]]; then
@@ -180,7 +201,7 @@ if [[ "$OLD_NIXPKGS_REV" != "$NEW_NIXPKGS_REV" ]]; then
     print_status "Nixpkgs updated: $OLD_NIXPKGS_REV -> $NEW_NIXPKGS_REV"
 fi
 
-if [[ "$OLD_HM_REV" != "$NEW_HM_REV" ]]; then
+if [[ "$NIXPKGS_ONLY" != true && "$OLD_HM_REV" != "$NEW_HM_REV" ]]; then
     HM_CHANGED=1
     print_status "Home-manager updated: $OLD_HM_REV -> $NEW_HM_REV"
 fi
