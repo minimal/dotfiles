@@ -51,7 +51,7 @@
     alejandra # nix formatter
     shfmt
     pgcli
-    poppler_utils # pdftools
+    poppler-utils # pdftools
     prettyping
     tmux
     zsh
@@ -70,7 +70,7 @@
     python3
     pipenv
     uv
-    wakatime
+    wakatime-cli
     highlight
     bat # fast syntax highlight
     httpie
