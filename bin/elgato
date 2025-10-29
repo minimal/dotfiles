@@ -7,7 +7,7 @@
          '[clojure.core.async :as async :refer [go]]
          '[clojure.string :as string])
 
-(def url "http://169.254.89.246:9123/elgato/lights")
+(def url "http://192.168.0.246:9123/elgato/lights")
 (def timeout-ms 3000) ; 3 second timeout for HTTP requests
 
 (def light-state (atom nil))

@@ -87,6 +87,7 @@
     kubectx
     kubelogin-oidc
     krew
+    terraform
 
     kcat
     neovim

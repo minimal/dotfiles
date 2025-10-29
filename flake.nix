@@ -120,6 +120,16 @@
             ./nixpkgs/emacs.nix
             ./nixpkgs/fonts.nix
             ./nixpkgs/profiles/work.nix
+            ({
+              config,
+              lib,
+              ...
+            }: {
+              nixpkgs.config.allowUnfreePredicate = pkg:
+                builtins.elem (lib.getName pkg) [
+                  "terraform"
+                ];
+            })
           ];
         };
         Yuris-MacBook-Airlocal = mkHomeConfig {
