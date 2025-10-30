@@ -13,14 +13,16 @@
 
 ;; (remove-hook 'org-load-hook #'+org-init-keybinds-h)
 
-(when (featurep! spacemacs)
+(when (modulep! spacemacs)
   (remove-hook 'org-load-hook #'+org-init-keybinds-h)
   (doom-init-ui-hook . spacemacs/home))
 
+;; (setq doom-localleader-key ",")
 (setq-default evil-escape-key-sequence "jk")
+
 (map! :leader :desc "M-x" "SPC" #'execute-extended-command
       (:prefix-map ("g" . "git")
-       (:when (featurep! :tools magit)
+       (:when (modulep! :tools magit)
         :desc "Magit status"              "s"   #'magit-status)))
 
 ;; Lisp keybinds
@@ -53,14 +55,14 @@
 
 (+global-word-wrap-mode +1)
 
-(use-package blamer
+(use-package! blamer
   :defer 20
   :custom
   (blamer-idle-time 0.3)
   (blamer-min-offset 70)
   :custom-face
   (blamer-face ((t :foreground "#7a88cf"
-                   :background nil
+                   :background "unspecified"
                    :family "san-serif"
                    :height 120
                    :italic t)))
@@ -147,6 +149,7 @@
 
 
 (set-formatter! 'alejandra "alejandra --quiet" :modes '(nix-mode))
+(set-formatter! 'jq "jq" :modes '(json-mode))
 
 (setq! electric-pair-mode t)
 
