@@ -25,21 +25,21 @@
          args args]
     (if (empty? args)
       m
-      (let [[a & rest] args]
+      (let [[a & rs] args]
         (cond
           (or (= a "-h") (= a "--help")) (assoc m :help true)
-          (or (= a "-f") (= a "--file")) (recur (assoc m :file (first rest)) (rest rest))
+          (or (= a "-f") (= a "--file")) (recur (assoc m :file (first rs)) (rest rs))
           (or (= a "-d") (= a "--delimiter"))
-          (let [ds (or (first rest) ",")
+          (let [ds (or (first rs) ",")
                 ;; allow literal "\\t", actual tab char, or the word "tab"
                 ds (if (= ds "\\t") "\t" ds)
                 delim (if (#{"tab" "\t"} ds)
                         \tab
                         (if (seq ds) (first ds) \,))]
-            (recur (assoc m :delimiter delim) (rest rest)))
+            (recur (assoc m :delimiter delim) (rest rs)))
           :else
           ;; treat first non-flag token as file
-          (recur (assoc m :file a) rest))))))
+          (recur (assoc m :file a) rs))))))
 
 (defn read-rows [{:keys [file delimiter]}]
   (let [file (when (and file (not (str/blank? file))) file)
