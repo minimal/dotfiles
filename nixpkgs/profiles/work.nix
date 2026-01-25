@@ -3,9 +3,11 @@
   lib,
   pkgs,
   ...
-}: {
+}: let
+  sharedLib = import ../lib.nix {inherit lib;};
+in {
   programs.git = {
-    userEmail = "chris.mcdevitt@fundingcircle.com";
+    settings.user.email = sharedLib.reverseString "moc.elcricgnidnuf@ttivedcm.sirhc";
     signing = {
       key = "836FC19C63AEC8BE";
       signByDefault = true;

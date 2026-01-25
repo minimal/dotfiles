@@ -24,9 +24,9 @@ in {
   programs.git = {
     package = pkgs.gitMinimal;
     enable = true;
-    userName = "Chris McDevitt";
+    settings.user.name = "Chris McDevitt";
 
-    aliases = {
+    settings.alias = {
       lol = "log --oneline --graph --decorate";
       lola = "log --graph --decorate --oneline --all";
       ci = "commit";
@@ -57,7 +57,7 @@ in {
       showdft = "!GIT_EXTERNAL_DIFF=difft git show $1 --ext-diff";
       undo-soft = "reset --soft HEAD~1";
     };
-    extraConfig = {
+    settings = {
       color = {
         status = "auto";
         diff = "auto";
