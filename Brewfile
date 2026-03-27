@@ -32,5 +32,4 @@ cask "font-monoid"
 # cask "font-source-serif-pro"
 cask "font-vollkorn"
 
-
-brew "emacs-mac", args: ["with-native-comp", "with-tree-sitter", "with-imagemagick", "with-imagemagick", "with-librsvg", "with-glib", "with-libxml2"]
+brew "emacs-mac@30exp", args: ["with-native-comp", "with-tree-sitter", "with-imagemagick", "with-imagemagick", "with-librsvg", "with-glib", "with-libxml2"]

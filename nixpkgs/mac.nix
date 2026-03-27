@@ -23,7 +23,7 @@ in {
     EDITOR = "emacsclient --no-wait";
     VISUAL = "emacsclient --no-wait";
     PROJECT_HOME = "${HOME}/code";
-    EMACS = "/opt/homebrew/opt/emacs-mac/Emacs.app/Contents/MacOS/Emacs";
+    EMACS = "/opt/homebrew/opt/emacs-mac@30exp/Emacs.app/Contents/MacOS/Emacs";
     GRANTED_ALIAS_CONFIGURED = "true";
     DOD_HOME = "${HOME}/code/fc/originations-toolbox/robert.johnson/decision-output-downloader";
   };
@@ -35,7 +35,7 @@ in {
     zsh = {
       shellAliases = {
         mdfindname = "mdfind -name";
-        emacs = "/opt/homebrew/opt/emacs-mac/Emacs.app/Contents/MacOS/Emacs";
+        emacs = "/opt/homebrew/opt/emacs-mac@30exp/Emacs.app/Contents/MacOS/Emacs";
         emacsclient = "/opt/homebrew/bin/emacsclient";
         assume = "source /opt/homebrew/bin/assume";
       };
