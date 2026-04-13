@@ -1,5 +1,7 @@
 #! /bin/sh
 regex="(TODO|XXX|FIXME)"
+# check if rg is available
+GREPPER=$(command -v rg || echo 'grep')
 if [ $GREPPER != 'grep' ]; then
     $GREPPER $regex
 else

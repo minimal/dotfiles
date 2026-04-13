@@ -8,7 +8,7 @@ brew "terminal-notifier"
 brew "trash"
 brew "mas"
 cask "iterm2"
-cask "flux"
+# cask "flux" # sha256sum mismatch with v 42.2
 cask "amethyst"
 
 cask "font-alegreya"
@@ -31,5 +31,7 @@ cask "font-monoid"
 # cask "font-source-sans-pro"
 # cask "font-source-serif-pro"
 cask "font-vollkorn"
+cask "firefox"
 
 brew "emacs-mac@30exp", args: ["with-native-comp", "with-tree-sitter", "with-imagemagick", "with-imagemagick", "with-librsvg", "with-glib", "with-libxml2"]
+cask "podman-desktop"

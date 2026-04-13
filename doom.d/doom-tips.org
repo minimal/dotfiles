@@ -23,6 +23,7 @@ ds"    deletes the closest surrounding quotes.
 cs'"   change single to double quotes
      See also this tutorial for more examples of what you can do with this plugin. http://www.catonmat.net/blog/vim-plugins-surround-vim/
      https://github.com/emacs-evil/evil-surround
+cs]} change from [] to {}, no gaps. e.g. [:foo] -> {:foo}
 
 SPC r y   consult-yank-from-kill-ring
 == evil-indent -- set to correct indentation
@@ -42,6 +43,9 @@ SPC i r  paste from evil register
 C-o better-jumper-jump-backward
 C-i better-jumper-jump-forward
 
+, r   org-refile menu
+, r . org-refile current file
+, r v org-refile to visible
 
 Diff regions:
 ediff-regions-linewise

@@ -66,3 +66,5 @@ tags
 /.dir-locals.el
 .direnv/
 .aider*
+.agent-shell
+.vscode

@@ -55,6 +55,7 @@
     prettyping
     tmux
     zsh
+    bash
 
     # programming langs
     openjdk
@@ -103,6 +104,7 @@
     # dhall-json
     # dhall-text
     postgresql
+    glow # markdown viewer
   ];
 
   programs = {
