@@ -78,6 +78,7 @@
     sourceHighlight
     cargo
     nodejs
+    bun
     pre-commit
     # haskell-language-server # started trying to compile ormolu and failing
     nixd

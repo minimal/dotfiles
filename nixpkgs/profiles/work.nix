@@ -11,6 +11,7 @@ in {
     signing = {
       key = "836FC19C63AEC8BE";
       signByDefault = true;
+      format = "openpgp";
     };
   };
 }

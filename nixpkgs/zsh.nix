@@ -83,6 +83,7 @@ in {
             ${HOME}/.emacs.d/bin
             ${HOME}/.krew/bin
             ${HOME}/.babashka/bbin/bin
+            ${HOME}/.bun/bin
             /opt/homebrew/bin
             /opt/homebrew/sbin
             $path)
