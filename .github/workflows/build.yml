@@ -36,7 +36,9 @@ jobs:
       - name: Run Flake Checks
         if: ${{ matrix.os != 'ubuntu-latest' }}
         run: |
-          nix flake check -v --show-trace --no-build
+          nix flake check -v --show-trace --no-build --impure
+        env:
+          NIXPKGS_ALLOW_UNFREE: 1 # for terraform
         timeout-minutes: 20
       - name: Run Flake show
         run: |
