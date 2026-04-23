@@ -36,3 +36,5 @@
 home.nix
 /.direnv/
 /doom.d/custom.el
+/.nix-skip-commits
+/flake.lock.backup.*
