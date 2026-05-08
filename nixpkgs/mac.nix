@@ -20,8 +20,8 @@ in {
   ];
 
   home.sessionVariables = {
-    EDITOR = "emacsclient --no-wait";
-    VISUAL = "emacsclient --no-wait";
+    EDITOR = "vi -e";
+    VISUAL = "emacsclient -nw";
     PROJECT_HOME = "${HOME}/code";
     EMACS = "/opt/homebrew/opt/emacs-mac@30exp/Emacs.app/Contents/MacOS/Emacs";
     GRANTED_ALIAS_CONFIGURED = "true";
