@@ -38,3 +38,4 @@ home.nix
 /doom.d/custom.el
 /.nix-skip-commits
 /flake.lock.backup.*
+/.nixpkgs-update-safe-error.*
