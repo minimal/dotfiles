@@ -155,7 +155,7 @@ BACKUP_FILE="flake.lock.backup.$$"
 cp flake.lock "$BACKUP_FILE"
 
 touch "$SKIP_LIST_FILE"
-ERROR_LOG=".nixpkgs-update-safe-error.$$.log"
+ERROR_LOG=$(mktemp -t nixpkgs-update-safe.XXXXXX)
 
 trap 'rollback; exit 1' ERR
 
