@@ -40,20 +40,26 @@ run_with_progress() {
     print_status "$label"
     local cols
     cols=$(($(tput cols 2>/dev/null || echo 80) - 4))
-    # pipefail ensures we get the first command's exit code
+    # Disable errexit so the pipeline failure doesn't exit the function before
+    # we can capture PIPESTATUS and display the error.
+    set +e
     "$@" 2>&1 | tee -a "$ERROR_LOG" | while IFS= read -r line; do
         [[ -z "$line" ]] && continue
         printf '\r\033[K  %s' "${line:0:$cols}"
     done
     local rc=${PIPESTATUS[0]}
+    set -e
     printf '\r\033[K'
     if [[ $rc -ne 0 ]]; then
-        # Show last few meaningful lines so the error is visible
         echo
         print_error "Command failed (exit $rc). Last output:"
-        grep -v '^$' "$ERROR_LOG" | tail -5 | while IFS= read -r line; do
-            echo -e "  ${RED}>${NC} $line"
-        done
+        if [[ -s "$ERROR_LOG" ]]; then
+            grep -v '^$' "$ERROR_LOG" | tail -5 | while IFS= read -r line; do
+                echo -e "  ${RED}>${NC} $line"
+            done
+        else
+            echo -e "  ${RED}>${NC} (no output captured)"
+        fi
     fi
     return $rc
 }
