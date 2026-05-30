@@ -79,10 +79,12 @@ format_date() {
 extract_update_date() {
     local input_name=$1
     # Match the input name, grab the last parenthesized date on the line
+    # || true prevents grep's exit code 1 (no match) from triggering set -e
     grep -i "input '$input_name'" "$ERROR_LOG" 2>/dev/null \
         | grep -oE '\([0-9]{4}-[0-9]{2}-[0-9]{2}\)' \
         | tail -1 \
-        | tr -d '()'
+        | tr -d '()' \
+        || true
 }
 
 # --- Resolve nixpkgs node (handles indirection) ---
