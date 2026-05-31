@@ -73,8 +73,8 @@ in {
 
     profileExtra = ''
 
-      if [[ -s ${HOME}/.secrets ]]; then
-        source "${HOME}/.secrets"
+      if [[ -s ${HOME}/.secrets/secrets ]]; then
+        source "${HOME}/.secrets/secrets"
       fi
 
       path=(${HOME}/bin
