@@ -45,7 +45,8 @@ in {
       pop = "stash pop";
       tags = "!git for-each-ref --sort=-taggerdate --format '%(refname:short) %(taggerdate:relative)' refs/tags";
       tagsonly = "!git for-each-ref --sort=-taggerdate --format '%(refname:short)' refs/tags";
-      pick = "!sh -c 'git log -S$1 -p' -  # show log diffs that add/remove arg string";
+      pick-string = "log -p -G";
+      pick = "log -p -G"; # show log diffs that add/remove arg regex"
       graphviz = "!f() { echo 'digraph git {' ; git log --pretty='format:  %h -> { %p }' \"$@\" | sed 's/[0-9a-f][0-9a-f]*/\"&\"/g' ; echo '}'; }; f";
       root = "!pwd";
       pu = "push --follow-tags";
