@@ -33,27 +33,16 @@
   }: let
     inherit (home-manager.lib) homeManagerConfiguration;
     isDarwin = system: (builtins.elem system nixpkgs.lib.platforms.darwin);
-    M1Overlay = (
-      final: prev: let
-        pkgs_x86_64 = import nixpkgs {localSystem = "x86_64-darwin";};
-      in {}
-    );
     homePrefix = system:
       if isDarwin system
       then "/Users"
       else "/home";
-    mkOverlays = system:
-      [
-        emacs-lsp-booster.overlays.default # Add the booster overlay
-        (final: prev: {doomEmacsRevision = doom-emacs.rev;})
-        (final: prev: {home-manager = home-manager.packages.${system}.home-manager;})
-        (import ./nixpkgs/overlays/bins.nix)
-      ]
-      ++ (
-        if system == "aarch64-darwin"
-        then [M1Overlay]
-        else []
-      );
+    mkOverlays = system: [
+      emacs-lsp-booster.overlays.default # Add the booster overlay
+      (final: prev: {doomEmacsRevision = doom-emacs.rev;})
+      (final: prev: {home-manager = home-manager.packages.${system}.home-manager;})
+      (import ./nixpkgs/overlays/bins.nix)
+    ];
     # Single source of truth for unfree packages: a host opts in by listing
     # package names. Empty (the default) keeps a host fully free.
     mkUnfreeConfig = unfree: {
