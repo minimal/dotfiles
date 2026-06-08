@@ -6,6 +6,9 @@
   # Let Home Manager install and manage itself.
   programs.home-manager.enable = false;
   manual.manpages.enable = false; # https://github.com/nix-community/home-manager/issues/3344
+  # Universal base: lightweight tools every host gets. Heavier/optional
+  # stacks (langs, cloud, work) live in ./modules/* and are opted into
+  # per-host via baseModules in flake.nix.
   home.packages = with pkgs; [
     # pkgs is the set of all packages in the default home.nix implementation
     home-manager
@@ -38,73 +41,38 @@
     pet
     ripgrep
     silver-searcher
+    ast-grep
     tealdeer # fast tldr
     tree
     # unrar # slow compile, nonfree
     wget
     xz
+    yt-dlp
 
-    # devenv
+    # devenv (universal)
     direnv
     nix-prefetch-git
     nixpkgs-fmt
     alejandra # nix formatter
+    nixd
     shfmt
-    pgcli
     poppler-utils # pdftools
     prettyping
     tmux
     zsh
     bash
-
-    # programming langs
-    openjdk
-    clojure
-    leiningen
-    clj-kondo
-    neil
-    clojure-lsp
-    rlwrap
-    shellcheck
-    cloc
-    scc # fast loc counter
-    python3
-    pipenv
-    uv
-    wakatime-cli
-    highlight
-    bat # fast syntax highlight
-    httpie
-    sourceHighlight
-    cargo
-    nodejs
-    bun
-    pre-commit
-    # haskell-language-server # started trying to compile ormolu and failing
-    nixd
-
-    awscli2
-
-    kubectl
-    kubectx
-    kubelogin-oidc
-    krew
-    terraform
-
-    kcat
     neovim
-    yt-dlp
     gnupg
     #pinentry
     #sshrc
-    prettyping
     fontconfig
     htop
     btop
-    # dhall
-    # dhall-json
-    # dhall-text
-    postgresql
+
+    # viewers
+    highlight
+    bat # fast syntax highlight
+    sourceHighlight
     glow # markdown viewer
   ];
 
@@ -130,14 +98,4 @@
   home.file."bin/elgato".source = config.lib.file.mkOutOfStoreSymlink "${config.home.homeDirectory}/code/dotfiles/bin/elgato";
   home.file.".config/nix/nix.conf".source = config.lib.file.mkOutOfStoreSymlink "${config.home.homeDirectory}/code/dotfiles/config/nix/nix.conf";
   home.file.".config/user.justfile".source = config.lib.file.mkOutOfStoreSymlink "${config.home.homeDirectory}/code/dotfiles/config/user.justfile";
-
-  # This value determines the Home Manager release that your
-  # configuration is compatible with. This helps avoid breakage
-  # when a new Home Manager release introduces backwards
-  # incompatible changes.
-  #
-  # You can update Home Manager without changing this value. See
-  # the Home Manager release notes for a list of state version
-  # changes in each release.
-  # home.stateVersion = "21.05";
 }

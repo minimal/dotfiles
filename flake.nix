@@ -117,6 +117,10 @@
           baseModules = [
             ./nixpkgs/emacs.nix
             ./nixpkgs/profiles/personal.nix
+            ./nixpkgs/modules/dev.nix
+            ./nixpkgs/modules/lang-clojure.nix
+            ./nixpkgs/modules/lang-python.nix
+            ./nixpkgs/modules/lang-js.nix
           ];
         };
         FVFG608QQ05Qlocal = mkHomeConfig {
@@ -128,6 +132,12 @@
             ./nixpkgs/emacs.nix
             ./nixpkgs/fonts.nix
             ./nixpkgs/profiles/work.nix
+            ./nixpkgs/modules/dev.nix
+            ./nixpkgs/modules/lang-clojure.nix
+            ./nixpkgs/modules/lang-python.nix
+            ./nixpkgs/modules/lang-js.nix
+            ./nixpkgs/modules/cloud.nix
+            ./nixpkgs/modules/work.nix
           ];
         };
         Yuris-MacBook-Airlocal = mkHomeConfig {
