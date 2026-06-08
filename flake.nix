@@ -36,9 +36,7 @@
     M1Overlay = (
       final: prev: let
         pkgs_x86_64 = import nixpkgs {localSystem = "x86_64-darwin";};
-      in {
-        emacsMacport = pkgs_x86_64.emacsMacport;
-      }
+      in {}
     );
     homePrefix = system:
       if isDarwin system
@@ -56,14 +54,24 @@
         then [M1Overlay]
         else []
       );
+    # Single source of truth for unfree packages: a host opts in by listing
+    # package names. Empty (the default) keeps a host fully free.
+    mkUnfreeConfig = unfree: {
+      allowUnfreePredicate = pkg: builtins.elem (nixpkgs.lib.getName pkg) unfree;
+    };
     mkHomeConfig = {
       username,
       system ? "x86_64-linux",
       baseModules ? [],
       extraModules ? [],
+      unfree ? [],
     }:
       homeManagerConfiguration {
-        pkgs = nixpkgs.legacyPackages.${system};
+        pkgs = import nixpkgs {
+          inherit system;
+          overlays = mkOverlays system;
+          config = mkUnfreeConfig unfree;
+        };
         modules =
           [
             {
@@ -80,8 +88,7 @@
             if isDarwin system
             then [./nixpkgs/mac.nix]
             else [./nixpkgs/linux.nix]
-          )
-          ++ [{nixpkgs.overlays = mkOverlays system;}];
+          );
       };
   in
     {
@@ -116,20 +123,11 @@
           # workm1
           system = "aarch64-darwin";
           username = "chris.mcdevitt";
+          unfree = ["terraform"];
           baseModules = [
             ./nixpkgs/emacs.nix
             ./nixpkgs/fonts.nix
             ./nixpkgs/profiles/work.nix
-            ({
-              config,
-              lib,
-              ...
-            }: {
-              nixpkgs.config.allowUnfreePredicate = pkg:
-                builtins.elem (lib.getName pkg) [
-                  "terraform"
-                ];
-            })
           ];
         };
         Yuris-MacBook-Airlocal = mkHomeConfig {
