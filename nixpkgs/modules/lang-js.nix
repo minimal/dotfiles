@@ -4,5 +4,6 @@
     nodejs
     node-gyp
     bun
+    pnpm
   ];
 }

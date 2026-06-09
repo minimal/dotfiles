@@ -22,8 +22,8 @@ let
   '';
   myEmacs =
     if pkgs.stdenv.isDarwin
-    then pkgs.emacsGcc
-    else pkgs.emacsPgtkGcc;
+    then pkgs.emacs-macport
+    else pkgs.emacs-pgtk;
 
   treeSitterGrammars = pkgs.runCommandLocal "grammars" {} ''
     mkdir -p $out/bin

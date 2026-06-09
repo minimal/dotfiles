@@ -63,7 +63,7 @@
   :recipe (:type git
            :host github
            :repo "NicholasBHubbard/clean-kill-ring.el"))
-(package! clean-kill-ring
+(package! boxquote
   :recipe (:type git
            :host github
            :repo "davep/boxquote.el"))
