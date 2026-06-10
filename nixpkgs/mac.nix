@@ -26,6 +26,7 @@ in {
     EMACS = "/opt/homebrew/opt/emacs-mac@30exp/Emacs.app/Contents/MacOS/Emacs";
     GRANTED_ALIAS_CONFIGURED = "true";
     DOD_HOME = "${HOME}/code/fc/originations-toolbox/robert.johnson/decision-output-downloader";
+    COPILOT_CUSTOM_INSTRUCTIONS_DIRS = "${HOME}/.claude/rules";
   };
 
   home.file.".amethyst".source = config.lib.file.mkOutOfStoreSymlink ../config/amethyst;

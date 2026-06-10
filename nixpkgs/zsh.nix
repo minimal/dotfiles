@@ -15,6 +15,8 @@ in {
     enableCompletion = true;
     history.path = "${HOME}/.zhistory";
     shellAliases = {
+      gls = "${HOME}/.nix-profile/bin/ls";
+      g = "git";
       sl = "eza";
       l = "eza";
       ll = "eza -l";
@@ -61,6 +63,7 @@ in {
       extraConfig = ''
         test -e ${HOME}/.iterm2_shell_integration.zsh && source ${HOME}/.iterm2_shell_integration.zsh
         eval "$(direnv hook zsh)"
+        zstyle ':prezto:module:git:alias' skip 'yes'
       '';
     };
 
@@ -85,6 +88,7 @@ in {
             ${HOME}/.babashka/bbin/bin
             ${HOME}/.bun/bin
             ${HOME}/.local/share/pnpm/bin
+            ${HOME}/.npm-global/bin
             /opt/homebrew/bin
             /opt/homebrew/sbin
             $path)

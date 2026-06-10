@@ -47,8 +47,14 @@ nix-update-safe:
 nix-update-safe-nixpkgs-only:
     ./bin/nixpkgs-update-safe --nixpkgs-only
 
+nix-remove-last-skip-commit:
+    sed -i '$d' .nix-skip-commits
+
 nix-check-format:
-    alejandra --check **/*nix
+    alejandra --check .
+
+nix-format:
+    alejandra .
 
 doom-update-flake: _nix-flake-lock
     nix flake update doom-emacs

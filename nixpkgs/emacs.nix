@@ -24,14 +24,7 @@ let
     if pkgs.stdenv.isDarwin
     then pkgs.emacs-macport
     else pkgs.emacs-pgtk;
-
-  treeSitterGrammars = pkgs.runCommandLocal "grammars" {} ''
-    mkdir -p $out/bin
-    ${
-      lib.concatStringsSep "\n"
-      (lib.mapAttrsToList (name: src: "ln -s ${src}/parser $out/bin/${name}.so") pkgs.tree-sitter.builtGrammars)
-    };
-  '';
+  # TODO: remove and use tree-sit?
   # list taken from here: https://github.com/emacs-tree-sitter/tree-sitter-langs/tree/e7b8db7c4006c04a4bc1fc6865ec31f223843192/repos
   # commented out are not yet packaged in nix
   langs = [
