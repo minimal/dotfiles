@@ -38,29 +38,33 @@ run_with_progress() {
     local label=$1
     shift
     print_status "$label"
-    local cols
+    local cols cmd_log
     cols=$(($(tput cols 2>/dev/null || echo 80) - 4))
+    cmd_log=$(mktemp -t nixpkgs-update-safe-cmd.XXXXXX)
     # Disable errexit so the pipeline failure doesn't exit the function before
     # we can capture PIPESTATUS and display the error.
     set +e
-    "$@" 2>&1 | tee -a "$ERROR_LOG" | while IFS= read -r line; do
+    "$@" 2>&1 | tee "$cmd_log" | while IFS= read -r line; do
         [[ -z "$line" ]] && continue
         printf '\r\033[K  %s' "${line:0:$cols}"
     done
     local rc=${PIPESTATUS[0]}
     set -e
     printf '\r\033[K'
+    # Keep the full output for later date extraction / inspection
+    cat "$cmd_log" >> "$ERROR_LOG"
     if [[ $rc -ne 0 ]]; then
         echo
         print_error "Command failed (exit $rc). Last output:"
-        if [[ -s "$ERROR_LOG" ]]; then
-            grep -v '^$' "$ERROR_LOG" | tail -5 | while IFS= read -r line; do
+        if [[ -s "$cmd_log" ]]; then
+            grep -v '^$' "$cmd_log" | tail -5 | while IFS= read -r line; do
                 echo -e "  ${RED}>${NC} $line"
             done
         else
             echo -e "  ${RED}>${NC} (no output captured)"
         fi
     fi
+    rm -f "$cmd_log"
     return $rc
 }
 
@@ -112,8 +116,8 @@ rollback() {
         print_warning "Detected 'no space left on device'; will not add nixpkgs rev to skip list"
     fi
 
-    # Add problematic nixpkgs commit to skip list
-    if [[ $skip_add -eq 0 && -n "${NEW_NIXPKGS_REV:-}" && "${NEW_NIXPKGS_REV:-}" != "null" ]]; then
+    # Add problematic nixpkgs commit to skip list only if nixpkgs actually changed
+    if [[ $skip_add -eq 0 && -n "${NEW_NIXPKGS_REV:-}" && "${NEW_NIXPKGS_REV:-}" != "null" && "${NEW_NIXPKGS_REV:-}" != "${OLD_NIXPKGS_REV:-}" ]]; then
         if ! grep -q "^$NEW_NIXPKGS_REV$" "$SKIP_LIST_FILE" 2>/dev/null; then
             echo "$NEW_NIXPKGS_REV" >> "$SKIP_LIST_FILE"
             print_warning "Added problematic nixpkgs commit to skip list: $NEW_NIXPKGS_REV"
@@ -123,7 +127,7 @@ rollback() {
     cp "$BACKUP_FILE" flake.lock
 
     print_warning "Running hm-switch to restore previous configuration..."
-    if just hm-switch 2>/dev/null; then
+    if just hm-switch; then
         print_status "Successfully restored previous configuration"
     else
         print_error "Failed to restore previous configuration with hm-switch"
