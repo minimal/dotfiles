@@ -52,11 +52,20 @@ run_with_progress() {
         [[ -z "$line" ]] && continue
         printf '\r\033[K  %s' "${line:0:$cols}"
     done
-    local rc=${PIPESTATUS[0]}
+    local -a pipe_status=("${PIPESTATUS[@]}")
+    local rc=${pipe_status[0]}
+    for p in "${pipe_status[@]}"; do
+        if [[ $p -ne 0 ]]; then
+            rc=$p
+            break
+        fi
+    done
+    # Keep the full output for later date extraction / inspection.
+    # Do this while errexit is still disabled so a disk-full append does not
+    # trigger a second rollback mid-cleanup.
+    cat "$cmd_log" >> "$ERROR_LOG"
     eval "$old_errexit"
     printf '\r\033[K'
-    # Keep the full output for later date extraction / inspection
-    cat "$cmd_log" >> "$ERROR_LOG"
     if [[ $rc -ne 0 ]]; then
         echo
         print_error "Command failed (exit $rc). Last output:"
@@ -111,6 +120,11 @@ cleanup() {
 # --- Rollback on failure ---
 rollback() {
     trap - ERR  # Prevent re-entry
+    # Disable errexit so a failure in any rollback step does not abort the
+    # rest of the rollback (e.g., missing backup, disk-full skip-list write).
+    local old_errexit
+    old_errexit=$(set +o | grep '^set [+-]o errexit$')
+    set +e
     print_warning "Rolling back flake.lock..."
 
     # Restore the working-tree file and the git index first, before any
@@ -149,6 +163,7 @@ rollback() {
         rm -f "$ERROR_LOG"
     fi
     print_status "Rollback completed"
+    eval "$old_errexit"
 }
 
 # --- Preflight checks ---
@@ -180,8 +195,14 @@ trap 'rollback; exit 1' ERR
 
 # Get current revisions
 OLD_NIXPKGS_REV=$(get_nixpkgs_rev "$BACKUP_FILE")
-OLD_HM_REV=""
-[[ "$NIXPKGS_ONLY" != true ]] && OLD_HM_REV=$(jq -r '.nodes."home-manager".locked.rev // empty' "$BACKUP_FILE")
+if [[ "$NIXPKGS_ONLY" != true ]]; then
+    OLD_HM_REV=$(jq -r '.nodes."home-manager".locked.rev // empty' "$BACKUP_FILE") || {
+        print_error "Failed to read home-manager revision from $BACKUP_FILE"
+        exit 1
+    }
+else
+    OLD_HM_REV=""
+fi
 
 # --- Update flake ---
 if [[ "$NIXPKGS_ONLY" == true ]]; then
@@ -212,8 +233,14 @@ print_status "flake.lock changed, proceeding with checks..."
 
 # Get new revisions
 NEW_NIXPKGS_REV=$(get_nixpkgs_rev flake.lock)
-NEW_HM_REV=""
-[[ "$NIXPKGS_ONLY" != true ]] && NEW_HM_REV=$(jq -r '.nodes."home-manager".locked.rev // empty' flake.lock)
+if [[ "$NIXPKGS_ONLY" != true ]]; then
+    NEW_HM_REV=$(jq -r '.nodes."home-manager".locked.rev // empty' flake.lock) || {
+        print_error "Failed to read home-manager revision from flake.lock"
+        exit 1
+    }
+else
+    NEW_HM_REV=""
+fi
 
 # Check skip list
 if [[ -n "$NEW_NIXPKGS_REV" && "$NEW_NIXPKGS_REV" != "null" ]]; then
