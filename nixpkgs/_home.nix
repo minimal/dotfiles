@@ -40,13 +40,13 @@
     lsd # ls alt
     pet
     ripgrep
-    silver-searcher
     ast-grep
     tealdeer # fast tldr
     tree
     # unrar # slow compile, nonfree
     wget
     xz
+    ouch # easy compressions
     yt-dlp
 
     # devenv (universal)
