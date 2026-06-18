@@ -42,14 +42,18 @@ run_with_progress() {
     cols=$(($(tput cols 2>/dev/null || echo 80) - 4))
     cmd_log=$(mktemp -t nixpkgs-update-safe-cmd.XXXXXX)
     # Disable errexit so the pipeline failure doesn't exit the function before
-    # we can capture PIPESTATUS and display the error.
+    # we can capture PIPESTATUS and display the error. Save and restore the
+    # original option state so an abnormal function exit doesn't leave set -e
+    # disabled for the rest of the script.
+    local old_errexit
+    old_errexit=$(set +o | grep '^set [+-]o errexit$')
     set +e
     "$@" 2>&1 | tee "$cmd_log" | while IFS= read -r line; do
         [[ -z "$line" ]] && continue
         printf '\r\033[K  %s' "${line:0:$cols}"
     done
     local rc=${PIPESTATUS[0]}
-    set -e
+    eval "$old_errexit"
     printf '\r\033[K'
     # Keep the full output for later date extraction / inspection
     cat "$cmd_log" >> "$ERROR_LOG"
@@ -57,9 +61,9 @@ run_with_progress() {
         echo
         print_error "Command failed (exit $rc). Last output:"
         if [[ -s "$cmd_log" ]]; then
-            grep -v '^$' "$cmd_log" | tail -5 | while IFS= read -r line; do
+            (grep -v '^$' "$cmd_log" | tail -5 | while IFS= read -r line; do
                 echo -e "  ${RED}>${NC} $line"
-            done
+            done) || true
         else
             echo -e "  ${RED}>${NC} (no output captured)"
         fi
@@ -109,6 +113,11 @@ rollback() {
     trap - ERR  # Prevent re-entry
     print_warning "Rolling back flake.lock..."
 
+    # Restore the working-tree file and the git index first, before any
+    # operations (like skip-list writes) that could fail and abort rollback.
+    cp "$BACKUP_FILE" flake.lock
+    git restore --staged flake.lock 2>/dev/null || true
+
     # Don't skip-list if failure was due to disk space
     local skip_add=0
     if [[ -f "$ERROR_LOG" ]] && grep -qi "no space left on device" "$ERROR_LOG" 2>/dev/null; then
@@ -123,8 +132,6 @@ rollback() {
             print_warning "Added problematic nixpkgs commit to skip list: $NEW_NIXPKGS_REV"
         fi
     fi
-
-    cp "$BACKUP_FILE" flake.lock
 
     print_warning "Running hm-switch to restore previous configuration..."
     if just hm-switch; then
