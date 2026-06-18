@@ -16,6 +16,12 @@ set -euo pipefail
 # --- Configuration ---
 SKIP_LIST_FILE=".nix-skip-commits"
 
+# --- State flags for trap-driven rollback ---
+# ROLLBACK_DONE: set by rollback() so repeated trap invocations are idempotent.
+# APPLIED: set once hm-switch succeeds — never roll back the system afterwards.
+ROLLBACK_DONE=0
+APPLIED=0
+
 # --- Argument parsing ---
 NIXPKGS_ONLY=false
 [[ "${1:-}" == "--nixpkgs-only" ]] && NIXPKGS_ONLY=true
@@ -53,13 +59,15 @@ run_with_progress() {
         printf '\r\033[K  %s' "${line:0:$cols}"
     done
     local -a pipe_status=("${PIPESTATUS[@]}")
+    # Only the wrapped command (pipe_status[0]) decides success/failure.
+    # tee (pipe_status[1]) can fail writing the log — e.g. on "no space left
+    # on device", the exact case we handle — while the command itself
+    # succeeded. Treating tee's failure as the command's would wrongly roll
+    # back a successful update.
     local rc=${pipe_status[0]}
-    for p in "${pipe_status[@]}"; do
-        if [[ $p -ne 0 ]]; then
-            rc=$p
-            break
-        fi
-    done
+    if [[ ${pipe_status[1]:-0} -ne 0 ]]; then
+        print_warning "Command log capture had a write error (exit ${pipe_status[1]})"
+    fi
     # Keep the full output for later date extraction / inspection.
     # Do this while errexit is still disabled so a disk-full append does not
     # trigger a second rollback mid-cleanup.
@@ -78,7 +86,7 @@ run_with_progress() {
         fi
     fi
     rm -f "$cmd_log"
-    return $rc
+    return "$rc"
 }
 
 # --- Date formatting (macOS compatible) ---
@@ -120,6 +128,8 @@ cleanup() {
 # --- Rollback on failure ---
 rollback() {
     trap - ERR  # Prevent re-entry
+    [[ $ROLLBACK_DONE -eq 1 ]] && return 0
+    ROLLBACK_DONE=1
     # Disable errexit so a failure in any rollback step does not abort the
     # rest of the rollback (e.g., missing backup, disk-full skip-list write).
     local old_errexit
@@ -192,6 +202,12 @@ touch "$SKIP_LIST_FILE"
 ERROR_LOG=$(mktemp -t nixpkgs-update-safe.XXXXXX)
 
 trap 'rollback; exit 1' ERR
+trap 'echo; print_warning "Interrupted by signal"; exit 130' INT TERM
+# On any exit, roll back only if the system config was never successfully
+# applied (APPLIED=0), rollback hasn't already run (ROLLBACK_DONE=0), the
+# backup file still exists, and flake.lock actually diverged from it (nothing
+# to restore otherwise). Always remove the backup file.
+trap 'if [[ $APPLIED -eq 0 && $ROLLBACK_DONE -eq 0 && -f "$BACKUP_FILE" ]] && ! diff -q "$BACKUP_FILE" flake.lock >/dev/null 2>&1; then rollback; fi; rm -f "$BACKUP_FILE" 2>/dev/null' EXIT
 
 # Get current revisions
 OLD_NIXPKGS_REV=$(get_nixpkgs_rev "$BACKUP_FILE")
@@ -262,6 +278,13 @@ if ! run_with_progress "Running hm-switch..." just hm-switch; then
     exit 1
 fi
 
+# The system is now running the new configuration. From here on, a failure
+# (e.g. during commit) must NOT roll back the already-applied system — only
+# git-side recovery is appropriate. Disarm ERR and mark applied so the
+# INT/TERM/EXIT traps skip system rollback too.
+APPLIED=1
+trap - ERR
+
 # --- Build commit message from nix output dates ---
 NIXPKGS_CHANGED=0
 HM_CHANGED=0
@@ -291,18 +314,25 @@ if [[ ${#parts[@]} -eq 0 ]]; then
 fi
 
 # Join parts with " & " and dates with ", "
-joined_parts=$(IFS='&'; echo "${parts[*]}" | sed 's/&/ \& /g')
-joined_dates=$(IFS=','; echo "${dates[*]}" | sed 's/,/, /g')
+joined_parts=$(IFS='&'; echo "${parts[*]}")
+joined_parts=${joined_parts//&/ & }
+joined_dates=$(IFS=','; echo "${dates[*]}")
+joined_dates=${joined_dates//,/, }
 COMMIT_MSG="nix: update ${joined_parts} (${joined_dates})"
 
 print_status "Commit message: $COMMIT_MSG"
 
 # --- Commit ---
 git add flake.lock
-git commit -m "$COMMIT_MSG"
+if ! git commit -m "$COMMIT_MSG"; then
+    print_error "System was updated successfully, but the commit failed."
+    print_error "flake.lock is staged with the new update. Finish the commit manually:"
+    print_error "  git commit -m \"$COMMIT_MSG\""
+    cleanup
+    exit 1
+fi
 
 cleanup
-trap - ERR
 
 print_status "✅ Successfully updated and committed flake.lock"
 print_status "Commit: $(git rev-parse --short HEAD)"
