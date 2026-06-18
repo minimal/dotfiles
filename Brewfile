@@ -1,8 +1,8 @@
 #!/usr/bin/env ruby
 
 # 'brew tap'
-tap "homebrew/cask-fonts"
 tap "railwaycat/emacsmacport"
+tap "hashicorp/tap"
 
 brew "terminal-notifier"
 brew "trash"
@@ -35,3 +35,4 @@ cask "firefox"
 
 brew "emacs-mac@30exp", args: ["with-native-comp", "with-tree-sitter", "with-imagemagick", "with-imagemagick", "with-librsvg", "with-glib", "with-libxml2"]
 cask "podman-desktop"
+brew "hashicorp/tap/terraform"

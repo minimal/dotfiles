@@ -116,7 +116,7 @@
           # workm1
           system = "aarch64-darwin";
           username = "chris.mcdevitt";
-          unfree = ["terraform"];
+          unfree = [];
           baseModules = [
             ./nixpkgs/emacs.nix
             ./nixpkgs/fonts.nix
