@@ -89,7 +89,7 @@
   };
 
   # Raw configuration files
-  home.file.".tmux.conf".source = ../config/tmux.conf;
+  home.file.".tmux.conf".source = config.lib.file.mkOutOfStoreSymlink "${config.home.homeDirectory}/code/dotfiles/config/tmux.conf";
   home.file.".config/git/gitignore".source = ../config/git/gitignore;
   home.file."bin/fzfprev".source = ../bin/fzfprev;
   home.file."bin/qfind".source = ../bin/fzfprev;
