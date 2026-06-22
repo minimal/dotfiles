@@ -191,8 +191,7 @@ in {
     ];
   };
 
-  # autojump clone in rust
-  programs.pazi = {
+  programs.zoxide = {
     enable = true;
     enableZshIntegration = true;
   };

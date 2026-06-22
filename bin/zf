@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 
-dir=$(pazi -i | awk '{print $2}' | fzf --header 'New tmux session' --preview 'eza -la {}' --height 40% --reverse)
+dir=$(zoxide query -l | fzf --header 'New tmux session' --preview 'eza -la --no-permissions --no-user {}' --height 40% --reverse)
 
 if [ -n "$dir" ]; then
   session_name=$(basename "$dir")
