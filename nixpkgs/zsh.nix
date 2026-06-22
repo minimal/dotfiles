@@ -25,7 +25,7 @@ in {
       gita = "git archive --format=zip `git reflog | grep 'HEAD@{0}' | cut -d \" \" -f1 | sed 's/[.]*//g'` > archive.zip";
       # gka = "gitk --all&";
       rm-git-turds = "rm **/(*.orig|*(LOCAL|BASE|REMOTE|BACKUP)*)";
-      switch = "cd ${HOME}/code/dotfiles && make hm-switch";
+      switch = "cd ${HOME}/code/dotfiles && rm -f ${HOME}/.config/zsh/.zcompdump* && make hm-switch";
       nsearch = "nix search nixpkgs";
       rgclj = "rg --type clojure";
       j = "just --justfile ${justfile} --working-directory .";
@@ -143,8 +143,7 @@ in {
             }
             refresh-just-aliases
 
-        # Initialize the completion system
-        autoload -U compinit && compinit
+        # Completion system is initialized by prezto's `completion` module.
       '')
 
       (lib.mkOrder 800 ''
