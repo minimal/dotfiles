@@ -19,15 +19,6 @@
 
 | Keys | Action |
 |---|---|
-| `prefix` + `o` | **Sessionx** — fuzzy-find / create sessions |
-| Within sessionx: | |
-| `C-x` | Browse `~/code` directories for a new session |
-| `C-r` | Rename selected session |
-| `C-d` | Kill selected session |
-| `C-w` | Browse windows within a session |
-| `C-t` | Tree view (sessions + windows) |
-| `?` | Toggle preview pane |
-| `Esc` / `C-c` | Close sessionx |
 | `prefix` + `s` | Built-in session list |
 | `prefix` + `d` | Detach from session |
 | `prefix` + `(` / `)` | Previous / next session |
