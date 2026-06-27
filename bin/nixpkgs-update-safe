@@ -89,6 +89,53 @@ run_with_progress() {
     return "$rc"
 }
 
+# --- Run a build command with nix's native progress bar ---
+# Unlike run_with_progress (which pipes output through a tee/read loop and so
+# forces nix into its non-interactive 'raw' logger — no colour, no [x/y/z]
+# build counter), this lets the command keep the real terminal on stdout/stderr
+# so nix detects a TTY and renders its native progress bar.
+#
+# To still capture output for date extraction, disk-full detection, and the
+# failure tail, we use nix's `json-log-path` setting: it streams structured
+# (internal-json) log events to a side file while leaving the terminal free for
+# the bar. NIX_CONFIG propagates the setting to nested nix invocations (e.g. the
+# `nix build` inside `home-manager switch`). We then flatten the JSON message
+# and build-log lines into ERROR_LOG so the rest of the script is unchanged.
+run_with_bar() {
+    local label=$1
+    shift
+    print_status "$label"
+    local jlog nl
+    jlog=$(mktemp -t nixpkgs-update-safe-json.XXXXXX)
+    nl=$'\n'
+    local old_errexit
+    old_errexit=$(set +o | grep '^set [+-]o errexit$')
+    set +e
+    # Inline assignment so the side-channel setting (appended to any existing
+    # NIX_CONFIG) applies only to this command and its children. stdout/stderr
+    # are inherited, so nix renders its native progress bar to the terminal.
+    NIX_CONFIG="${NIX_CONFIG:+${NIX_CONFIG}${nl}}json-log-path = ${jlog}" "$@"
+    local rc=$?
+    # Flatten structured events into ERROR_LOG: notices/errors (msg) plus build
+    # log lines (resBuildLogLine=101, resPostBuildLogLine=107) so disk-full
+    # detection and the failure tail keep working.
+    if [[ -s "$jlog" ]]; then
+        jq -r '
+            if .action == "msg" then (.raw_msg // .msg // empty)
+            elif .action == "result" and (.type == 101 or .type == 107)
+                then (.fields[1] // empty)
+            else empty end
+        ' "$jlog" >> "$ERROR_LOG" 2>/dev/null || cat "$jlog" >> "$ERROR_LOG"
+    fi
+    eval "$old_errexit"
+    rm -f "$jlog"
+    if [[ $rc -ne 0 ]]; then
+        echo
+        print_error "Command failed (exit $rc). See output above."
+    fi
+    return "$rc"
+}
+
 # --- Date formatting (macOS compatible) ---
 format_date() {
     local raw=$1
@@ -271,7 +318,7 @@ if [[ -n "$NEW_NIXPKGS_REV" && "$NEW_NIXPKGS_REV" != "null" ]]; then
 fi
 
 # --- Apply with home-manager switch ---
-if ! run_with_progress "Running hm-switch..." just hm-switch; then
+if ! run_with_bar "Running hm-switch..." just hm-switch; then
     print_error "hm-switch failed"
     trap - ERR
     rollback
