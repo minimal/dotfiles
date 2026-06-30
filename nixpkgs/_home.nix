@@ -58,7 +58,9 @@
     shfmt
     poppler-utils # pdftools
     prettyping
-    tmux
+    restic # encrypted, deduplicated, incremental backups
+    # tmux # wait until version > 3.6a is released (3.6b or 3.7)
+    sesh 
     zsh
     bash
     neovim
@@ -68,6 +70,7 @@
     fontconfig
     htop
     btop
+    starship
 
     # viewers
     highlight
@@ -92,11 +95,14 @@
   home.file.".tmux.conf".source = config.lib.file.mkOutOfStoreSymlink "${config.home.homeDirectory}/code/dotfiles/config/tmux.conf";
   home.file.".config/git/gitignore".source = ../config/git/gitignore;
   home.file."bin/fzfprev".source = ../bin/fzfprev;
-  home.file."bin/qfind".source = ../bin/fzfprev;
+  home.file."bin/qfind".source = ../bin/qfind;
   home.file."bin/cmd_exists".source = ../bin/cmd_exists;
   home.file."bin/csv2md".source = ../bin/csv2md.bb;
   home.file."bin/elgato".source = config.lib.file.mkOutOfStoreSymlink "${config.home.homeDirectory}/code/dotfiles/bin/elgato";
   home.file."bin/zf".source = config.lib.file.mkOutOfStoreSymlink "${config.home.homeDirectory}/code/dotfiles/bin/zf";
   home.file.".config/nix/nix.conf".source = config.lib.file.mkOutOfStoreSymlink "${config.home.homeDirectory}/code/dotfiles/config/nix/nix.conf";
   home.file.".config/user.justfile".source = config.lib.file.mkOutOfStoreSymlink "${config.home.homeDirectory}/code/dotfiles/config/user.justfile";
+  home.file.".config/restic/include.conf".source = config.lib.file.mkOutOfStoreSymlink "${config.home.homeDirectory}/code/dotfiles/config/restic/include.conf";
+  home.file.".config/restic/exclude.conf".source = config.lib.file.mkOutOfStoreSymlink "${config.home.homeDirectory}/code/dotfiles/config/restic/exclude.conf";
+  home.file."bin/restic-backup.sh".source = config.lib.file.mkOutOfStoreSymlink "${config.home.homeDirectory}/code/dotfiles/bin/restic-backup.sh";
 }

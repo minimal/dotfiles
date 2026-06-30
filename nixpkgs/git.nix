@@ -20,6 +20,8 @@ in {
     git-extras
     git-export-stash
     git-absorb
+    worktrunk
+    vimPlugins.codediff-nvim
   ];
   programs.git = {
     package = pkgs.gitMinimal;
@@ -45,7 +47,7 @@ in {
       pop = "stash pop";
       tags = "!git for-each-ref --sort=-taggerdate --format '%(refname:short) %(taggerdate:relative)' refs/tags";
       tagsonly = "!git for-each-ref --sort=-taggerdate --format '%(refname:short)' refs/tags";
-      pick-string = "log -p -G";
+      pick-string = "log -p -S";
       pick = "log -p -G"; # show log diffs that add/remove arg regex"
       graphviz = "!f() { echo 'digraph git {' ; git log --pretty='format:  %h -> { %p }' \"$@\" | sed 's/[0-9a-f][0-9a-f]*/\"&\"/g' ; echo '}'; }; f";
       root = "!pwd";

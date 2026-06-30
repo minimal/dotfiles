@@ -41,7 +41,7 @@ nix-reg-pin-latest-nixpkgs:
 nixpkgs-update-flake: _nix-flake-lock
     nix flake update nixpkgs home-manager
 
-nix-update-safe:
+nix-update-safe: nix-reg-pin-latest-nixpkgs
     ./bin/nixpkgs-update-safe
 
 nix-update-safe-nixpkgs-only:
@@ -64,6 +64,11 @@ doom-update-sync: doom-update-flake hm-switch
 
 doom-trash-packages:
     trash ~/.emacs.d/.local/straight/
+
+# Wipe straight packages and fully resync, regenerating the envvar loader (-e)
+# so GUI Emacs (Finder/Dock) picks up the nix PATH again.
+doom-trash-resync: doom-trash-packages
+    YES=1 FORCE=1 $HOME/.emacs.d/bin/doom sync -u -e
 
 git-submodules:
     git submodule update --init

@@ -17,7 +17,7 @@ let
     if [ $(git -C $HOME/.emacs.d rev-parse HEAD) != ${pkgs.doomEmacsRevision} ]; then
       git -C $HOME/.emacs.d fetch https://github.com/doomemacs/doomemacs.git || true
       git -C $HOME/.emacs.d checkout ${pkgs.doomEmacsRevision} || true
-      YES=1 FORCE=1 $HOME/.emacs.d/bin/doom sync -u || true
+      YES=1 FORCE=1 $HOME/.emacs.d/bin/doom sync -u -e || true
     fi
   '';
   myEmacs =
@@ -36,18 +36,18 @@ let
     "css"
     "clojure" # not in emacs tree-sitter-langs yet :(
     /*
-     "elm"
-     */
+    "elm"
+    */
     # "fluent"
     "go"
     "haskell"
     /*
-     "hcl"
-     */
+    "hcl"
+    */
     "html"
     /*
-     "janet-simple"
-     */
+    "janet-simple"
+    */
     "java"
     "javascript"
     "jsdoc"
@@ -57,8 +57,8 @@ let
     "python"
     "php"
     /*
-     "pgn"
-     */
+    "pgn"
+    */
     "ruby"
     "rust"
     "scala"

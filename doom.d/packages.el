@@ -67,11 +67,42 @@
   :recipe (:type git
            :host github
            :repo "davep/boxquote.el"))
+;; (package! chatgpt
+;;   :recipe (:type git :host github :repo "emacs-openai/chatgpt"))
 (package! editorconfig)
 
-(package! copilot
-  :recipe (:host github :repo "copilot-emacs/copilot.el" :files ("*.el" "dist")))
+;; (package! copilot
+;;   :recipe (:host github :repo "copilot-emacs/copilot.el" :files ("*.el" "dist")))
 
 (package! difftastic)
 (package! pcre2el)
 (package! epoch-view)
+
+(package! copilot-chat
+  :recipe (:host github :repo "chep/copilot-chat.el" :files ("*.el")))
+(package! org-download)
+(package! kaocha-runner)
+(package! rainbow-delimiters)
+
+;; de-download-mode for downloading decisions and reports
+;; (package! de-download-mode
+;;   :recipe (:local-repo "/Users/chris.mcdevitt/code/fc/dod-emacs-mode/robert.johnson/decision-output-downloader"
+;;            :files ("de-download-mode.el")))
+
+;; Optional: Enhanced JSON support
+(package! json-reformat)
+(package! json-snatcher)
+
+;; Optional: Enhanced dired support
+(package! dired-sidebar)
+(package! all-the-icons-dired)
+
+
+;; agent-shell
+(package! shell-maker :pin "808bede99dc2c2d27c3dc69d5f363aade40e6f87")
+(package! acp)
+(package! agent-shell :pin "68b8c394a4838fb54f7dbfc70cee38e7310f03a3")
+
+(package! pi-coding-agent)
+(package! catppuccin-theme)
+(package! ghostel)

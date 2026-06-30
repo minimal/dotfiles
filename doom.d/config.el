@@ -36,12 +36,20 @@
        :n "s-k" #'cider-repl-backward-input
        :n "s-j" #'cider-repl-forward-input))
 
+
 (setq cider-print-fn "puget")
 
 (use-package magit-delta
   :hook (magit-mode . magit-delta-mode))
 
 (use-package wakatime-mode
+  ;; Pin the cli explicitly so wakatime never falls back to its buggy
+  ;; auto-download path. When Emacs is launched from Finder it doesn't
+  ;; inherit the shell PATH, so `executable-find' fails to locate the nix
+  ;; binary and wakatime tries to download wakatime-cli over HTTP; that
+  ;; async callback hits an upstream lexical-binding bug
+  ;; (Symbol's value as variable is void: output-file).
+  :init (setq wakatime-cli-path "/Users/chris.mcdevitt/.nix-profile/bin/wakatime-cli")
   :config (global-wakatime-mode))
 
 (use-package just-mode)
@@ -52,6 +60,36 @@
                "s"  #'de-run-scenario-test-at-point
                "f"  #'de-run-feature))))
 
+(map! (:localleader
+       (:map cider-test-report-mode-map
+             "d" #'diff-clojure )))
+
+
+;; (defun diff-clojure (start end)
+;;   (interactive "r")
+;;   ;;(thing-at-point 'line 'no-properties)
+;;   ;; (message (buffer-substring start end))
+
+;;   (let* ((region (buffer-substring start end))
+;;          (sexp (format "(scenario/test-output-diff '%s)" region)))
+
+;;     ;; (message sexp)
+;;     ;; (cider-read-and-eval sexp)
+;;     ;; (cider--pprint-eval-form sexp)
+;;     (cider-insert-in-repl sexp 1)))
+
+;; copilot improved version
+(defun diff-clojure (start end)
+  "Evaluate the selected region of Clojure code and generate a diff.
+START and END define the region to evaluate. The result is inserted into the REPL."
+  (interactive "r")
+  (if (use-region-p)
+      (let* ((region (buffer-substring start end))
+             (sexp (format "(scenario/test-output-diff '%s)" region)))
+        (cider-repl-set-ns "scenario")
+        (cider-insert-in-repl sexp 1)
+        (message "Sent region diff to REPL: %s" sexp))
+    (message "No region selected!")))
 
 (+global-word-wrap-mode +1)
 
@@ -91,11 +129,30 @@
 ;; There are two ways to load a theme. Both assume the theme is installed and
 ;; available. You can either set `doom-theme' or manually load a theme with the
 ;; `load-theme' function. This is the default:
-(setq doom-theme 'doom-one)
+;; (setq doom-theme 'doom-one)
+;; (setq catppuccin-flavor 'mocha)
+(setq doom-theme 'catppuccin)
 
-;; If you use `org' and don't want your org files in the default location below,
+;; If you use `org' and don't want your org files jkjkin the default location below,
 ;; change `org-directory'. It must be set before org loads!
 (setq org-directory "~/org/")
+
+;; add more capture templates in %DOOMDIR%/config.el
+(after! org
+  (setq org-capture-templates               ; [1]
+        (append org-capture-templates       ; [2]
+                '(;("f" "Custom Capture")    ; [3]
+                  ("c" "Custom Capture todo with date" entry
+                   (file+headline +org-capture-todo-file "Inbox")
+                   "* TODO %U %?\n%i\n%a" :prepend t)
+                  ;; ("fb" "B Custom Capture" entry
+                  ;;  (file+headline +org-capture-todo-file "Inbox")
+                  ;;  "* TODO %?\n%i\n%a" :prepend t)
+                  ))))
+
+;; [1] make the value of org-capture-templates the result of the following form
+;; [2] return a list combining lists a & b, here org-capture-templates & our quoted list
+;; [3] our list that we want appended to org-capture-templates
 
 ;; This determines the style of line numbers in effect. If set to `nil', line
 ;; numbers are disabled. For relative line numbers, set this to `relative'.
@@ -147,6 +204,21 @@
                                       "\\(defrule\\)\\>")
                              1 font-lock-keyword-face)))
   (setq cider-font-lock-dynamically '(macro core function var)))
+;; (flycheck-add-next-checker 'lsp 'clj-kondo-clj)
+;; (consult-customize
+;;  +default/search-project
+;;  :preview-key '(:debounce 0.2 any))
+
+;; (use-package! consult
+;;   :config
+;;   (consult-customize
+;;    consult-ripgrep consult-git-grep consult-grep
+;;    consult-bookmark consult-xref
+;;    consult--source-bookmark
+;;    :preview-key '(:debounce 0.2 any)))
+;; ;;(map! :map doom-leader-map "s p" #'consult-ripgrep)
+;;
+;;
 
 
 (set-formatter! 'alejandra "alejandra --quiet" :modes '(nix-mode))
@@ -155,6 +227,7 @@
 (setq! electric-pair-mode t)
 
 (use-package! justl)
+
 
 ;; magit difftastic setup
 
@@ -267,8 +340,12 @@
 
 ;; end magit difftastic
 
-(use-package! clean-kill-ring
-  :config (clean-kill-ring-mode 1))
+;; (use-package! clean-kill-ring
+;;   :config (clean-kill-ring-mode 1))
+
+
+;; (use-package! chatgpt)
+
 (use-package! boxquote)
 (comment
  (use-package! editorconfig
@@ -277,13 +354,19 @@
 
 
 ;; accept completion from copilot and fallback to company
-(use-package! copilot
-  :hook (prog-mode . copilot-mode)
-  :bind (:map copilot-completion-map
-              ("<tab>" . 'copilot-accept-completion)
-              ("TAB" . 'copilot-accept-completion)
-              ("C-TAB" . 'copilot-accept-completion-by-word)
-              ("C-<tab>" . 'copilot-accept-completion-by-word)))
+(comment 
+ (use-package! copilot
+   :hook (prog-mode . copilot-mode)
+   :bind (:map copilot-completion-map
+               ("<tab>" . 'copilot-accept-completion)
+               ("TAB" . 'copilot-accept-completion)
+               ("C-TAB" . 'copilot-accept-completion-by-word)
+               ("C-<tab>" . 'copilot-accept-completion-by-word))
+   :config ;; Disable in org-mode
+   (add-to-list 'copilot-disable-predicates
+                (lambda () (derived-mode-p 'json-mode)))
+   (add-to-list 'copilot-disable-predicates
+                (lambda () (derived-mode-p 'org-mode)))))
 
 (setq copilot-node-executable "/Users/chris.mcdevitt/.nix-profile/bin/node")
 
@@ -304,6 +387,9 @@ Use `set-region-read-only' to set this property."
   (interactive "r")
   (with-silent-modifications
     (remove-text-properties begin end '(read-only t))))
+
+;; (setq!
+;;  (warning-suppress-types '(((copilot copilot-no-mode-indent)) (iedit))))
 (setq! copilot-indent-offset-warning-disable t)
 
 
@@ -317,6 +403,7 @@ Use `set-region-read-only' to set this property."
     '(transient-append-suffix 'magit-diff '(-1 -1)
        [("D" "Difftastic diff (dwim)" difftastic-magit-diff)
         ("S" "Difftastic show" difftastic-magit-show)])))
+
 (use-package! pcre2el)
 (use-package! rxt)
 (use-package! epoch-view
@@ -345,6 +432,9 @@ Use `set-region-read-only' to set this property."
   '(("\\<[0-9]\\{13\\}\\>"
      (0 (epoch-view-render))))
   "Font-lock keywords of epoch timestamps.")
+
+(use-package! copilot-chat
+  :after (request org markdown-mode))
 
 (put 'lsp-booster--advice-json-parse 'native-comp-never-compile t)
 
@@ -380,6 +470,117 @@ Use `set-region-read-only' to set this property."
           (when-let ((command-from-exec-path (executable-find (car orig-result))))  ;; resolve command from exec-path (in case not found in $PATH)
             (setcar orig-result command-from-exec-path))
           (message "Using emacs-lsp-booster for %s!" orig-result)
-          (cons "emacs-lsp-booster" orig-result))
+          ;; (cons "emacs-lsp-booster" orig-result)
+          (append '("emacs-lsp-booster" "--disable-bytecode" "--") orig-result))
       orig-result)))
 (advice-add 'lsp-resolve-final-command :around #'lsp-booster--advice-final-command)
+
+
+(use-package! kaocha-runner
+  :after (cider-mode)
+  :bind (:map clojure-mode-map
+              ("C-c k t" . kaocha-runner-run-test-at-point)
+              ("C-c k r" . kaocha-runner-run-tests)
+              ("C-c k a" . kaocha-runner-run-all-tests)
+              ("C-c k w" . kaocha-runner-show-warnings)
+              ("C-c k h" . kaocha-runner-hide-windows)))
+
+
+(add-hook! '(prog-mode-hook
+             text-mode-hook
+             conf-mode-hook)
+           #'rainbow-delimiters-mode)
+;;; de-download-mode configuration
+;; Added by install-doom.sh on Tue Jul 29 17:09:03 BST 2025
+(comment 
+ (use-package! de-download-mode
+   :defer t
+   :commands (de-download-decisions
+              de-download-latest-decision
+              de-download-reports
+              de-download-batch-test
+              de-download-menu)
+   :config
+   ;; Configure paths (adjust as needed)
+   (setq de-download-script-path "/Users/chris.mcdevitt/code/fc/originations-toolbox/robert.johnson/decision-output-downloader/de_download.clj")
+   (setq de-download-default-environment "prod")
+   (setq de-download-auto-open-dired t))
+
+ ;; Leader key bindings
+ (map! :leader
+       (:prefix-map ("d" . "decisions/download")
+        :desc "Download menu"                  "m" #'de-download-menu
+        :desc "Download decisions"             "d" #'de-download-decisions
+        :desc "Download latest decision"       "l" #'de-download-latest-decision
+        :desc "Download reports"               "r" #'de-download-reports
+        :desc "Download batch test"            "b" #'de-download-batch-test))
+
+ ;; Local leader bindings for dired
+ (map! :map dired-mode-map
+       :localleader
+       (:prefix ("d" . "decisions")
+        :desc "Download for this app"         "d" #'de-download-from-dired
+        :desc "Download latest for this app"  "l" #'de-download-latest-from-dired
+        :desc "Download reports for this app" "r" #'de-download-reports-from-dired))
+
+ ;; Popup configuration
+ (set-popup-rule! "^\\*Decision-.*\\*$" :side 'right :size 0.5 :select t :quit t)
+ (set-popup-rule! "^\\*Summary-.*\\*$" :side 'bottom :size 0.3 :select t :quit t)
+
+ ;; Which-key descriptions
+ (after! which-key
+   (which-key-add-key-based-replacements
+     "SPC d" "decisions/download"
+     "SPC d d" "download decisions"
+     "SPC d l" "download latest"
+     "SPC d r" "download reports"
+     "SPC d b" "download batch test"
+     "SPC d m" "download menu"))
+
+ ;; Auto-enable in relevant modes
+ (add-hook! '(dired-mode-hook json-mode-hook clojure-mode-hook)
+   (de-download-mode 1))
+
+ ;; Helper functions for dired integration
+ (defun de-download-from-dired ()
+   "Download decisions for app ID extracted from current dired directory."
+   (interactive)
+   (when (derived-mode-p 'dired-mode)
+     (let* ((dir-name (file-name-nondirectory (directory-file-name default-directory)))
+            (app-id (if (string-match "^[0-9a-f\\-]+$" dir-name) dir-name
+                      (read-string "App ID: " dir-name)))
+            (env (completing-read "Environment: " '("prod" "staging" "uat") nil t "prod")))
+       (de-download-decisions app-id env))))
+
+ (defun de-download-latest-from-dired ()
+   "Download latest decision for app ID extracted from current dired directory."
+   (interactive)
+   (when (derived-mode-p 'dired-mode)
+     (let* ((dir-name (file-name-nondirectory (directory-file-name default-directory)))
+            (app-id (if (string-match "^[0-9a-f\\-]+$" dir-name) dir-name
+                      (read-string "App ID: " dir-name)))
+            (env (completing-read "Environment: " '("prod" "staging" "uat") nil t "prod")))
+       (de-download-latest-decision app-id env t))))
+
+ (defun de-download-reports-from-dired ()
+   "Download reports for app ID extracted from current dired directory."
+   (interactive)
+   (when (derived-mode-p 'dired-mode)
+     (let* ((dir-name (file-name-nondirectory (directory-file-name default-directory)))
+            (app-id (if (string-match "^[0-9a-f\\-]+$" dir-name) dir-name
+                      (read-string "App ID: " dir-name)))
+            (env (completing-read "Environment: " '("prod" "staging" "uat") nil t "prod"))
+            (report-type (completing-read "Report type: " 
+                                          '("ccds" "callcredit" "creditsafe" "loc-summary") 
+                                          nil t)))
+       (de-download-reports app-id env report-type)))))
+
+
+;; agent-shell
+(require 'acp)
+(require 'agent-shell)
+
+(use-package! pi-coding-agent
+  :init (defalias 'pi 'pi-coding-agent))
+
+(use-package! ghostel)

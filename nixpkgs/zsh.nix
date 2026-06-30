@@ -25,7 +25,7 @@ in {
       gita = "git archive --format=zip `git reflog | grep 'HEAD@{0}' | cut -d \" \" -f1 | sed 's/[.]*//g'` > archive.zip";
       # gka = "gitk --all&";
       rm-git-turds = "rm **/(*.orig|*(LOCAL|BASE|REMOTE|BACKUP)*)";
-      switch = "cd ${HOME}/code/dotfiles && rm -f ${HOME}/.config/zsh/.zcompdump* && make hm-switch";
+      switch = "cd ${HOME}/code/dotfiles && rm -f ${HOME}/.config/zsh/.zcompdump*(N) && make hm-switch";
       nsearch = "nix search nixpkgs";
       rgclj = "rg --type clojure";
       j = "just --justfile ${justfile} --working-directory .";
@@ -133,6 +133,23 @@ in {
                                   'bindkey "^[[A" history-beginning-search-backward'
                                   'bindkey "^[[B" history-beginning-search-forward'
                                   'bindkey "^O" pet-select')
+
+      function sesh-sessions() {
+  {
+    exec </dev/tty
+    exec <&1
+    local session
+    session=$(sesh list -t -c | fzf --height 40% --reverse --border-label ' sesh ' --border --prompt '⚡  ')
+    zle reset-prompt > /dev/null 2>&1 || true
+    [[ -z "$session" ]] && return
+    sesh connect $session
+  }
+      }
+
+zle     -N             sesh-sessions
+bindkey -M emacs '\es' sesh-sessions
+bindkey -M vicmd '\es' sesh-sessions
+bindkey -M viins '\es' sesh-sessions
       '')
 
       (lib.mkOrder 700 ''
@@ -143,7 +160,18 @@ in {
             }
             refresh-just-aliases
 
-        # Completion system is initialized by prezto's `completion` module.
+        # worktrunk (wt) shell integration: defines the `wt` cd/exec wrapper
+        # and a lazy completer. Sourcing it here defines the functions, but its
+        # internal `compdef` registration is wiped when home-manager runs
+        # prezto's compinit *after* all initContent. So we (re)register the
+        # completion on the first prompt via a one-shot precmd, by which point
+        # prezto's compinit has run and `compdef` is live.
+        source ${HOME}/code/dotfiles/nixpkgs/wt-integration.zsh
+        _wt_register_completion() {
+          (( $+functions[compdef] )) && compdef _wt_lazy_complete wt
+          add-zsh-hook -d precmd _wt_register_completion
+        }
+        autoload -Uz add-zsh-hook && add-zsh-hook precmd _wt_register_completion
       '')
 
       (lib.mkOrder 800 ''
