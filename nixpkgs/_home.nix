@@ -59,7 +59,7 @@
     poppler-utils # pdftools
     prettyping
     restic # encrypted, deduplicated, incremental backups
-    # tmux # wait until version > 3.6a is released (3.6b or 3.7)
+    tmux 
     sesh 
     zsh
     bash
