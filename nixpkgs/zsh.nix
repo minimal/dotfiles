@@ -28,6 +28,7 @@ in {
       # gka = "gitk --all&";
       rm-git-turds = "rm **/(*.orig|*(LOCAL|BASE|REMOTE|BACKUP)*)";
       switch = "cd ${HOME}/code/dotfiles && rm -f ${HOME}/.config/zsh/.zcompdump*(N) && make hm-switch";
+      emacsd = "emacs --daemon";
       nsearch = "nix search nixpkgs";
       nsearchx = "(){ nix search nixpkgs \"^$1$\";}";
       rgclj = "rg --type clojure";
@@ -83,18 +84,8 @@ in {
         source "${HOME}/.secrets/secrets"
       fi
 
-      path=(${HOME}/bin
-            ${HOME}/.local/bin
-            ${HOME}/.cargo/bin
-            ${HOME}/.emacs.d/bin
-            ${HOME}/.krew/bin
-            ${HOME}/.babashka/bbin/bin
-            ${HOME}/.bun/bin
-            ${HOME}/.local/share/pnpm/bin
-            ${HOME}/.npm-global/bin
-            /opt/homebrew/bin
-            /opt/homebrew/sbin
-            $path)
+      source ${HOME}/.config/shell/paths.sh
+      export BASH_ENV="${HOME}/.config/shell/paths.sh"
     '';
     # /usr/local/bin gets added at the front after the above so
     # overrides some of nix bins etc. How to fix?
@@ -107,6 +98,18 @@ in {
 
         # To customize prompt, run `p10k configure` or edit ~/.config/zsh/.p10k.zsh.
         [[ ! -f ~/.config/zsh/.p10k.zsh ]] || source ~/.config/zsh/.p10k.zsh
+
+        # Auto-start Emacs daemon (WSL2), then connect with client
+        function ec() {
+            if ! emacsclient -e '(+ 1 1)' 2>/dev/null >/dev/null; then
+                # Clean up stale server socket from a previous crashed daemon
+                rm -f "${TMPDIR:-/tmp}/emacs$(id -u)/server" "${HOME}/.emacs.d/server/server" 2>/dev/null
+                # PGTK Emacs on WSL crashes when the Wayland/X display disconnects.
+                # Start daemon without display to keep it alive across terminal sessions.
+                env -u WAYLAND_DISPLAY -u DISPLAY command emacs --daemon
+            fi
+            emacsclient -nw "$@"
+        }
 
         function grep-port {
             lsof -n -i4TCP:$1 | grep LISTEN && nc -z localhost $1

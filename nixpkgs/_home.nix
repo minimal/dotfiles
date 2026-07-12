@@ -100,6 +100,7 @@
   home.file.".tmux.conf".source = config.lib.file.mkOutOfStoreSymlink "${config.home.homeDirectory}/code/dotfiles/config/tmux.conf";
   home.file.".config/nvim/init.lua".source = config.lib.file.mkOutOfStoreSymlink "${config.home.homeDirectory}/code/dotfiles/config/nvim/init.lua";
   home.file.".config/nvim/vimrc.vim".source = config.lib.file.mkOutOfStoreSymlink "${config.home.homeDirectory}/code/dotfiles/config/nvim/vimrc.vim";
+  home.file.".config/shell/paths.sh".source = ../config/shell/paths.sh;
   home.file.".config/git/gitignore".source = ../config/git/gitignore;
   home.file."bin/fzfprev".source = ../bin/fzfprev;
   home.file."bin/qfind".source = ../bin/qfind;
