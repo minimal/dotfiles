@@ -1,0 +1,4 @@
+:inoremap jk <Esc>
+:inoremap kj <Esc>
+:vnoremap jk <Esc>
+:vnoremap kj <Esc>

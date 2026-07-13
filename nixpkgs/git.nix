@@ -21,8 +21,9 @@ in {
     git-export-stash
     git-absorb
     worktrunk
-    vimPlugins.codediff-nvim
   ];
+
+  programs.neovim.plugins = [pkgs.vimPlugins.codediff-nvim];
   programs.git = {
     package = pkgs.gitMinimal;
     enable = true;

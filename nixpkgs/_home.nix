@@ -59,11 +59,10 @@
     poppler-utils # pdftools
     prettyping
     restic # encrypted, deduplicated, incremental backups
-    tmux 
-    sesh 
+    tmux
+    sesh
     zsh
     bash
-    neovim
     gnupg
     #pinentry
     #sshrc
@@ -90,10 +89,17 @@
       settings.tree_view = true;
     };
     jq.enable = true;
+    neovim = {
+      enable = true;
+      sideloadInitLua = true;
+      plugins = [pkgs.vimPlugins.oil-nvim pkgs.vimPlugins.nvim-web-devicons pkgs.vimPlugins.mini-nvim];
+    };
   };
 
   # Raw configuration files
   home.file.".tmux.conf".source = config.lib.file.mkOutOfStoreSymlink "${config.home.homeDirectory}/code/dotfiles/config/tmux.conf";
+  home.file.".config/nvim/init.lua".source = config.lib.file.mkOutOfStoreSymlink "${config.home.homeDirectory}/code/dotfiles/config/nvim/init.lua";
+  home.file.".config/nvim/vimrc.vim".source = config.lib.file.mkOutOfStoreSymlink "${config.home.homeDirectory}/code/dotfiles/config/nvim/vimrc.vim";
   home.file.".config/git/gitignore".source = ../config/git/gitignore;
   home.file."bin/fzfprev".source = ../bin/fzfprev;
   home.file."bin/qfind".source = ../bin/qfind;
