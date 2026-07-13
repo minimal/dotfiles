@@ -71,6 +71,7 @@
     htop
     btop
     starship
+    fastfetch
 
     # viewers
     highlight

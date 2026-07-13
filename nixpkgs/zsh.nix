@@ -15,18 +15,21 @@ in {
     enableCompletion = true;
     history.path = "${HOME}/.zhistory";
     shellAliases = {
+      en = "emacsclient -n"; # open in emacs gui
       gls = "${HOME}/.nix-profile/bin/ls";
       g = "git";
       sl = "eza";
       l = "eza";
       ll = "eza -l";
       la = "eza -la";
+      ltr = "eza -l --sort time --reverse";
       ip = "ip --color=auto";
       gita = "git archive --format=zip `git reflog | grep 'HEAD@{0}' | cut -d \" \" -f1 | sed 's/[.]*//g'` > archive.zip";
       # gka = "gitk --all&";
       rm-git-turds = "rm **/(*.orig|*(LOCAL|BASE|REMOTE|BACKUP)*)";
       switch = "cd ${HOME}/code/dotfiles && rm -f ${HOME}/.config/zsh/.zcompdump*(N) && make hm-switch";
       nsearch = "nix search nixpkgs";
+      nsearchx = "(){ nix search nixpkgs \"^$1$\";}";
       rgclj = "rg --type clojure";
       j = "just --justfile ${justfile} --working-directory .";
     };
