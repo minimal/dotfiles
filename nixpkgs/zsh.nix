@@ -106,7 +106,7 @@ in {
                 rm -f "${TMPDIR:-/tmp}/emacs$(id -u)/server" "${HOME}/.emacs.d/server/server" 2>/dev/null
                 # PGTK Emacs on WSL crashes when the Wayland/X display disconnects.
                 # Start daemon without display to keep it alive across terminal sessions.
-                env -u WAYLAND_DISPLAY -u DISPLAY command emacs --daemon
+                env -u WAYLAND_DISPLAY -u DISPLAY emacs --daemon
             fi
             emacsclient -nw "$@"
         }
