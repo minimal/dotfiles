@@ -12,7 +12,7 @@ in {
   ];
 
   home.packages = with pkgs; [
-    terminal-notifier
+    # terminal-notifier
     tk
     babashka
     pinentry_mac
@@ -30,6 +30,9 @@ in {
   };
 
   home.file.".amethyst".source = config.lib.file.mkOutOfStoreSymlink ../config/amethyst;
+  home.file.".gnupg/gpg-agent.conf".text = ''
+    pinentry-program ${pkgs.pinentry_mac}/bin/pinentry-mac
+  '';
   # home.file.".lein".source = ../.lein;
 
   programs = {

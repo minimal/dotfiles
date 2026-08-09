@@ -48,6 +48,7 @@
     xz
     ouch # easy compressions
     yt-dlp
+    ncdu
 
     # devenv (universal)
     direnv
@@ -64,12 +65,12 @@
     zsh
     bash
     gnupg
-    #pinentry
     #sshrc
     fontconfig
     htop
     btop
     starship
+    gum
     fastfetch
 
     # viewers
@@ -77,6 +78,7 @@
     bat # fast syntax highlight
     sourceHighlight
     glow # markdown viewer
+    tuicr
   ];
 
   programs = {
@@ -92,6 +94,8 @@
     neovim = {
       enable = true;
       sideloadInitLua = true;
+      withPython3 = true;
+      withRuby = false;
       plugins = [pkgs.vimPlugins.oil-nvim pkgs.vimPlugins.nvim-web-devicons pkgs.vimPlugins.mini-nvim];
     };
   };

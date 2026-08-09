@@ -16,6 +16,7 @@ in {
     history.path = "${HOME}/.zhistory";
     shellAliases = {
       en = "emacsclient -n"; # open in emacs gui
+      nv = "nvim";
       gls = "${HOME}/.nix-profile/bin/ls";
       g = "git";
       sl = "eza";
@@ -92,6 +93,9 @@ in {
     initContent = lib.mkMerge [
       (lib.mkOrder 550 ''
         fpath=(~/code/dotfiles/nixpkgs/zfunc $fpath)
+
+        # Required for gpg-agent to launch pinentry-mac for commit signing.
+        export GPG_TTY=$(tty)
       '')
 
       (lib.mkOrder 600 ''
