@@ -115,6 +115,61 @@ self: super: {
         platforms = ["aarch64-darwin" "x86_64-darwin" "x86_64-linux"];
       };
     };
+
+  # beads_rust (br) - agent-first issue tracker.
+  # Uses the statically-linked musl build on Linux: the gnu prebuilds require
+  # glibc >= 2.38 and fail on older distros (e.g. Ubuntu 22.04 / glibc 2.35).
+  # To update: bump `version`, then refresh the hashes (one per artifact) with:
+  #   nix-prefetch-url --unpack "https://github.com/Dicklesworthstone/beads_rust/releases/download/vX.Y.Z/br-X.Y.Z-linux_musl_amd64.tar.gz"
+  br = with super;
+    stdenv.mkDerivation rec {
+      name = "br-${version}";
+      version = "0.3.2";
+      src = let
+        sources = {
+          "x86_64-linux" = fetchzip {
+            url = "https://github.com/Dicklesworthstone/beads_rust/releases/download/v${version}/br-${version}-linux_musl_amd64.tar.gz";
+            sha256 = "sha256-YAlhCv1lRbZCkX4SQkxsDa8zjpYbGVX0WlJIm7Oa8zQ=";
+            name = "br";
+            stripRoot = false; # tarball has br + README + LICENSE at top level
+          };
+          "aarch64-linux" = fetchzip {
+            url = "https://github.com/Dicklesworthstone/beads_rust/releases/download/v${version}/br-${version}-linux_musl_arm64.tar.gz";
+            sha256 = "sha256-Mt0NJzl/oiQ4qOZE+5qE3Mt6UMUwaBImnMZIK2kyFDM=";
+            name = "br";
+            stripRoot = false; # tarball has br + README + LICENSE at top level
+          };
+          "x86_64-darwin" = fetchzip {
+            url = "https://github.com/Dicklesworthstone/beads_rust/releases/download/v${version}/br-${version}-darwin_amd64.tar.gz";
+            sha256 = "sha256-+X7IAiZ/YrxjomL5t/T8NU1y/uCie05v85Yoi7vjap8=";
+            name = "br";
+            stripRoot = false; # tarball has br + README + LICENSE at top level
+          };
+          "aarch64-darwin" = fetchzip {
+            url = "https://github.com/Dicklesworthstone/beads_rust/releases/download/v${version}/br-${version}-darwin_arm64.tar.gz";
+            sha256 = "sha256-RZrTqNFF9tp0OcUDdLqkFrdnds6R3LeL1TtR9z3PF5M=";
+            name = "br";
+            stripRoot = false; # tarball has br + README + LICENSE at top level
+          };
+        };
+      in
+        sources."${stdenv.hostPlatform.system}";
+
+      phases = ["installPhase"];
+
+      installPhase = ''
+        mkdir -p $out/bin
+        cp -p $src/br $out/bin/br
+      '';
+
+      meta = with lib; {
+        description = "Agent-first issue tracker (SQLite + JSONL)";
+        homepage = "https://github.com/Dicklesworthstone/beads_rust";
+        # MIT with OpenAI/Anthropic rider (custom variant, not plain MIT)
+        license = licenses.mit;
+        platforms = ["x86_64-linux" "aarch64-linux" "x86_64-darwin" "aarch64-darwin"];
+      };
+    };
 }
 # See for fetching different archs
 # https://github.com/jtacoma/nixpkgs/blob/42e09c2134add3ae66c6579478c474aeffd8443d/pkgs/development/interpreters/dart/default.nix

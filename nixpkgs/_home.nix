@@ -17,6 +17,7 @@
     # cmdline / system programs
     aspell
     aspellDicts.en
+    br # beads_rust issue tracker
     cmake
     coreutils
     curl
