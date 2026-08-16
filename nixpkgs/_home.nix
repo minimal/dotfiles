@@ -18,6 +18,7 @@
     aspell
     aspellDicts.en
     br # beads_rust issue tracker
+    bv # beads_viewer
     cmake
     coreutils
     curl

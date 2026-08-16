@@ -170,6 +170,60 @@ self: super: {
         platforms = ["x86_64-linux" "aarch64-linux" "x86_64-darwin" "aarch64-darwin"];
       };
     };
+
+  # beads_viewer (bv) - companion viewer for beads_rust.
+  # Statically linked Go binary, so no glibc concerns on any distro.
+  # To update: bump `version`, then refresh the hashes (one per artifact) with:
+  #   nix-prefetch-url --unpack "https://github.com/Dicklesworthstone/beads_viewer/releases/download/vX.Y.Z/bv_linux_amd64.tar.gz"
+  bv = with super;
+    stdenv.mkDerivation rec {
+      name = "bv-${version}";
+      version = "0.20.0";
+      src = let
+        sources = {
+          "x86_64-linux" = fetchzip {
+            url = "https://github.com/Dicklesworthstone/beads_viewer/releases/download/v${version}/bv_linux_amd64.tar.gz";
+            sha256 = "sha256-1seS7P7hKq2xzVJOiIL+YidIhfasf3OjZyg9tMY6Kck=";
+            name = "bv";
+            stripRoot = false; # tarball has bv + LICENSE + README + CHANGELOG at top level
+          };
+          "aarch64-linux" = fetchzip {
+            url = "https://github.com/Dicklesworthstone/beads_viewer/releases/download/v${version}/bv_linux_arm64.tar.gz";
+            sha256 = "sha256-JYV0YPIRXk27ubs3gCWSsW33qBhFGyVl2v/d454PG4M=";
+            name = "bv";
+            stripRoot = false; # tarball has bv + LICENSE + README + CHANGELOG at top level
+          };
+          "x86_64-darwin" = fetchzip {
+            url = "https://github.com/Dicklesworthstone/beads_viewer/releases/download/v${version}/bv_darwin_amd64.tar.gz";
+            sha256 = "sha256-7XgE44JPESlrVIb/AkBaYLEYg3PQc/y1kp0tNS4ZGlE=";
+            name = "bv";
+            stripRoot = false; # tarball has bv + LICENSE + README + CHANGELOG at top level
+          };
+          "aarch64-darwin" = fetchzip {
+            url = "https://github.com/Dicklesworthstone/beads_viewer/releases/download/v${version}/bv_darwin_arm64.tar.gz";
+            sha256 = "sha256-hBFAqI1rDYegknMYeA8mR2BGYPgQcfIOn9WZ3DPk3Ls=";
+            name = "bv";
+            stripRoot = false; # tarball has bv + LICENSE + README + CHANGELOG at top level
+          };
+        };
+      in
+        sources."${stdenv.hostPlatform.system}";
+
+      phases = ["installPhase"];
+
+      installPhase = ''
+        mkdir -p $out/bin
+        cp -p $src/bv $out/bin/bv
+      '';
+
+      meta = with lib; {
+        description = "Companion viewer for the beads_rust issue tracker";
+        homepage = "https://github.com/Dicklesworthstone/beads_viewer";
+        # MIT with OpenAI/Anthropic rider (custom variant, not plain MIT)
+        license = licenses.mit;
+        platforms = ["x86_64-linux" "aarch64-linux" "x86_64-darwin" "aarch64-darwin"];
+      };
+    };
 }
 # See for fetching different archs
 # https://github.com/jtacoma/nixpkgs/blob/42e09c2134add3ae66c6579478c474aeffd8443d/pkgs/development/interpreters/dart/default.nix
