@@ -5,7 +5,9 @@
 }:
 # to enable:
 # ln -s linux.nix home.nix
-{
+let
+  HOME = config.home.homeDirectory;
+in {
   imports = [
     ./_home.nix
     ./git.nix
@@ -25,7 +27,25 @@
     zsh = {
       shellAliases = {
         code = "/mnt/c/Users/Chris/AppData/Local/Programs/Microsoft\\ VS\\ Code/bin/code";
+        # Lightweight pi for local models: only extensions with zero/low tool tokens
+        pi-local =
+          "pi --no-extensions"
+          + " -e npm:pi-sandbox"
+          + " -e npm:pi-vim"
+          + " -e npm:@juicesharp/rpiv-btw"
+          + " -e npm:pi-context-usage"
+          + " -e npm:@tmustier/pi-usage-extension"
+          + " -e npm:pi-cache-graph"
+          + " -e npm:pi-token-speed"
+          + " -e npm:@juicesharp/rpiv-todo"
+          + " -e npm:@sting8k/pi-vcc"
+          + " -e ${HOME}/.pi/agent/extensions/pi-tool-classifier/index.ts"
+          + " -e ${HOME}/.pi/agent/extensions/agent-sessions-pi-live/index.ts"
+          + " -e ${HOME}/.pi/agent/extensions/context-monitor.ts";
       };
+      initContent = ''
+        . ${HOME}/.nix-profile/etc/profile.d/nix.sh
+      '';
     };
   };
 }
