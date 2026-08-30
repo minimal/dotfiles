@@ -21,7 +21,7 @@ let
     fi
   '';
   myEmacs =
-    if pkgs.stdenv.isDarwin
+    if pkgs.stdenv.hostPlatform.isDarwin
     then pkgs.emacs-macport
     else pkgs.emacs-nox;
   # TODO: remove and use tree-sit?

@@ -1,7 +1,7 @@
 {pkgs, ...}: {
   # Clojure / JVM toolchain.
   home.packages = with pkgs; [
-    openjdk
+    openjdk25
     clojure
     leiningen
     clj-kondo
