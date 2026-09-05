@@ -44,6 +44,10 @@ nixpkgs-update-flake: _nix-flake-lock
 nix-update-safe: nix-reg-pin-latest-nixpkgs
     ./bin/nixpkgs-update-safe
 
+# Refresh beads (br/bv) versions + source hashes from latest GitHub releases
+bump-beads *args:
+    ./bin/bump-beads.bb {{args}}
+
 nix-update-safe-nixpkgs-only:
     ./bin/nixpkgs-update-safe --nixpkgs-only
 

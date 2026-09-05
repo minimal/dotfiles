@@ -74,6 +74,7 @@
     starship
     gum
     fastfetch
+    babashka
 
     # viewers
     highlight

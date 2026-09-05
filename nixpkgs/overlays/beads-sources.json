@@ -1,0 +1,44 @@
+{
+  "br": {
+    "sources": {
+      "aarch64-darwin": {
+        "sha256": "sha256-gc76gg5gOKAbGUJAh7xyEP549Odc1/dRPLDuzPU2bBs=",
+        "url": "https://github.com/Dicklesworthstone/beads_rust/releases/download/v0.5.10/br-0.5.10-darwin_arm64.tar.gz"
+      },
+      "aarch64-linux": {
+        "sha256": "sha256-bovTCVt0iAPhv14T/avF0vd+S612tOjbIQ5FGNHHSWw=",
+        "url": "https://github.com/Dicklesworthstone/beads_rust/releases/download/v0.5.10/br-0.5.10-linux_musl_arm64.tar.gz"
+      },
+      "x86_64-darwin": {
+        "sha256": "sha256-2/nouLnok06uSh7O9f/4E7volqFmwfJBHMV481XSNXI=",
+        "url": "https://github.com/Dicklesworthstone/beads_rust/releases/download/v0.5.10/br-0.5.10-darwin_amd64.tar.gz"
+      },
+      "x86_64-linux": {
+        "sha256": "sha256-liJNvZ/H/p9Eh2DbvzRO1mhnfy/UAKclL8VbiFt2f8w=",
+        "url": "https://github.com/Dicklesworthstone/beads_rust/releases/download/v0.5.10/br-0.5.10-linux_musl_amd64.tar.gz"
+      }
+    },
+    "version": "0.5.10"
+  },
+  "bv": {
+    "sources": {
+      "aarch64-darwin": {
+        "sha256": "sha256-wrYmL7JOHHQxQx4m53voTk1gFN6ZSd7Amz3uC1pEcTg=",
+        "url": "https://github.com/Dicklesworthstone/beads_viewer/releases/download/v0.23.0/bv_0.23.0_darwin_arm64.tar.gz"
+      },
+      "aarch64-linux": {
+        "sha256": "sha256-91E9ImGLUXdEWT6hvvz0O0EDie54j6bey+0/kYCvWbw=",
+        "url": "https://github.com/Dicklesworthstone/beads_viewer/releases/download/v0.23.0/bv_0.23.0_linux_arm64.tar.gz"
+      },
+      "x86_64-darwin": {
+        "sha256": "sha256-WxAccXbRqWPP9fCGyMcJYF9OIGLOe5Yd6BkXrJXFwT8=",
+        "url": "https://github.com/Dicklesworthstone/beads_viewer/releases/download/v0.23.0/bv_0.23.0_darwin_amd64.tar.gz"
+      },
+      "x86_64-linux": {
+        "sha256": "sha256-dGhP+OKGGxeawk4qUgQ96lwy1m7ZeeJbG1lQmd0u9w8=",
+        "url": "https://github.com/Dicklesworthstone/beads_viewer/releases/download/v0.23.0/bv_0.23.0_linux_amd64.tar.gz"
+      }
+    },
+    "version": "0.23.0"
+  }
+}

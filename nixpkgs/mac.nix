@@ -14,7 +14,6 @@ in {
   home.packages = with pkgs; [
     # terminal-notifier
     tk
-    babashka
     pinentry_mac
     granted
   ];
