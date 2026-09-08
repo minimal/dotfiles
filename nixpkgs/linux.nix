@@ -27,6 +27,10 @@ in {
     zsh = {
       shellAliases = {
         code = "/mnt/c/Users/Chris/AppData/Local/Programs/Microsoft\\ VS\\ Code/bin/code";
+        # WSL clipboard bridge. Windows dirs are not on PATH here, so use
+        # full paths. -NoProfile skips the PowerShell startup profile.
+        pbcopy = "/mnt/c/Windows/System32/clip.exe";
+        pbpaste = "/mnt/c/Windows/System32/WindowsPowerShell/v1.0/powershell.exe -NoProfile -Command 'Get-Clipboard' | tr -d '\\r'";
         # Lightweight pi for local models: only extensions with zero/low tool tokens
         pi-local =
           "pi --no-extensions"

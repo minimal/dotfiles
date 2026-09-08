@@ -84,7 +84,7 @@ in {
       findutils
     ]
     ++ (
-      if pkgs.stdenv.isDarwin
+      if pkgs.stdenv.hostPlatform.isDarwin
       then []
       else [myEmacs]
     );
