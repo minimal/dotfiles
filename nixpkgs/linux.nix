@@ -23,6 +23,11 @@ in {
     VISUAL = "nvim";
   };
 
+  # Executables rather than aliases so non-interactive bash (pi's tool shell,
+  # where zsh aliases never expand) can use them too.
+  home.file."bin/pbcopy".source = ../bin/pbcopy;
+  home.file."bin/pbpaste".source = ../bin/pbpaste;
+
   programs = {
     zsh = {
       shellAliases = {

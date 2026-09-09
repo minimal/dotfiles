@@ -1,0 +1,4 @@
+#!/bin/sh
+# WSL clipboard copy. Windows dirs are not on PATH, so use full path.
+# Reads stdin, like macOS pbcopy.
+exec /mnt/c/Windows/System32/clip.exe

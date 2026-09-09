@@ -1,0 +1,4 @@
+#!/bin/sh
+# WSL clipboard paste. Windows dirs are not on PATH, so use full path.
+# -NoProfile skips the PowerShell startup profile. Strip Windows CRLF.
+/mnt/c/Windows/System32/WindowsPowerShell/v1.0/powershell.exe -NoProfile -Command 'Get-Clipboard' | tr -d '\r'
