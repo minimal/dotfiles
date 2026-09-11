@@ -2,43 +2,43 @@
   "br": {
     "sources": {
       "aarch64-darwin": {
-        "sha256": "sha256-gc76gg5gOKAbGUJAh7xyEP549Odc1/dRPLDuzPU2bBs=",
-        "url": "https://github.com/Dicklesworthstone/beads_rust/releases/download/v0.5.10/br-0.5.10-darwin_arm64.tar.gz"
+        "sha256": "sha256-DJI7LC2U94K/9BOS0IOk6H3GAyLDgBipvK7q5RnXrkY=",
+        "url": "https://github.com/Dicklesworthstone/beads_rust/releases/download/v0.5.12/br-0.5.12-darwin_arm64.tar.gz"
       },
       "aarch64-linux": {
-        "sha256": "sha256-bovTCVt0iAPhv14T/avF0vd+S612tOjbIQ5FGNHHSWw=",
-        "url": "https://github.com/Dicklesworthstone/beads_rust/releases/download/v0.5.10/br-0.5.10-linux_musl_arm64.tar.gz"
+        "sha256": "sha256-tzugMeL67vd026hH6c91k1wOAXlyB7UcoHk9G0cSHOw=",
+        "url": "https://github.com/Dicklesworthstone/beads_rust/releases/download/v0.5.12/br-0.5.12-linux_musl_amd64.tar.gz"
       },
       "x86_64-darwin": {
-        "sha256": "sha256-2/nouLnok06uSh7O9f/4E7volqFmwfJBHMV481XSNXI=",
-        "url": "https://github.com/Dicklesworthstone/beads_rust/releases/download/v0.5.10/br-0.5.10-darwin_amd64.tar.gz"
+        "sha256": "sha256-jiHuBbB5MwLZ0xqnRfe6L1RsuHCFwUsY+f2Um2VtuAs=",
+        "url": "https://github.com/Dicklesworthstone/beads_rust/releases/download/v0.5.12/br-0.5.12-darwin_amd64.tar.gz"
       },
       "x86_64-linux": {
-        "sha256": "sha256-liJNvZ/H/p9Eh2DbvzRO1mhnfy/UAKclL8VbiFt2f8w=",
-        "url": "https://github.com/Dicklesworthstone/beads_rust/releases/download/v0.5.10/br-0.5.10-linux_musl_amd64.tar.gz"
+        "sha256": "sha256-tzugMeL67vd026hH6c91k1wOAXlyB7UcoHk9G0cSHOw=",
+        "url": "https://github.com/Dicklesworthstone/beads_rust/releases/download/v0.5.12/br-0.5.12-linux_musl_amd64.tar.gz"
       }
     },
-    "version": "0.5.10"
+    "version": "0.5.12"
   },
   "bv": {
     "sources": {
       "aarch64-darwin": {
-        "sha256": "sha256-wrYmL7JOHHQxQx4m53voTk1gFN6ZSd7Amz3uC1pEcTg=",
-        "url": "https://github.com/Dicklesworthstone/beads_viewer/releases/download/v0.23.0/bv_0.23.0_darwin_arm64.tar.gz"
+        "sha256": "sha256-33nDj9VeKosmCYmRcLNnc4Br2p2sT8BFv33kFIVFTgs=",
+        "url": "https://github.com/Dicklesworthstone/beads_viewer/releases/download/v0.24.1/bv_0.24.1_darwin_arm64.tar.gz"
       },
       "aarch64-linux": {
-        "sha256": "sha256-91E9ImGLUXdEWT6hvvz0O0EDie54j6bey+0/kYCvWbw=",
-        "url": "https://github.com/Dicklesworthstone/beads_viewer/releases/download/v0.23.0/bv_0.23.0_linux_arm64.tar.gz"
+        "sha256": "sha256-nXU9GcCKTcxscWvS58UNw7lgTgJMLh88GiOHc44QKrw=",
+        "url": "https://github.com/Dicklesworthstone/beads_viewer/releases/download/v0.24.1/bv_0.24.1_linux_arm64.tar.gz"
       },
       "x86_64-darwin": {
-        "sha256": "sha256-WxAccXbRqWPP9fCGyMcJYF9OIGLOe5Yd6BkXrJXFwT8=",
-        "url": "https://github.com/Dicklesworthstone/beads_viewer/releases/download/v0.23.0/bv_0.23.0_darwin_amd64.tar.gz"
+        "sha256": "sha256-6rW//S60sSiklUGrcyihsXpTaFfEQvdmIB3Nv9BFeqo=",
+        "url": "https://github.com/Dicklesworthstone/beads_viewer/releases/download/v0.24.1/bv_0.24.1_darwin_amd64.tar.gz"
       },
       "x86_64-linux": {
-        "sha256": "sha256-dGhP+OKGGxeawk4qUgQ96lwy1m7ZeeJbG1lQmd0u9w8=",
-        "url": "https://github.com/Dicklesworthstone/beads_viewer/releases/download/v0.23.0/bv_0.23.0_linux_amd64.tar.gz"
+        "sha256": "sha256-j59jLk1mMFOG8D7B9YJW+LTvzDHZzAIE4QgdacCt3Xk=",
+        "url": "https://github.com/Dicklesworthstone/beads_viewer/releases/download/v0.24.1/bv_0.24.1_linux_amd64.tar.gz"
       }
     },
-    "version": "0.23.0"
+    "version": "0.24.1"
   }
 }
