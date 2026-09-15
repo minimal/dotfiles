@@ -64,9 +64,13 @@
            :host github
            :repo "NicholasBHubbard/clean-kill-ring.el"))
 (package! boxquote
+  ;; Skip autoload generation: boxquote's autoloads call
+  ;; `transient-define-prefix' at load time, which fails while straight loads
+  ;; autoloads during `doom sync'. See the `:commands' list in config.el.
   :recipe (:type git
            :host github
-           :repo "davep/boxquote.el"))
+           :repo "davep/boxquote.el"
+           :build (:not autoloads)))
 ;; (package! chatgpt
 ;;   :recipe (:type git :host github :repo "emacs-openai/chatgpt"))
 (package! editorconfig)

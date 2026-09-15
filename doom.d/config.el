@@ -346,7 +346,14 @@ START and END define the region to evaluate. The result is inserted into the REP
 
 ;; (use-package! chatgpt)
 
-(use-package! boxquote)
+;; boxquote has no autoloads here (see packages.el), so declare them explicitly
+;; to keep the commands lazily loaded.
+(use-package! boxquote
+  :commands (boxquote boxquote-region boxquote-buffer boxquote-defun
+             boxquote-paragraph boxquote-boxquote boxquote-yank
+             boxquote-kill-ring-save boxquote-insert-file boxquote-insert-buffer
+             boxquote-text boxquote-title boxquote-unbox boxquote-kill
+             boxquote-fill-paragraph))
 (comment
  (use-package! editorconfig
    :config
