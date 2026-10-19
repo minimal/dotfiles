@@ -46,7 +46,10 @@ run_with_progress() {
     print_status "$label"
     local cols cmd_log
     cols=$(($(tput cols 2>/dev/null || echo 80) - 4))
-    cmd_log=$(mktemp -t nixpkgs-update-safe-cmd.XXXXXX)
+    if (( cols < 1 )); then
+        cols=1
+    fi
+    cmd_log=$(mktemp "${TMPDIR:-/tmp}/nixpkgs-update-safe-cmd.XXXXXX")
     # Disable errexit so the pipeline failure doesn't exit the function before
     # we can capture PIPESTATUS and display the error. Save and restore the
     # original option state so an abnormal function exit doesn't leave set -e
@@ -106,7 +109,7 @@ run_with_bar() {
     shift
     print_status "$label"
     local jlog nl
-    jlog=$(mktemp -t nixpkgs-update-safe-json.XXXXXX)
+    jlog=$(mktemp "${TMPDIR:-/tmp}/nixpkgs-update-safe-json.XXXXXX")
     nl=$'\n'
     local old_errexit
     old_errexit=$(set +o | grep '^set [+-]o errexit$')
@@ -224,13 +227,26 @@ rollback() {
 }
 
 # --- Preflight checks ---
-for check in \
-    "git rev-parse --git-dir > /dev/null 2>&1 || { print_error 'Not in a git repository'; exit 1; }" \
-    "[[ -f flake.lock ]] || { print_error 'flake.lock not found'; exit 1; }" \
-    "git diff --quiet flake.lock 2>/dev/null || { print_error 'flake.lock has uncommitted changes'; exit 1; }" \
-    "command -v just &>/dev/null || { print_error 'just not found'; exit 1; }"
-do
-    eval "$check"
+if ! git rev-parse --git-dir >/dev/null 2>&1; then
+    print_error "Not in a git repository"
+    exit 1
+fi
+
+if [[ ! -f flake.lock ]]; then
+    print_error "flake.lock not found"
+    exit 1
+fi
+
+if ! git diff --quiet flake.lock 2>/dev/null; then
+    print_error "flake.lock has uncommitted changes"
+    exit 1
+fi
+
+for cmd in just nix jq; do
+    if ! command -v "$cmd" >/dev/null 2>&1; then
+        print_error "$cmd not found"
+        exit 1
+    fi
 done
 
 # Check staged separately (inverted logic)
@@ -246,7 +262,7 @@ BACKUP_FILE="flake.lock.backup.$$"
 cp flake.lock "$BACKUP_FILE"
 
 touch "$SKIP_LIST_FILE"
-ERROR_LOG=$(mktemp -t nixpkgs-update-safe.XXXXXX)
+ERROR_LOG=$(mktemp "${TMPDIR:-/tmp}/nixpkgs-update-safe.XXXXXX")
 
 trap 'rollback; exit 1' ERR
 trap 'echo; print_warning "Interrupted by signal"; exit 130' INT TERM

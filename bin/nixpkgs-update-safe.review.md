@@ -2,7 +2,10 @@
 
 This file records issues identified during code review. Each entry is marked
 **Open** (not yet addressed in source) or **Resolved** (fixed in
-`bin/nixpkgs-update-safe`; see the referenced commit).
+`bin/nixpkgs-update-safe`). Bead IDs track the follow-up fixes.
+
+The four follow-up items were addressed on 2026-10-19. This was not a full
+review of the native progress and JSON logging change in `80ce44c`.
 
 ## Resolved
 
@@ -44,24 +47,21 @@ This file records issues identified during code review. Each entry is marked
   run (`ROLLBACK_DONE=0`), and the backup differs from `flake.lock`.
   `rollback()` is now idempotent via `ROLLBACK_DONE`.
 
-## Open
+### Very narrow terminal width breaks the progress display — _resolved_
 
-### Very narrow terminal width crashes the script — _open, Low_
-
+- **Bead:** `dotfiles-kz1`
 - **Location:** `run_with_progress()` — `cols=$(($(tput cols 2>/dev/null || echo 80) - 4))`
 - **Issue:** If the terminal width is 1–3 columns, `cols` becomes negative.
-  Bash then fails on `${line:0:$cols}` with a "substring expression < 0"
-  error, which triggers `set -e` and aborts the update.
-- **Fix if addressed:** Clamp `cols` to a minimum of 1:
+  Short output lines can cause a "substring expression < 0" error in the
+  display pipeline. The update can still succeed despite the display error.
+  At width 4, the zero-length substring hides output entirely.
+- **Fix applied:** Clamp `cols` to a minimum of 1. Tests cover widths 1–4
+  and 80, short and long lines, and successful and failed commands.
 
-  ```bash
-  cols=$(($(tput cols 2>/dev/null || echo 80) - 4))
-  (( cols < 1 )) && cols=1
-  ```
+### `mktemp -t <template>` is non-portable — _resolved_
 
-### `mktemp -t <template>` is non-portable — _open, Low_
-
-- **Location:** `run_with_progress()` and setup — `mktemp -t nixpkgs-update-safe.XXXXXX`
+- **Bead:** `dotfiles-5ly`
+- **Location:** `run_with_progress()`, `run_with_bar()`, and setup
 - **Issue:** `mktemp -t TEMPLATE` means different things on different
   platforms. GNU coreutils treats `-t TEMPLATE` as a template in `$TMPDIR`
   (and `-t` is deprecated in favor of `--tmpdir`). On macOS, `-t` takes a
@@ -71,43 +71,50 @@ This file records issues identified during code review. Each entry is marked
   `format_date` implies macOS is supported, so this matters. It still
   produces a unique file (no crash), but the `XXXXXX` is misleading and the
   form is deprecated on Linux.
-- **Fix if addressed:** Use the trailing-template form with `-p`, which both
-  GNU and macOS accept:
+- **Fix applied:** Pass an absolute trailing template for all three log files,
+  such as `mktemp "${TMPDIR:-/tmp}/nixpkgs-update-safe.XXXXXX"`. This avoids
+  platform-specific flags and respects `TMPDIR`, including paths with spaces.
+  Tests exercise GNU and macOS `mktemp`, cleanup, and the `/tmp` fallback.
 
-  ```bash
-  mktemp -p "${TMPDIR:-/tmp}" nixpkgs-update-safe.XXXXXX
-  ```
+### No preflight check for `nix` and `jq` — _resolved_
 
-### No preflight check for `nix` and `jq` — _open, Low_
+- **Bead:** `dotfiles-3a9`
+- **Location:** Preflight checks
+- **Issue:** The preflight loop checked `git`, `flake.lock`, and `just`, but
+  not `nix` or `jq`, both of which are essential. Missing commands caused
+  failures during revision reads or updates after the backup was taken.
+- **Fix applied:** Added explicit `command -v` checks before setup. Missing
+  commands now produce a clear error before any backup, log, or skip-list change.
 
-- **Location:** Preflight loop
-- **Issue:** The preflight loop checks `git`, `flake.lock`, and `just`, but
-  not `nix` or `jq`, both of which are essential. If `jq` is missing,
-  `get_nixpkgs_rev` returns empty and the script proceeds with empty revs;
-  if `nix` is missing, the failure surfaces only inside `run_with_progress`
-  after the backup is already taken. Failing fast with a clear message is
-  cheaper and clearer than a rollback cascade.
-- **Fix if addressed:** Add `command -v` checks to the preflight loop:
+### `eval` preflight checks are a maintenance footgun — _resolved_
 
-  ```bash
-  "command -v nix &>/dev/null || { print_error 'nix not found'; exit 1; }"
-  "command -v jq &>/dev/null || { print_error 'jq not found'; exit 1; }"
-  ```
+- **Bead:** `dotfiles-k08`
+- **Location:** Preflight checks
+- **Issue:** The loop used `eval` on hardcoded strings. The strings contained
+  no user input, so this was a maintenance concern, not a demonstrated
+  command-injection vulnerability.
+- **Fix applied:** Replaced the strings with direct checks and a dependency
+  loop. Existing check order and error messages are preserved. The separate
+  `eval` calls that restore shell options remain unchanged.
 
-### `eval` preflight checks are a maintenance footgun — _open, Minor_
+## Open
 
-- **Location:** Preflight loop — `for check in ...; do eval "$check"; done`
-- **Issue:** The loop uses `eval` on hardcoded strings. There is no current
-  command-injection risk because the strings contain no user input, but the
-  pattern makes future edits error-prone and easy to misquote. (The code
-  review agent explicitly dismissed this as a non-issue since the eval'd
-  strings are static literals, but it's recorded here as a style/maintenance
-  concern.)
-- **Fix if addressed:** Replace the `eval` loop with direct commands or a
-  small helper function, e.g.:
+None of the recorded issues remain open.
 
-  ```bash
-  require_git_repo() { git rev-parse --git-dir >/dev/null 2>&1 || { print_error "Not in a git repository"; exit 1; }; }
-  require_flake_lock() { [[ -f flake.lock ]] || { print_error "flake.lock not found"; exit 1; }; }
-  # ... etc
-  ```
+## Regression checks
+
+Run the isolated shell suite and lint checks:
+
+```bash
+bash scripts/nixpkgs-update-safe-test.sh
+shellcheck bin/nixpkgs-update-safe scripts/nixpkgs-update-safe-test.sh
+```
+
+On macOS, also exercise the system `mktemp`:
+
+```bash
+MKTEMP_BIN=/usr/bin/mktemp bash scripts/nixpkgs-update-safe-test.sh
+```
+
+The suite mocks Git, Nix, and Just. It does not update this repository's lock
+file, switch the system, or create commits.
