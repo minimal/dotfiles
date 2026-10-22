@@ -2,23 +2,23 @@
   "br": {
     "sources": {
       "aarch64-darwin": {
-        "sha256": "sha256-vCUf/3SXmga77AFiPLi0p0mAwmGlYwVmsK5y2lLoJN4=",
-        "url": "https://github.com/Dicklesworthstone/beads_rust/releases/download/v0.7.4/br-0.7.4-darwin_arm64.tar.gz"
+        "sha256": "sha256-AKWMDfHz7sCtoqjQav3bT0app47qPjlgHNjaHKeVGUY=",
+        "url": "https://github.com/Dicklesworthstone/beads_rust/releases/download/v0.7.6/br-0.7.6-darwin_arm64.tar.gz"
       },
       "aarch64-linux": {
-        "sha256": "sha256-T2tCJkx7VujNudUGcpuyrKH799DnH3l5DCvIbiA+w1E=",
-        "url": "https://github.com/Dicklesworthstone/beads_rust/releases/download/v0.7.4/br-0.7.4-linux_musl_amd64.tar.gz"
+        "sha256": "sha256-6+ZieMiD/CM4m7UfRBdEJHKTaAxHxLI0s/xnmKH9Gzk=",
+        "url": "https://github.com/Dicklesworthstone/beads_rust/releases/download/v0.7.6/br-0.7.6-linux_musl_amd64.tar.gz"
       },
       "x86_64-darwin": {
-        "sha256": "sha256-VHZhOOSgH2xFs+ikUaKrICHNRLSIskzXpFIlB26gOqU=",
-        "url": "https://github.com/Dicklesworthstone/beads_rust/releases/download/v0.7.4/br-0.7.4-darwin_amd64.tar.gz"
+        "sha256": "sha256-9N5VORL3ASURosdTSBwXIsWn87YZqwovR9h0XYRflaU=",
+        "url": "https://github.com/Dicklesworthstone/beads_rust/releases/download/v0.7.6/br-0.7.6-darwin_amd64.tar.gz"
       },
       "x86_64-linux": {
-        "sha256": "sha256-T2tCJkx7VujNudUGcpuyrKH799DnH3l5DCvIbiA+w1E=",
-        "url": "https://github.com/Dicklesworthstone/beads_rust/releases/download/v0.7.4/br-0.7.4-linux_musl_amd64.tar.gz"
+        "sha256": "sha256-6+ZieMiD/CM4m7UfRBdEJHKTaAxHxLI0s/xnmKH9Gzk=",
+        "url": "https://github.com/Dicklesworthstone/beads_rust/releases/download/v0.7.6/br-0.7.6-linux_musl_amd64.tar.gz"
       }
     },
-    "version": "0.7.4"
+    "version": "0.7.6"
   },
   "bv": {
     "sources": {
