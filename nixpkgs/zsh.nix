@@ -76,6 +76,7 @@ in {
       enable = true;
       plugins = [
         {name = "jeffreytse/zsh-vi-mode";}
+        {name = "tolkonepiu/catppuccin-powerlevel10k-themes";}
       ];
     };
 
