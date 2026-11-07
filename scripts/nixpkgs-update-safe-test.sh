@@ -21,7 +21,7 @@ prepare() {
     : > "$MOCK_CALLS"
     : > "$MOCK_TEMP_FILES"
     local cmd
-    for cmd in jq cp touch tee cat grep tail tr date rm diff sed cmp; do
+    for cmd in jq cp touch tee cat grep tail tr date rm diff sed cmp hostname; do
         ln -s "$(command -v "$cmd")" "$work/bin/$cmd"
     done
     ln -s "$BASH" "$work/bin/bash"
@@ -85,6 +85,7 @@ run_script() {
         else
             export TMPDIR="$work/tmp files"
         fi
+        unset BASH_ENV ENV
         "$BASH" "$SCRIPT" "$@"
     ) > "$work/output" 2>&1; then
         rc=0

@@ -44,3 +44,26 @@ jobs:
         run: |
           nix flake show
         timeout-minutes: 240
+
+  # Mocked tests for bin/nixpkgs-update-safe; no nix build needed
+  nixpkgs-update-safe-test:
+    strategy:
+      fail-fast: false
+      matrix:
+        os:
+          - ubuntu-latest
+          - macos-latest
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v6
+      - uses: extractions/setup-just@v4
+      - name: Install jq
+        run: |
+          if [[ "$RUNNER_OS" == "macOS" ]]; then
+            brew install jq
+          else
+            sudo apt-get update && sudo apt-get install -y jq
+          fi
+      - name: Run nixpkgs-update-safe tests
+        run: just nix-update-safe-test
+        timeout-minutes: 10

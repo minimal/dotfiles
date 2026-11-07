@@ -51,6 +51,11 @@ bump-beads *args:
 nix-update-safe-nixpkgs-only:
     ./bin/nixpkgs-update-safe --nixpkgs-only
 
+# Run nixpkgs-update-safe tests against mocked nix, git and just
+nix-update-safe-test:
+    #!/usr/bin/env bash
+    bash scripts/nixpkgs-update-safe-test.sh
+
 nix-remove-last-skip-commit:
     sed -i '$d' .nix-skip-commits
 
