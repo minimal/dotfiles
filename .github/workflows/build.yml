@@ -57,12 +57,13 @@ jobs:
     steps:
       - uses: actions/checkout@v6
       - uses: extractions/setup-just@v4
-      - name: Install jq
+      # justfile uses zsh for its backticks, so zsh must exist on Linux too
+      - name: Install jq and zsh
         run: |
           if [[ "$RUNNER_OS" == "macOS" ]]; then
             brew install jq
           else
-            sudo apt-get update && sudo apt-get install -y jq
+            sudo apt-get update && sudo apt-get install -y jq zsh
           fi
       - name: Run nixpkgs-update-safe tests
         run: just nix-update-safe-test
