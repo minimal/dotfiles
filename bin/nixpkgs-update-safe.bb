@@ -260,9 +260,16 @@
 
 ;; --- Skip list ---
 
-(defn- skip-listed? [rev]
-  (and (fs/exists? skip-list-file)
-       (contains? (set (str/split-lines (slurp skip-list-file))) rev)))
+(defn- skip-listed?
+  "Return true when REV is in the skip list. Return false when the list
+   cannot be read, as grep does in the bash version."
+  [rev]
+  (try
+    (and (fs/exists? skip-list-file)
+         (contains? (set (str/split-lines (slurp skip-list-file))) rev))
+    (catch Exception e
+      (warn (str "Cannot read " skip-list-file ": " (ex-message e)))
+      false)))
 
 (defn- add-to-skip-list! [rev]
   (let [old (if (fs/exists? skip-list-file) (slurp skip-list-file) "")
@@ -379,14 +386,17 @@
     ;; Restore the file and the git index first.
     (attempt "restore flake.lock" #(restore-lock! state))
     (exec {:out :string :err :string} ["git" "restore" "--staged" lock-file])
-    (let [{:keys [old-rev new-rev]} @state
-          disk-full? (some #(re-find #"(?i)no space left on device" %) @log)]
-      (when disk-full?
-        (warn "Detected 'no space left on device'; will not add nixpkgs rev to skip list"))
-      (when (and skip-list? (not disk-full?) (some? new-rev) (not= new-rev old-rev)
-                 (not (skip-listed? new-rev))
-                 (attempt "update the skip list" #(add-to-skip-list! new-rev)))
-        (warn (str "Added problematic nixpkgs commit to skip list: " new-rev))))
+    ;; Nothing in this step may stop the switch back below.
+    (attempt
+     "update the skip list"
+     #(let [{:keys [old-rev new-rev]} @state
+            disk-full? (some (fn [line] (re-find #"(?i)no space left on device" line)) @log)]
+        (when disk-full?
+          (warn "Detected 'no space left on device'; will not add nixpkgs rev to skip list"))
+        (when (and skip-list? (not disk-full?) (some? new-rev) (not= new-rev old-rev)
+                   (not (skip-listed? new-rev)))
+          (add-to-skip-list! new-rev)
+          (warn (str "Added problematic nixpkgs commit to skip list: " new-rev)))))
     (warn "Running hm-switch to restore previous configuration...")
     (if (zero? (:exit (exec {:inherit true} ["just" "hm-switch"])))
       (info "Successfully restored previous configuration")

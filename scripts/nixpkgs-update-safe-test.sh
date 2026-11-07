@@ -275,6 +275,17 @@ rollback_suite() {
     [[ $(switch_calls) -eq 0 ]] || fail 'skip-listed rev was applied'
     [[ $(wc -l < "$work/.nix-skip-commits") -eq 1 ]] || fail 'skip list changed'
 
+    # A skip list that cannot be read or written must not stop the rollback.
+    prepare unreadable-skip-list
+    mkdir "$work/.nix-skip-commits"
+    export MOCK_SWITCH_RC=5
+    run_script
+    [[ $rc -eq 1 ]] || fail "unreadable skip list exited $rc"
+    cmp -s "$work/original.lock" "$work/flake.lock" || fail 'unreadable skip list: lock not restored'
+    [[ $(switch_calls) -eq 2 ]] || fail 'unreadable skip list stopped the switch back'
+    grep -q 'Successfully restored previous configuration' "$work/output" \
+        || fail 'unreadable skip list: configuration not restored'
+
     prepare disk-full
     export MOCK_SWITCH_RC=5 MOCK_SWITCH_MSG='error: writing file: No space left on device'
     run_script
