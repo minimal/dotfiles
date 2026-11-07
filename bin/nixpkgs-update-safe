@@ -15,6 +15,13 @@ set -euo pipefail
 
 # --- Configuration ---
 SKIP_LIST_FILE=".nix-skip-commits"
+# Derivations that always build locally (never cached). Anything else a
+# dry-run would build is a binary-cache miss.
+LOCAL_DRV_RE='^[a-z0-9]{32}-(home-manager-|hm_|hm-putter|activation-script)'
+# Flake attribute checked against the binary cache.
+HM_ATTR=".#homeConfigurations.$(hostname | tr -d .).activationPackage"
+# Max older channel releases to try when the newest is not cached.
+CHANNEL_MAX_TRIES=12
 
 # --- State flags for trap-driven rollback ---
 # ROLLBACK_DONE: set by rollback() so repeated trap invocations are idempotent.
@@ -168,6 +175,36 @@ get_nixpkgs_rev() {
     local target
     target=$(jq -r '.nodes.root.inputs.nixpkgs // "nixpkgs"' "$file")
     jq -r ".nodes.\"$target\".locked.rev // empty" "$file"
+}
+
+# --- Binary cache check ---
+# Print derivations a dry-run would build, minus the always-local ones.
+# Return 2 if the dry-run itself fails (e.g. eval error).
+uncached_drvs() {
+    local out
+    out=$(nix build --dry-run "$HM_ATTR" 2>&1) || {
+        printf '%s\n' "$out" >> "$ERROR_LOG"
+        return 2
+    }
+    # "will be built:" section: indented .drv lines until the next unindented line.
+    printf '%s\n' "$out" \
+        | awk '/will be built:/ {f=1; next} f && /^ / {print; next} {f=0}' \
+        | sed 's|.*/nix/store/||' \
+        | { grep -vE "$LOCAL_DRV_RE" || true; }
+}
+
+# Print channel release revs (12-char) older than $1, newest first.
+# Source: the nixpkgs release index. Releases are channel bumps, so Hydra
+# has usually built them.
+channel_candidates() {
+    local new_rev=$1 ver series
+    ver=$(nix eval --raw "github:NixOS/nixpkgs/${new_rev}#lib.version") || return 1
+    series=$(cut -d. -f1-2 <<<"$ver")
+    curl -fsS "https://nix-releases.s3.amazonaws.com/?delimiter=/&prefix=nixpkgs/nixpkgs-${series}pre&max-keys=1000" \
+        | grep -oE 'pre[0-9]+\.[0-9a-f]{12}' \
+        | sed 's/^pre//' \
+        | sort -u -t. -k1,1nr \
+        | awk -F. -v new="$new_rev" 'seen {print $2} index(new, $2) == 1 {seen=1}'
 }
 
 # --- Cleanup helper ---
@@ -333,6 +370,52 @@ if [[ -n "$NEW_NIXPKGS_REV" && "$NEW_NIXPKGS_REV" != "null" ]]; then
     fi
 fi
 
+# --- Binary cache check ---
+# A new nixpkgs rev can land before Hydra caches it. Then nix builds from
+# source (e.g. dotnet via pre-commit tests). If so, step back through channel
+# releases to the newest one that is fully cached.
+print_status "Checking binary cache for nixpkgs ${NEW_NIXPKGS_REV:0:8}..."
+if drvs=$(uncached_drvs); then drv_rc=0; else drv_rc=$?; fi
+if [[ $drv_rc -eq 2 ]]; then
+    print_warning "Cache check failed to evaluate; continuing without it"
+elif [[ -n "$drvs" ]]; then
+    print_warning "$(wc -l <<<"$drvs" | tr -d ' ') derivation(s) would build from source:"
+    head -5 <<<"$drvs" | sed 's/^/    /'
+    if [[ "$NEW_NIXPKGS_REV" == "$OLD_NIXPKGS_REV" ]]; then
+        print_warning "nixpkgs unchanged; nothing to step back to. Continuing."
+    else
+        found=""
+        tries=0
+        while read -r short; do
+            # Reached the previously applied rev: nothing newer is cached.
+            if [[ -n "$OLD_NIXPKGS_REV" && "$OLD_NIXPKGS_REV" == "$short"* ]]; then
+                break
+            fi
+            tries=$((tries + 1))
+            if [[ $tries -gt $CHANNEL_MAX_TRIES ]]; then
+                break
+            fi
+            run_with_progress "Trying channel release $short ($tries/$CHANNEL_MAX_TRIES)..." \
+                nix flake lock --override-input nixpkgs "github:NixOS/nixpkgs/$short" || continue
+            if cand=$(uncached_drvs) && [[ -z "$cand" ]]; then
+                found=$short
+                break
+            fi
+        done < <(channel_candidates "$NEW_NIXPKGS_REV")
+
+        if [[ -z "$found" ]]; then
+            print_warning "No newer fully cached nixpkgs found. Keeping current flake.lock."
+            print_warning "Not skip-listed: retry later, once Hydra catches up."
+            cp "$BACKUP_FILE" flake.lock
+            cleanup
+            trap - ERR
+            exit 0
+        fi
+        NEW_NIXPKGS_REV=$(get_nixpkgs_rev flake.lock)
+        print_status "Using cached nixpkgs release $found (${NEW_NIXPKGS_REV:0:8})"
+    fi
+fi
+
 # --- Apply with home-manager switch ---
 if ! run_with_bar "Running hm-switch..." just hm-switch; then
     print_error "hm-switch failed"
@@ -360,6 +443,11 @@ dates=()
 if [[ $NIXPKGS_CHANGED -eq 1 ]]; then
     print_status "Nixpkgs updated: ${OLD_NIXPKGS_REV:0:8} → ${NEW_NIXPKGS_REV:0:8}"
     nix_date=$(extract_update_date "nixpkgs")
+    if [[ -z "$nix_date" ]]; then
+        # Fall back to the lock's own timestamp (e.g. after a cache step-back).
+        nix_ts=$(jq -r '.nodes.nixpkgs.locked.lastModified // empty' flake.lock)
+        [[ -n "$nix_ts" ]] && nix_date=$(date -u -d "@$nix_ts" +%Y-%m-%d)
+    fi
     dates+=("$(format_date "$nix_date")")
     parts+=("nixpkgs")
 fi
