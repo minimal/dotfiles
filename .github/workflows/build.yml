@@ -45,7 +45,7 @@ jobs:
           nix flake show
         timeout-minutes: 240
 
-  # Mocked tests for bin/nixpkgs-update-safe; no nix build needed
+  # Mocked tests for bin/nixpkgs-update-safe and its bb port; no nix build needed
   nixpkgs-update-safe-test:
     strategy:
       fail-fast: false
@@ -57,6 +57,10 @@ jobs:
     steps:
       - uses: actions/checkout@v6
       - uses: extractions/setup-just@v4
+      # The suite also tests bin/nixpkgs-update-safe.bb
+      - uses: DeLaGuardo/setup-clojure@13.7.0
+        with:
+          bb: latest
       # justfile uses zsh for its backticks, so zsh must exist on Linux too
       - name: Install jq and zsh
         run: |
