@@ -23,13 +23,13 @@ prepare() {
     export MOCK_CALLS="$work/calls" MOCK_GIT_STATE=normal MOCK_WIDTH=80
     export MOCK_UPDATE_RC=0 MOCK_UNCHANGED=0 MOCK_UNSET_TMPDIR=0
     export MOCK_SWITCH_RC=0 MOCK_SWITCH_MSG='build complete' MOCK_COMMIT_RC=0
-    export MOCK_DELETE_LOCK=0 MOCK_SWITCH_LOG_DIR=0
+    export MOCK_DELETE_LOCK=0 MOCK_SWITCH_LOG_DIR=0 MOCK_TERM_ON=none
     export MOCK_TEMP_FILES="$work/temp-files" MOCK_JSON_LOGS="$work/json-logs"
     : > "$MOCK_CALLS"
     : > "$MOCK_TEMP_FILES"
     : > "$MOCK_JSON_LOGS"
     local cmd
-    for cmd in jq cp touch tee cat grep tail tr date rm mkdir diff sed cmp hostname; do
+    for cmd in jq cp touch tee cat grep tail tr date rm mkdir sleep diff sed cmp hostname; do
         ln -s "$(command -v "$cmd")" "$work/bin/$cmd"
     done
     ln -s "$BASH" "$work/bin/bash"
@@ -40,6 +40,12 @@ JSON
     cat > "$work/bin/git" <<'SH'
 #!/usr/bin/env bash
 printf 'git %s\n' "$*" >> "$MOCK_CALLS"
+# Send TERM to the script during this git step, then let the step succeed.
+# The sleep lets the signal arrive before the step ends.
+if [[ "$*" == "$MOCK_TERM_ON"* ]]; then
+    kill -TERM "$PPID"
+    sleep 1
+fi
 case "$*" in
     'rev-parse --git-dir') [[ "$MOCK_GIT_STATE" != outside ]] ;;
     'diff --quiet flake.lock')
@@ -333,6 +339,25 @@ rollback_suite() {
     [[ $(switch_calls) -eq 1 ]] || fail 'failed commit rolled back the system'
     [[ ! -s "$work/.nix-skip-commits" ]] || fail 'failed commit was skip-listed'
     grep -q 'Finish the commit manually' "$work/output" || fail 'no manual commit hint'
+
+    # TERM after the switch: exit 130, never roll back the system.
+    local step
+    for step in add commit; do
+        prepare "term-during-$step"
+        export MOCK_TERM_ON=$step
+        run_script
+        [[ $rc -eq 130 ]] || fail "TERM during git $step exited $rc"
+        grep -q 'Interrupted by signal' "$work/output" || fail "TERM during git $step not reported"
+        grep -q 'new-nixpkgs' "$work/flake.lock" || fail "TERM during git $step rolled back the lock"
+        [[ $(switch_calls) -eq 1 ]] || fail "TERM during git $step rolled back the system"
+        if [[ $step == add ]]; then
+            if grep -q '^git commit ' "$MOCK_CALLS"; then
+                fail 'TERM during git add did not stop the commit'
+            fi
+        elif grep -q 'not committed' "$work/output"; then
+            fail 'TERM during git commit reported a done commit as not committed'
+        fi
+    done
 }
 
 for impl in $IMPLS; do

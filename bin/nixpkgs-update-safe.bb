@@ -471,8 +471,9 @@
               (halt! 0))))))))
 
 (defn- commit!
-  "Stage and commit flake.lock. Stop on an interrupt before each git step."
-  [msg]
+  "Stage and commit flake.lock. Stop on an interrupt around each git step.
+   Set :committed? in STATE when the commit succeeds."
+  [state msg]
   (let [manual (fn []
                  (error "System was updated successfully, but the commit failed.")
                  (error "flake.lock is staged with the new update. Finish the commit manually:")
@@ -480,11 +481,15 @@
                  (halt! 1))
         git! (fn [& args]
                (check-interrupt!)
-               (let [rc (:exit (exec {:inherit true} (cons "git" args)))]
-                 (check-interrupt!)
-                 (when-not (zero? rc) (manual))))]
-    (git! "add" lock-file)
-    (git! "commit" "-m" msg)))
+               (zero? (:exit (exec {:inherit true} (cons "git" args)))))
+        added? (git! "add" lock-file)]
+    (check-interrupt!)
+    (when-not added? (manual))
+    (let [committed? (git! "commit" "-m" msg)]
+      ;; Record the commit before the interrupt check, so the message is true.
+      (when committed? (swap! state assoc :committed? true))
+      (check-interrupt!)
+      (when-not committed? (manual)))))
 
 (defn- update!
   "Run the update. Return normally on success. Throw ::exit or
@@ -531,7 +536,7 @@
                                   ["home-manager" (format-date (extract-update-date @log "home-manager"))])))
               msg (commit-message changes)]
           (info (str "Commit message: " msg))
-          (commit! msg)
+          (commit! state msg)
           (info "✅ Successfully updated and committed flake.lock")
           (info (str "Commit: " (str/trim (:out (exec {:out :string :err :inherit}
                                                       ["git" "rev-parse" "--short" "HEAD"]))))))))))
@@ -553,9 +558,10 @@
             (::interrupted data)
             (do (println)
                 (warn "Interrupted by signal")
-                (if (:applied? @state)
-                  (warn "System is updated, but flake.lock is not committed.")
-                  (roll-back-if-needed!))
+                (cond
+                  (:committed? @state) (info "System is updated and flake.lock is committed.")
+                  (:applied? @state) (warn "System is updated, but flake.lock is not committed.")
+                  :else (roll-back-if-needed!))
                 130)
 
             :else
