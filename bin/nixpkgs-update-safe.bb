@@ -97,6 +97,16 @@
   [code]
   (throw (ex-info "Halt" {::exit code})))
 
+(defn- attempt
+  "Call F. On an exception, warn and return nil. Use for steps that must
+   not stop the update or the rollback."
+  [what f]
+  (try
+    (or (f) true)
+    (catch Exception e
+      (warn (str "Could not " what ": " (ex-message e)))
+      nil)))
+
 ;; --- Error log (in memory) ---
 
 (def ^:private log (atom []))
@@ -191,18 +201,21 @@
                     nil))
         nix-config (->> [(System/getenv "NIX_CONFIG") (when jlog (str "json-log-path = " jlog))]
                         (keep not-empty)
-                        (str/join "\n"))]
-    (try
-      (let [rc (:exit (exec {:inherit true :extra-env {"NIX_CONFIG" nix-config}} cmd))]
-        (when (and jlog (fs/exists? jlog))
-          (swap! log into (json-log-lines (slurp (fs/file jlog)))))
-        (check-interrupt!)
-        (when-not (zero? rc)
-          (println)
-          (error (str "Command failed (exit " rc "). See output above.")))
-        rc)
-      (finally
-        (when jlog (fs/delete-if-exists jlog))))))
+                        (str/join "\n"))
+        rc (:exit (exec {:inherit true :extra-env {"NIX_CONFIG" nix-config}} cmd))]
+    ;; Log capture must not throw: after a successful switch, an exception
+    ;; here would roll back a working system.
+    (when jlog
+      (attempt "read the JSON log"
+               #(when (fs/exists? jlog)
+                  (swap! log into (json-log-lines (slurp (fs/file jlog))))
+                  nil))
+      (attempt "remove the JSON log" #(do (fs/delete-if-exists jlog) nil)))
+    (check-interrupt!)
+    (when-not (zero? rc)
+      (println)
+      (error (str "Command failed (exit " rc "). See output above.")))
+    rc))
 
 ;; --- flake.lock ---
 
@@ -363,16 +376,6 @@
 
 ;; --- Rollback ---
 
-(defn- attempt
-  "Call F. On an exception, warn and return nil, so a failed step does not
-   stop the rollback."
-  [what f]
-  (try
-    (or (f) true)
-    (catch Exception e
-      (warn (str "Could not " what ": " (ex-message e)))
-      nil)))
-
 (defn- restore-lock! [state]
   (fs/write-bytes lock-file (:backup @state)))
 
@@ -407,11 +410,14 @@
         (warn (str "Full error log: " path))))
     (info "Rollback completed")))
 
-(defn- lock-changed? [state]
-  (let [backup (:backup @state)]
-    (and backup
-         (fs/exists? lock-file)
-         (not (java.util.Arrays/equals ^bytes backup ^bytes (fs/read-all-bytes lock-file))))))
+(defn- lock-changed?
+  "Return true when flake.lock differs from the backup. A missing or
+   unreadable lock counts as changed, as with `diff` in the bash version."
+  [state]
+  (when-let [backup (:backup @state)]
+    (try
+      (not (java.util.Arrays/equals ^bytes backup ^bytes (fs/read-all-bytes lock-file)))
+      (catch Exception _ true))))
 
 ;; --- Steps ---
 
@@ -464,16 +470,21 @@
               (restore-lock! state)
               (halt! 0))))))))
 
-(defn- commit! [msg]
+(defn- commit!
+  "Stage and commit flake.lock. Stop on an interrupt before each git step."
+  [msg]
   (let [manual (fn []
                  (error "System was updated successfully, but the commit failed.")
                  (error "flake.lock is staged with the new update. Finish the commit manually:")
                  (error (str "  git commit -m \"" msg "\""))
-                 (halt! 1))]
-    (when-not (zero? (:exit (exec {:inherit true} ["git" "add" lock-file])))
-      (manual))
-    (when-not (zero? (:exit (exec {:inherit true} ["git" "commit" "-m" msg])))
-      (manual))))
+                 (halt! 1))
+        git! (fn [& args]
+               (check-interrupt!)
+               (let [rc (:exit (exec {:inherit true} (cons "git" args)))]
+                 (check-interrupt!)
+                 (when-not (zero? rc) (manual))))]
+    (git! "add" lock-file)
+    (git! "commit" "-m" msg)))
 
 (defn- update!
   "Run the update. Return normally on success. Throw ::exit or
@@ -542,7 +553,9 @@
             (::interrupted data)
             (do (println)
                 (warn "Interrupted by signal")
-                (roll-back-if-needed!)
+                (if (:applied? @state)
+                  (warn "System is updated, but flake.lock is not committed.")
+                  (roll-back-if-needed!))
                 130)
 
             :else

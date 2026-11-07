@@ -23,12 +23,13 @@ prepare() {
     export MOCK_CALLS="$work/calls" MOCK_GIT_STATE=normal MOCK_WIDTH=80
     export MOCK_UPDATE_RC=0 MOCK_UNCHANGED=0 MOCK_UNSET_TMPDIR=0
     export MOCK_SWITCH_RC=0 MOCK_SWITCH_MSG='build complete' MOCK_COMMIT_RC=0
+    export MOCK_DELETE_LOCK=0 MOCK_SWITCH_LOG_DIR=0
     export MOCK_TEMP_FILES="$work/temp-files" MOCK_JSON_LOGS="$work/json-logs"
     : > "$MOCK_CALLS"
     : > "$MOCK_TEMP_FILES"
     : > "$MOCK_JSON_LOGS"
     local cmd
-    for cmd in jq cp touch tee cat grep tail tr date rm diff sed cmp hostname; do
+    for cmd in jq cp touch tee cat grep tail tr date rm mkdir diff sed cmp hostname; do
         ln -s "$(command -v "$cmd")" "$work/bin/$cmd"
     done
     ln -s "$BASH" "$work/bin/bash"
@@ -54,6 +55,10 @@ SH
 #!/usr/bin/env bash
 printf 'nix %s\n' "$*" >> "$MOCK_CALLS"
 printf '%s\n' x 'a longer output line for the progress display'
+if [[ "$MOCK_DELETE_LOCK" == 1 && "$*" == 'flake update'* ]]; then
+    rm -f flake.lock
+    exit 0
+fi
 if [[ "$MOCK_UNCHANGED" == 0 ]]; then
     sed 's/old-/new-/g' original.lock > flake.lock
 fi
@@ -71,6 +76,11 @@ case "$1" in
             log=${NIX_CONFIG##*json-log-path = }
             printf '%s\n' "$log" >> "$MOCK_JSON_LOGS"
             printf '{"action":"msg","msg":"%s"}\n' "$MOCK_SWITCH_MSG" > "$log"
+            # A JSON log that cannot be read.
+            if [[ "$MOCK_SWITCH_LOG_DIR" == 1 ]]; then
+                rm -f "$log"
+                mkdir "$log"
+            fi
             exit "$MOCK_SWITCH_RC"
         fi ;;
     *) exit 99 ;;
@@ -254,15 +264,22 @@ switch_calls() {
     grep -c '^just hm-switch$' "$MOCK_CALLS" || true
 }
 
+# Check that a failed run exited 1, restored the lock and did not commit.
+assert_rolled_back() {
+    [[ $rc -eq 1 ]] || fail "$1: exited $rc, expected 1"
+    cmp -s "$work/original.lock" "$work/flake.lock" || fail "$1: lock not restored"
+    if grep -q '^git commit ' "$MOCK_CALLS"; then
+        fail "$1: failed update was committed"
+    fi
+}
+
 rollback_suite() {
     prepare switch-fails
     export MOCK_SWITCH_RC=5
     run_script
-    [[ $rc -eq 1 ]] || fail "failed switch exited $rc"
-    cmp -s "$work/original.lock" "$work/flake.lock" || fail 'failed switch did not restore the lock'
+    assert_rolled_back 'failed switch'
     grep -qx 'new-nixpkgs' "$work/.nix-skip-commits" || fail 'failed switch did not skip-list the rev'
     [[ $(switch_calls) -eq 2 ]] || fail 'rollback did not switch back'
-    grep -q '^git commit ' "$MOCK_CALLS" && fail 'failed switch was committed'
 
     # Run again with the skip list from the failed run.
     local skip_list="$work/.nix-skip-commits"
@@ -280,8 +297,7 @@ rollback_suite() {
     mkdir "$work/.nix-skip-commits"
     export MOCK_SWITCH_RC=5
     run_script
-    [[ $rc -eq 1 ]] || fail "unreadable skip list exited $rc"
-    cmp -s "$work/original.lock" "$work/flake.lock" || fail 'unreadable skip list: lock not restored'
+    assert_rolled_back 'unreadable skip list'
     [[ $(switch_calls) -eq 2 ]] || fail 'unreadable skip list stopped the switch back'
     grep -q 'Successfully restored previous configuration' "$work/output" \
         || fail 'unreadable skip list: configuration not restored'
@@ -289,10 +305,25 @@ rollback_suite() {
     prepare disk-full
     export MOCK_SWITCH_RC=5 MOCK_SWITCH_MSG='error: writing file: No space left on device'
     run_script
-    [[ $rc -eq 1 ]] || fail "disk-full switch exited $rc"
-    cmp -s "$work/original.lock" "$work/flake.lock" || fail 'disk-full switch did not restore the lock'
+    assert_rolled_back 'disk-full switch'
     grep -q "Detected 'no space left on device'" "$work/output" || fail 'disk full not detected'
     [[ ! -s "$work/.nix-skip-commits" ]] || fail 'disk-full failure was skip-listed'
+
+    # The update deletes flake.lock but exits 0.
+    prepare lock-deleted
+    export MOCK_DELETE_LOCK=1
+    run_script
+    assert_rolled_back 'deleted lock'
+    [[ $(switch_calls) -eq 1 ]] || fail 'deleted lock: no switch back'
+
+    # The switch succeeds but its JSON log cannot be read.
+    prepare unreadable-json-log
+    export MOCK_SWITCH_LOG_DIR=1
+    run_script
+    [[ $rc -eq 0 ]] || fail "unreadable JSON log exited $rc"
+    grep -q 'new-nixpkgs' "$work/flake.lock" || fail 'unreadable JSON log rolled back the lock'
+    [[ $(switch_calls) -eq 1 ]] || fail 'unreadable JSON log rolled back the system'
+    grep -q '^git commit -m ' "$MOCK_CALLS" || fail 'unreadable JSON log: not committed'
 
     prepare commit-fails
     export MOCK_COMMIT_RC=1
