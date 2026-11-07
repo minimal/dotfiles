@@ -33,7 +33,7 @@ cask "font-monoid"
 cask "font-vollkorn"
 cask "firefox"
 
-# brew "emacs-mac@30exp", args: ["with-native-comp", "with-tree-sitter", "with-imagemagick", "with-imagemagick", "with-librsvg", "with-glib", "with-libxml2"]
+brew "emacs-mac@31exp", args: ["with-native-comp", "with-tree-sitter", "with-imagemagick", "with-imagemagick", "with-librsvg", "with-glib", "with-libxml2"]
 cask "podman-desktop"
 brew "hashicorp/tap/terraform"
 cask "tmuxpack/tpack/tpack"

@@ -13,6 +13,7 @@
     # pkgs is the set of all packages in the default home.nix implementation
     home-manager
     nix
+    nh
 
     # cmdline / system programs
     aspell
@@ -51,6 +52,7 @@
     ouch # easy compressions
     yt-dlp
     ncdu
+    chafa
 
     # devenv (universal)
     direnv

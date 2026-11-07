@@ -2,6 +2,9 @@ set shell := ["zsh", "-uc"]
 flake := ".#" +`hostname | tr -d .`
 
 default:
+    just --list
+
+print-flake:
     echo {{ flake }}
 
 nix-packages-tree:
@@ -25,8 +28,18 @@ hm-packages:
 nix-gc-30d:
     nix-collect-garbage --delete-older-than 30d
 
+# saves the most space
+nix-nh-clean:
+    nh clean user
+
+nix-optimise-store:
+    nix-store --optimise
+
 nix-repair-store:
     nix-store --verify --check-contents --repair
+
+nix-store-size:
+    du -sh /nix/store
 
 nix-install-unstable:
     nix-env -f '<nixpkgs>' -iA nixUnstable
@@ -74,8 +87,7 @@ doom-update-sync: doom-update-flake hm-switch
 doom-trash-packages:
     trash ~/.emacs.d/.local/straight/
 
-# Wipe straight packages and fully resync, regenerating the envvar loader (-e)
-# so GUI Emacs (Finder/Dock) picks up the nix PATH again.
+[doc("Wipe straight packages and fully resync, regenerating the envvar loader (-e) so GUI Emacs (Finder/Dock) picks up the nix PATH again.")]
 doom-trash-resync: doom-trash-packages
     YES=1 FORCE=1 $HOME/.emacs.d/bin/doom sync -u -e
 
@@ -88,5 +100,6 @@ brew-bundle:
 nix-latest-git-version:
     curl -s https://raw.githubusercontent.com/NixOS/nixpkgs/master/pkgs/applications/version-management/git/default.nix | grep '^  version ='
 
-save-space: nix-gc-30d
+save-space: nix-gc-30d nix-nh-clean
+    brew cleanup
     doom gc

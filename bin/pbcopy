@@ -1,4 +1,6 @@
 #!/bin/sh
-# WSL clipboard copy. Windows dirs are not on PATH, so use full path.
+# Clipboard copy. Use macOS pbcopy on Darwin, else WSL clip.exe.
+# Windows dirs are not on PATH, so use full path.
 # Reads stdin, like macOS pbcopy.
+[ "$(uname)" = Darwin ] && exec /usr/bin/pbcopy
 exec /mnt/c/Windows/System32/clip.exe

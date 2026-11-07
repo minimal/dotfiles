@@ -22,7 +22,7 @@ in {
     EDITOR = "vi -e";
     VISUAL = "emacsclient -nw";
     PROJECT_HOME = "${HOME}/code";
-    EMACS = "/opt/homebrew/opt/emacs-mac@30exp/Emacs.app/Contents/MacOS/Emacs";
+    EMACS = "/opt/homebrew/opt/emacs-mac@31exp/Emacs.app/Contents/MacOS/Emacs";
     GRANTED_ALIAS_CONFIGURED = "true";
     DOD_HOME = "${HOME}/code/fc/originations-toolbox/robert.johnson/decision-output-downloader";
     COPILOT_CUSTOM_INSTRUCTIONS_DIRS = "${HOME}/.claude/rules";
@@ -32,13 +32,14 @@ in {
   home.file.".gnupg/gpg-agent.conf".text = ''
     pinentry-program ${pkgs.pinentry_mac}/bin/pinentry-mac
   '';
+  home.file.".claude/statusline.sh".source = config.lib.file.mkOutOfStoreSymlink "${config.home.homeDirectory}/code/dotfiles/config/claude/statusline.sh";
   # home.file.".lein".source = ../.lein;
 
   programs = {
     zsh = {
       shellAliases = {
         mdfindname = "mdfind -name";
-        emacs = "/opt/homebrew/opt/emacs-mac@30exp/Emacs.app/Contents/MacOS/Emacs";
+        emacs = "/opt/homebrew/opt/emacs-mac@31exp/Emacs.app/Contents/MacOS/Emacs";
         emacsclient = "/opt/homebrew/bin/emacsclient";
       };
     };
