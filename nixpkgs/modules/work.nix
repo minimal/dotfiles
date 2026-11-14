@@ -3,6 +3,5 @@
   # unfree packages via the `unfree` arg to mkHomeConfig in flake.nix.
   home.packages = with pkgs; [
     # kcat
-    mise
   ];
 }

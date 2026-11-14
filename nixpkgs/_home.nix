@@ -91,6 +91,12 @@
       enable = true;
       nix-direnv.enable = true;
     };
+    # Shell activation only; ~/.config/mise/config.toml stays user-managed
+    # (set mutableSettings = true if HM should contribute conf.d fragments).
+    mise = {
+      enable = true;
+      enableZshIntegration = true;
+    };
     htop = {
       enable = true;
       settings.tree_view = true;
