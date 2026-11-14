@@ -23,7 +23,8 @@
 ;; - No jq or curl dependency.
 ;; - The binary-cache check counts only derivations that run a build. It asks
 ;;   nix for each one, so generated files, wrappers and buildEnvs do not count
-;;   as compilation. The bash version filters by derivation name.
+;;   as compilation. Packages from flake inputs are excluded. The bash version
+;;   filters by derivation name.
 ;; - --dry-run updates flake.lock to check the binary cache, then restores
 ;;   it. It reports the rev, the date and the derivations a real run would
 ;;   build, including the older channel release it would fall back to when
@@ -47,6 +48,11 @@
 
 (def lock-file "flake.lock")
 (def skip-list-file ".nix-skip-commits")
+
+(def flake-package-re
+  "Packages that come from a flake input, not from nixpkgs. They always build
+   locally, so they are not a binary-cache miss. Add new flake packages here."
+  #"^[a-z0-9]{32}-emacs-lsp-booster-")
 
 (def channel-max-tries
   "Max older channel releases to try when the newest is not cached."
@@ -387,19 +393,21 @@
 
 (defn compiling-drvs
   "Return the derivations in NAMES that compile something. NAMES are store
-   path names without the prefix, as parse-uncached returns them. A
-   derivation whose attributes cannot be read counts as a compile."
+   path names without the prefix, as parse-uncached returns them. Packages
+   from flake inputs do not count, and a derivation whose attributes cannot
+   be read counts as a compile."
   [names]
-  (if (empty? names)
-    []
-    (let [path (fn [name] (str "/nix/store/" name))
-          derivs (drv-attrs (map path names))
-          attrs-of (fn [name] (or (get derivs name) (get derivs (path name))))]
-      (filterv (fn [name]
-                 (if-let [attrs (attrs-of name)]
-                   (drv-compiles? attrs)
-                   true))
-               names))))
+  (let [names (remove #(re-find flake-package-re %) names)]
+    (if (empty? names)
+      []
+      (let [path (fn [name] (str "/nix/store/" name))
+            derivs (drv-attrs (map path names))
+            attrs-of (fn [name] (or (get derivs name) (get derivs (path name))))]
+        (filterv (fn [name]
+                   (if-let [attrs (attrs-of name)]
+                     (drv-compiles? attrs)
+                     true))
+                 names)))))
 
 (defn describe-build
   "Return a short description of DRVS, the derivations a dry run would compile."

@@ -131,6 +131,13 @@
                  {"builder" "/nix/store/x-bash/bin/bash"
                   "env" {"__json" "{\"text\":\"hi\"}"}})))))
 
+(deftest compiling-drvs
+  (testing "an empty list needs no nix call"
+    (is (= [] (nus/compiling-drvs []))))
+  (testing "packages from a flake input are not cache misses"
+    (is (= [] (nus/compiling-drvs
+               ["p3bijqrscrhg8hlk2kirk3r7gsifsrg7-emacs-lsp-booster-0.2.1.drv"])))))
+
 (deftest input-date
   (let [lock {"nodes" {"home-manager" {"locked" {"lastModified" 1705708800}}}}]
     (is (= "2024-01-20" (nus/input-date lock "home-manager")))
