@@ -92,5 +92,108 @@
   (is (= "a" (nus/truncate "abc" 1)))
   (is (= "abc" (nus/truncate "abc" 80))))
 
+(deftest describe-build
+  (is (= "fully cached, no compilation" (nus/describe-build [])))
+  (is (= "1 derivation would compile" (nus/describe-build ["a"])))
+  (is (= "3 derivations would compile" (nus/describe-build ["a" "b" "c"])))
+  (is (= "cache check could not evaluate" (nus/describe-build ::nus/eval-failed))))
+
+(deftest input-date
+  (let [lock {"nodes" {"home-manager" {"locked" {"lastModified" 1705708800}}}}]
+    (is (= "2024-01-20" (nus/input-date lock "home-manager")))
+    (is (nil? (nus/input-date lock "missing")))))
+
+(defn rev-of
+  "Return a 40-character rev that starts with PREFIX."
+  [prefix]
+  (str prefix (apply str (repeat (- 40 (count prefix)) \0))))
+
+(def dry-run-rev "oldnixpk")
+
+(def dry-run-old-lock
+  {"nodes" {"root" {"inputs" {"nixpkgs" "nixpkgs"}}
+            "nixpkgs" {"locked" {"rev" (rev-of dry-run-rev) "lastModified" 1705708800}}
+            "home-manager" {"locked" {"rev" "oldgen01"}}}})
+
+(defn dry-run-lock
+  "Return a lock with nixpkgs REV and given timestamps."
+  [rev nixpkgs-ts hm-rev hm-ts]
+  {"nodes" {"root" {"inputs" {"nixpkgs" "nixpkgs"}}
+            "nixpkgs" {"locked" {"rev" rev "lastModified" nixpkgs-ts}}
+            "home-manager" {"locked" {"rev" hm-rev "lastModified" hm-ts}}}})
+
+(deftest dry-run-rows
+  (testing "a fully cached latest nixpkgs is listed once"
+    (let [chosen (dry-run-lock (rev-of "newnixpk") 1706572800 "newgen01" 1706659200)
+          state (atom {:cache-checked {:rev (rev-of "newnixpk") :date "2024-01-30" :drvs []}})
+          rows (nus/dry-run-rows state dry-run-old-lock chosen)]
+      (is (= ["in use" "latest, fully cached, no compilation"] (map :note rows)))
+      (is (= ["2024-01-20" "2024-01-30"] (map :date rows)))
+      (is (= ["oldnixpk" "newnixpk"] (map :rev rows)))))
+
+  (testing "otherwise lists the latest and each rejected older release"
+    (let [fallback (rev-of "cached")
+          chosen (dry-run-lock fallback 1706486400 "oldgen01" nil)
+          state (atom {:cache-checked {:rev (rev-of "newnixpk") :date "2024-01-30" :drvs ["a" "b"]}
+                       :cache-tried [{:rev (subs (rev-of "oldrel") 0 12) :date "2024-01-30"
+                                      :drvs ["a"]}
+                                     {:rev (subs fallback 0 12) :date "2024-01-29" :drvs []}]})
+          rows (nus/dry-run-rows state dry-run-old-lock chosen)]
+      ;; The chosen release is left out; dry-run-summary reports it.
+      (is (= ["in use"
+              "latest, 2 derivations would compile"
+              "older release, 1 derivation would compile"]
+             (map :note rows)))
+      (is (= ["oldnixpk" "newnixpk" "oldrel00"] (map :rev rows)))
+      (is (= ["2024-01-20" "2024-01-30" "2024-01-30"] (map :date rows)))))
+
+  (testing "an unchanged rev lists only the rev in use"
+    (let [chosen (dry-run-lock (rev-of dry-run-rev) 1705708800 "newgen01" 1706659200)
+          state (atom {:cache-checked {:rev (rev-of dry-run-rev) :date "2024-01-20"
+                                      :drvs ["a" "b"]}})]
+      (is (= ["in use"] (map :note (nus/dry-run-rows state dry-run-old-lock chosen)))))))
+
+(deftest dry-run-summary
+  (testing "reports the full rev, the date and the build state"
+    (let [chosen (dry-run-lock (rev-of "newnixpk") 1706572800 "newgen01" 1706659200)
+          state (atom {:cache-checked {:rev (rev-of "newnixpk") :date "2024-01-30" :drvs []}})
+          lines (nus/dry-run-summary state dry-run-old-lock chosen {})]
+      (is (= [(str "Would use nixpkgs " (rev-of "newnixpk") " (2024-01-30)"
+                   ": fully cached, no compilation")
+              "Would use home-manager newgen01 (2024-01-31), was oldgen01"]
+             (butlast lines)))
+      (is (str/starts-with? (last lines) "Would commit: nix: update nixpkgs & home-manager ("))))
+
+  (testing "a fallback release is reported as fully cached"
+    (let [fallback (rev-of "cached")
+          chosen (dry-run-lock fallback 1706486400 "oldgen01" nil)
+          state (atom {:cache-checked {:rev (rev-of "newnixpk") :date "2024-01-30" :drvs ["a"]}})
+          lines (nus/dry-run-summary state dry-run-old-lock chosen {})]
+      (is (= (str "Would use nixpkgs " fallback " (2024-01-29): fully cached, no compilation")
+             (first lines)))
+      (is (= 2 (count lines)))))
+
+  (testing "compiling is reported when the latest rev is kept"
+    (let [chosen (dry-run-lock (rev-of dry-run-rev) 1705708800 "oldgen01" nil)
+          state (atom {:cache-checked {:rev (rev-of dry-run-rev) :date "2024-01-20"
+                                      :drvs ["a" "b"]}})
+          lines (nus/dry-run-summary state dry-run-old-lock chosen {})]
+      (is (str/ends-with? (first lines) ": 2 derivations would compile"))))
+
+  (testing "no fully cached release found: keep the current lock"
+    (let [state (atom {:cache-checked {:rev (rev-of "newnixpk") :date "2024-01-30"
+                                      :drvs ["a" "b"]}
+                       :keep-current? true})]
+      (is (= [(str "Would keep nixpkgs " (rev-of dry-run-rev) " (2024-01-20)"
+                   ": no fully cached release newer than it")]
+             (nus/dry-run-summary state dry-run-old-lock dry-run-old-lock {})))))
+
+  (testing "--nixpkgs-only leaves home-manager out"
+    (let [chosen (dry-run-lock (rev-of "newnixpk") 1706572800 "newgen01" 1706659200)
+          state (atom {:cache-checked {:rev (rev-of "newnixpk") :date "2024-01-30" :drvs []}})
+          lines (nus/dry-run-summary state dry-run-old-lock chosen {:nixpkgs-only true})]
+      (is (= 2 (count lines)))
+      (is (not-any? #(str/includes? % "home-manager") (butlast lines))))))
+
 (let [{:keys [fail error]} (run-tests)]
   (System/exit (if (zero? (+ fail error)) 0 1)))

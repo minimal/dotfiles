@@ -270,6 +270,67 @@ switch_calls() {
     grep -c '^just hm-switch$' "$MOCK_CALLS" || true
 }
 
+# --dry-run exists only in the bb version. It reports the chosen rev and then
+# restores flake.lock: no switch, no commit, no skip-list change.
+dry_run_suite() {
+    prepare dry-run
+    run_script --dry-run
+    [[ $rc -eq 0 ]] || fail "dry run exited $rc"
+    cmp -s "$work/original.lock" "$work/flake.lock" || fail 'dry run changed flake.lock'
+    if grep -Eq '^(just hm-switch|git (add|commit))' "$MOCK_CALLS"; then
+        fail 'dry run switched or committed'
+    fi
+    [[ ! -e "$work/.nix-skip-commits" ]] || fail 'dry run touched the skip list'
+    grep -q '^just nixpkgs-update-flake$' "$MOCK_CALLS" || fail 'dry run did not update the inputs'
+    grep -q '^nix build --dry-run ' "$MOCK_CALLS" || fail 'dry run skipped the cache check'
+    grep -Fq 'Would use nixpkgs new-nixpkgs (' "$work/output" || fail 'dry run did not report the rev'
+    grep -q 'fully cached, no compilation' "$work/output" || fail 'dry run did not report the cache state'
+    grep -q 'Would commit: nix: update nixpkgs & home-manager (' "$work/output" \
+        || fail 'dry run did not report the commit message'
+    grep -q 'Dry run complete: flake.lock restored' "$work/output" || fail 'dry run did not restore the lock'
+
+    prepare dry-run-nixpkgs-only
+    run_script --dry-run --nixpkgs-only
+    [[ $rc -eq 0 ]] || fail "dry run --nixpkgs-only exited $rc"
+    grep -q '^nix flake update nixpkgs$' "$MOCK_CALLS" || fail 'wrong dry-run update mode'
+    cmp -s "$work/original.lock" "$work/flake.lock" || fail 'dry run --nixpkgs-only changed flake.lock'
+    if grep -q 'Would use home-manager' "$work/output"; then
+        fail 'dry run --nixpkgs-only reported home-manager'
+    fi
+
+    # A failed update restores the lock without switching or skip-listing.
+    prepare dry-run-fails
+    export MOCK_UPDATE_RC=7
+    run_script --dry-run
+    [[ $rc -ne 0 ]] || fail 'failed dry-run update exited 0'
+    cmp -s "$work/original.lock" "$work/flake.lock" || fail 'failed dry-run update left flake.lock changed'
+    if grep -Eq '^(just hm-switch|git (add|commit))' "$MOCK_CALLS"; then
+        fail 'failed dry-run update switched or committed'
+    fi
+    [[ ! -e "$work/.nix-skip-commits" ]] || fail 'failed dry-run update touched the skip list'
+    grep -q 'Restoring flake.lock (dry run)' "$work/output" || fail 'dry-run restore was not reported'
+
+    prepare dry-run-unchanged
+    export MOCK_UNCHANGED=1
+    run_script --dry-run
+    [[ $rc -eq 0 ]] || fail "unchanged dry run exited $rc"
+    grep -q 'flake.lock unchanged, nothing to do' "$work/output" || fail 'unchanged dry run not reported'
+    cmp -s "$work/original.lock" "$work/flake.lock" || fail 'unchanged dry run changed flake.lock'
+    if grep -Eq '^(nix build|just hm-switch|git (add|commit))' "$MOCK_CALLS"; then
+        fail 'unchanged dry run checked or applied the system'
+    fi
+
+    # A skip-listed rev is reported, and the lock is restored.
+    prepare dry-run-skip-listed
+    printf 'new-nixpkgs\n' > "$work/.nix-skip-commits"
+    run_script --dry-run
+    [[ $rc -eq 0 ]] || fail "skip-listed dry run exited $rc"
+    grep -q 'is in skip list' "$work/output" || fail 'skip-listed dry run did not report the rev'
+    cmp -s "$work/original.lock" "$work/flake.lock" || fail 'skip-listed dry run changed flake.lock'
+    [[ $(switch_calls) -eq 0 ]] || fail 'skip-listed dry run switched'
+    [[ $(wc -l < "$work/.nix-skip-commits") -eq 1 ]] || fail 'skip-listed dry run changed the skip list'
+}
+
 # Check that a failed run exited 1, restored the lock and did not commit.
 assert_rolled_back() {
     [[ $rc -eq 1 ]] || fail "$1: exited $rc, expected 1"
@@ -367,6 +428,10 @@ for impl in $IMPLS; do
     fi
     suite
     rollback_suite
+    # --dry-run is only in the bb version.
+    if [[ "$impl" == bb ]]; then
+        dry_run_suite
+    fi
     printf 'PASS: nixpkgs-update-safe (%s)\n' "$impl"
 done
 

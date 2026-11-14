@@ -9,6 +9,7 @@
 ;; Usage:
 ;;   bin/nixpkgs-update-safe.bb                 # update nixpkgs and home-manager
 ;;   bin/nixpkgs-update-safe.bb --nixpkgs-only  # update nixpkgs only
+;;   bin/nixpkgs-update-safe.bb --dry-run       # report only, change nothing
 ;;
 ;; Differences from the bash version:
 ;; - The flake.lock backup and the error log stay in memory. The log goes to
@@ -20,6 +21,10 @@
 ;;   rev lookup does.
 ;; - Unknown options are an error (exit 1).
 ;; - No jq or curl dependency.
+;; - --dry-run updates flake.lock to check the binary cache, then restores
+;;   it. It reports the rev, the date and the derivations a real run would
+;;   build, including the older channel release it would fall back to when
+;;   the newest nixpkgs needs compiling. The bash version has no such option.
 ;;
 ;; Tests: scripts/nixpkgs-update-safe-test.sh (end to end, with mocks) and
 ;; scripts/nixpkgs-update-safe-test.bb (pure functions).
@@ -51,6 +56,7 @@
 
 (def cli-options
   [[nil "--nixpkgs-only" "Update only nixpkgs, not home-manager"]
+   ["-n" "--dry-run" "Report what would be built; no switch, no commit"]
    ["-h" "--help" "Show this help"]])
 
 ;; --- Output ---
@@ -74,6 +80,25 @@
   "Return S cut to at most N characters."
   [s n]
   (if (> (count s) n) (subs s 0 n) s))
+
+(defn- pad-right
+  "Pad S with spaces to N characters. Never truncate."
+  [s n]
+  (let [s (str s)]
+    (str s (apply str (repeat (max 0 (- n (count s))) \space)))))
+
+(defn- report-row
+  "Return one aligned line of the dry-run report."
+  [{:keys [input rev date note]}]
+  (str "  " (pad-right input 14) (pad-right rev 10) (pad-right (or date "?") 12) note))
+
+(defn- print-report!
+  "Print ROWS, a seq of {:input :rev :date :note}, as an aligned table."
+  [rows]
+  (say "")
+  (say (str "  " (pad-right "input" 14) (pad-right "rev" 10) (pad-right "date" 12) "note"))
+  (doseq [row rows] (say (report-row row)))
+  (say ""))
 
 ;; --- Control flow ---
 
@@ -234,11 +259,16 @@
 (defn nixpkgs-rev [lock]
   (get-in lock ["nodes" (nixpkgs-node lock) "locked" "rev"]))
 
+(defn input-date
+  "Return the lastModified date of lock NODE (UTC, YYYY-MM-DD), or nil."
+  [lock node]
+  (when-let [ts (get-in lock ["nodes" node "locked" "lastModified"])]
+    (str (.toLocalDate (.atZone (Instant/ofEpochSecond (long ts)) ZoneOffset/UTC)))))
+
 (defn nixpkgs-date
   "Return the lastModified date of nixpkgs (UTC, YYYY-MM-DD), or nil."
   [lock]
-  (when-let [ts (get-in lock ["nodes" (nixpkgs-node lock) "locked" "lastModified"])]
-    (str (.toLocalDate (.atZone (Instant/ofEpochSecond (long ts)) ZoneOffset/UTC)))))
+  (input-date lock (nixpkgs-node lock)))
 
 (defn hm-rev [lock]
   (get-in lock ["nodes" "home-manager" "locked" "rev"]))
@@ -265,11 +295,23 @@
     (truncate raw 10)))
 
 (defn commit-message
-  "Make the commit message from CHANGES, a seq of [input date]."
-  [changes]
-  (let [changes (if (seq changes) changes [["flake.lock" (str (LocalDate/now))]])]
-    (str "nix: update " (str/join " & " (map first changes))
-         " (" (str/join ", " (map second changes)) ")")))
+  "Make the commit message from PAIRS, a seq of [input date]."
+  [pairs]
+  (let [pairs (if (seq pairs) pairs [["flake.lock" (str (LocalDate/now))]])]
+    (str "nix: update " (str/join " & " (map first pairs))
+         " (" (str/join ", " (map second pairs)) ")")))
+
+(defn changes
+  "Return the [input date] pairs for a change from OLD-LOCK to NEW-LOCK.
+   Dates come from the update output, else from the lock."
+  [old-lock new-lock {:keys [nixpkgs-only]}]
+  (cond-> []
+    (not= (nixpkgs-rev old-lock) (nixpkgs-rev new-lock))
+    (conj ["nixpkgs" (format-date (or (extract-update-date @log "nixpkgs")
+                                     (nixpkgs-date new-lock)))])
+
+    (and (not nixpkgs-only) (not= (hm-rev old-lock) (hm-rev new-lock)))
+    (conj ["home-manager" (format-date (extract-update-date @log "home-manager"))])))
 
 ;; --- Skip list ---
 
@@ -306,6 +348,15 @@
        (map #(str/replace % #".*/nix/store/" ""))
        (remove #(re-find local-drv-re %))
        vec))
+
+(defn describe-build
+  "Return a short description of DRVS, the derivations a dry run would build."
+  [drvs]
+  (cond
+    (= drvs ::eval-failed) "cache check could not evaluate"
+    (empty? drvs) "fully cached, no compilation"
+    (= 1 (count drvs)) "1 derivation would compile"
+    :else (str (count drvs) " derivations would compile")))
 
 (defn- hm-attr []
   (let [host (str/trim (:out (exec {:out :string :err :string} ["hostname"])))]
@@ -357,22 +408,30 @@
 
 (defn- find-cached-release
   "Lock nixpkgs to each older channel release until one is fully cached.
-   Return its short rev, or nil."
+   Return {:rev rev :tried [{:rev :date :drvs} ...]}; :rev is nil when no
+   release is fully cached."
   [attr new-rev old-rev]
   (loop [[rev & more] (channel-candidates new-rev)
-         tries 1]
-    (cond
-      (nil? rev) nil
-      ;; Reached the previously applied rev: nothing newer is cached.
-      (and old-rev (str/starts-with? old-rev rev)) nil
-      (> tries channel-max-tries) nil
-      (and (zero? (run-with-progress
-                   (format "Trying channel release %s (%d/%d)..." rev tries channel-max-tries)
-                   "nix" "flake" "lock" "--override-input" "nixpkgs" (str "github:NixOS/nixpkgs/" rev)))
-           (let [drvs (uncached-drvs attr)]
-             (and (not= drvs ::eval-failed) (empty? drvs))))
-      rev
-      :else (recur more (inc tries)))))
+         tries 1
+         tried []]
+    (let [done {:rev nil :tried tried}]
+      (cond
+        (nil? rev) done
+        ;; Reached the previously applied rev: nothing newer is cached.
+        (and old-rev (str/starts-with? old-rev rev)) done
+        (> tries channel-max-tries) done
+        :else
+        (if-not (zero? (run-with-progress
+                        (format "Trying channel release %s (%d/%d)..." rev tries channel-max-tries)
+                        "nix" "flake" "lock" "--override-input" "nixpkgs" (str "github:NixOS/nixpkgs/" rev)))
+          (recur more (inc tries) tried)
+          (let [drvs (uncached-drvs attr)
+                entry (when (not= drvs ::eval-failed)
+                        {:rev rev :date (nixpkgs-date (read-lock)) :drvs drvs})
+                tried (if entry (conj tried entry) tried)]
+            (if (and entry (empty? drvs))
+              {:rev rev :tried tried}
+              (recur more (inc tries) tried))))))))
 
 ;; --- Rollback ---
 
@@ -381,34 +440,36 @@
 
 (defn- rollback!
   "Restore flake.lock and the previous configuration. Run only once.
-   Add the new nixpkgs rev to the skip list when SKIP-LIST? is true."
+   Add the new nixpkgs rev to the skip list when SKIP-LIST? is true.
+   In a dry run, only restore flake.lock."
   [state {:keys [skip-list?]}]
   (when-not (:rolled-back? @state)
     (swap! state assoc :rolled-back? true)
-    (warn "Rolling back flake.lock...")
+    (warn (if (:dry-run? @state) "Restoring flake.lock (dry run)..." "Rolling back flake.lock..."))
     ;; Restore the file and the git index first.
     (attempt "restore flake.lock" #(restore-lock! state))
     (exec {:out :string :err :string} ["git" "restore" "--staged" lock-file])
-    ;; Nothing in this step may stop the switch back below.
-    (attempt
-     "update the skip list"
-     #(let [{:keys [old-rev new-rev]} @state
-            disk-full? (some (fn [line] (re-find #"(?i)no space left on device" line)) @log)]
-        (when disk-full?
-          (warn "Detected 'no space left on device'; will not add nixpkgs rev to skip list"))
-        (when (and skip-list? (not disk-full?) (some? new-rev) (not= new-rev old-rev)
-                   (not (skip-listed? new-rev)))
-          (add-to-skip-list! new-rev)
-          (warn (str "Added problematic nixpkgs commit to skip list: " new-rev)))))
-    (warn "Running hm-switch to restore previous configuration...")
-    (if (zero? (:exit (exec {:inherit true} ["just" "hm-switch"])))
-      (info "Successfully restored previous configuration")
-      (do (error "Failed to restore previous configuration with hm-switch")
-          (error "You may need to manually run 'just hm-switch' to fix your system")))
+    (when-not (:dry-run? @state)
+      ;; Nothing in this step may stop the switch back below.
+      (attempt
+       "update the skip list"
+       #(let [{:keys [old-rev new-rev]} @state
+              disk-full? (some (fn [line] (re-find #"(?i)no space left on device" line)) @log)]
+          (when disk-full?
+            (warn "Detected 'no space left on device'; will not add nixpkgs rev to skip list"))
+          (when (and skip-list? (not disk-full?) (some? new-rev) (not= new-rev old-rev)
+                     (not (skip-listed? new-rev)))
+            (add-to-skip-list! new-rev)
+            (warn (str "Added problematic nixpkgs commit to skip list: " new-rev)))))
+      (warn "Running hm-switch to restore previous configuration...")
+      (if (zero? (:exit (exec {:inherit true} ["just" "hm-switch"])))
+        (info "Successfully restored previous configuration")
+        (do (error "Failed to restore previous configuration with hm-switch")
+            (error "You may need to manually run 'just hm-switch' to fix your system"))))
     (when (seq @log)
       (when-let [path (attempt "write the error log" save-log!)]
         (warn (str "Full error log: " path))))
-    (info "Rollback completed")))
+    (info (if (:dry-run? @state) "Dry run stopped; flake.lock restored" "Rollback completed"))))
 
 (defn- lock-changed?
   "Return true when flake.lock differs from the backup. A missing or
@@ -418,6 +479,68 @@
     (try
       (not (java.util.Arrays/equals ^bytes backup ^bytes (fs/read-all-bytes lock-file)))
       (catch Exception _ true))))
+
+;; --- Dry run ---
+
+(defn dry-run-rows
+  "Return the candidate rows for a dry run: the rev in use, the latest
+   nixpkgs and each older release tried. CHOSEN is the lock a real run
+   would use; OLD-LOCK is the lock before the update."
+  [state old-lock chosen]
+  (let [{:keys [rev date drvs]} (:cache-checked @state)
+        chosen-rev (nixpkgs-rev chosen)]
+    (concat
+     [{:input "nixpkgs" :rev (short-rev (nixpkgs-rev old-lock))
+       :date (nixpkgs-date old-lock) :note "in use"}]
+
+     ;; The newest nixpkgs, when it differs from the rev in use.
+     (when (and rev (not= rev (nixpkgs-rev old-lock)))
+       [{:input "" :rev (short-rev rev) :date date
+         :note (str "latest, " (describe-build drvs))}])
+
+     ;; Older channel releases tried and rejected, newest first. The chosen
+     ;; release is left out: the summary reports it.
+     (->> (:cache-tried @state)
+          (remove #(and chosen-rev (:rev %) (str/starts-with? chosen-rev (:rev %))))
+          (map (fn [{:keys [rev date drvs]}]
+                 {:input "" :rev (short-rev rev) :date date
+                  :note (str "older release, " (describe-build drvs))}))))))
+
+(defn dry-run-summary
+  "Return the conclusion lines for a dry run: the input revs a real run
+   would use, or the rev it would keep, and the commit message it would write."
+  [state old-lock chosen {:keys [nixpkgs-only old-hm]}]
+  (let [{:keys [rev drvs]} (:cache-checked @state)
+        chosen-rev (nixpkgs-rev chosen)
+        chosen-hm (hm-rev chosen)
+        old-hm (or old-hm (hm-rev old-lock))]
+    (if (:keep-current? @state)
+      [(str "Would keep nixpkgs " chosen-rev " (" (or (nixpkgs-date chosen) "unknown date")
+            "): no fully cached release newer than it")]
+      (concat
+       [(str "Would use nixpkgs " chosen-rev " (" (or (nixpkgs-date chosen) "unknown date") "): "
+             (if (= chosen-rev rev) (describe-build drvs) "fully cached, no compilation"))]
+
+       (when (and (not nixpkgs-only) (not= old-hm chosen-hm))
+         [(str "Would use home-manager " chosen-hm
+               " (" (or (input-date chosen "home-manager") "unknown date") ")"
+               ", was " (short-rev old-hm))])
+
+       [(str "Would commit: " (commit-message (changes old-lock chosen
+                                                       {:nixpkgs-only nixpkgs-only})))]))))
+
+(defn- print-dry-run!
+  "Print the candidates and the conclusion, then restore flake.lock.
+   Change nothing else."
+  [state {:keys [old-lock] :as opts}]
+  (let [chosen (read-lock)]
+    (print-report! (dry-run-rows state old-lock chosen))
+    (doseq [line (dry-run-summary state old-lock chosen opts)] (info line))
+    (attempt "restore flake.lock" #(do (restore-lock! state) true))
+    (exec {:out :string :err :string} ["git" "restore" "--staged" lock-file])
+    (if (succeeds? "git" "diff" "--quiet" lock-file)
+      (info "Dry run complete: flake.lock restored, nothing switched or committed")
+      (warn "flake.lock differs from HEAD after the dry run; check git status"))))
 
 ;; --- Steps ---
 
@@ -443,11 +566,13 @@
 (defn- ensure-cached!
   "Check that the new nixpkgs is in the binary cache. If not, step back
    through channel releases to the newest one that is fully cached. Return
-   the nixpkgs rev to use."
+   the nixpkgs rev to use. Record each check in STATE for the dry-run report."
   [state new-rev old-rev]
   (info (str "Checking binary cache for nixpkgs " (short-rev new-rev) "..."))
   (let [attr (hm-attr)
+        date (nixpkgs-date (read-lock))
         drvs (uncached-drvs attr)]
+    (swap! state assoc :cache-checked {:rev new-rev :date date :drvs drvs})
     (cond
       (= drvs ::eval-failed)
       (do (warn "Cache check failed to evaluate; continuing without it") new-rev)
@@ -460,15 +585,19 @@
         (doseq [d (take 5 drvs)] (say (str "    " d)))
         (if (= new-rev old-rev)
           (do (warn "nixpkgs unchanged; nothing to step back to. Continuing.") new-rev)
-          (if-let [found (find-cached-release attr new-rev old-rev)]
-            (let [rev (nixpkgs-rev (read-lock))]
-              (info (str "Using cached nixpkgs release " found " (" (short-rev rev) ")"))
-              rev)
-            (do
-              (warn "No newer fully cached nixpkgs found. Keeping current flake.lock.")
-              (warn "Not skip-listed: retry later, once Hydra catches up.")
-              (restore-lock! state)
-              (halt! 0))))))))
+          (let [{found :rev tried :tried} (find-cached-release attr new-rev old-rev)]
+            (swap! state assoc :cache-tried tried)
+            (if found
+              (let [rev (nixpkgs-rev (read-lock))]
+                (info (str "Using cached nixpkgs release " found " (" (short-rev rev) ")"))
+                rev)
+              (do
+                (warn "No newer fully cached nixpkgs found. Keeping current flake.lock.")
+                (warn "Not skip-listed: retry later, once Hydra catches up.")
+                (swap! state assoc :keep-current? true)
+                (restore-lock! state)
+                ;; A dry run reports this instead of stopping silently.
+                (if (:dry-run? @state) old-rev (halt! 0))))))))))
 
 (defn- commit!
   "Stage and commit flake.lock. Stop on an interrupt around each git step.
@@ -494,14 +623,16 @@
 (defn- update!
   "Run the update. Return normally on success. Throw ::exit or
    ::interrupted ex-info to stop."
-  [state {:keys [nixpkgs-only]}]
+  [state {:keys [nixpkgs-only dry-run]}]
   (preflight!)
-  (info "Starting safe Nix flake update...")
+  (info (if dry-run
+          "Starting dry run; flake.lock is restored afterwards"
+          "Starting safe Nix flake update..."))
   (let [backup (fs/read-all-bytes lock-file)
         old-lock (parse-lock backup)
         old-rev (nixpkgs-rev old-lock)
         old-hm (hm-rev old-lock)]
-    (swap! state assoc :backup backup :old-rev old-rev)
+    (swap! state assoc :backup backup :old-rev old-rev :dry-run? dry-run)
     (update-inputs! state nixpkgs-only)
     (when (succeeds? "git" "diff" "--quiet" lock-file)
       (info "flake.lock unchanged, nothing to do")
@@ -516,6 +647,9 @@
         (halt! 0))
       (let [new-rev (ensure-cached! state new-rev old-rev)]
         (swap! state assoc :new-rev new-rev)
+        (when dry-run
+          (print-dry-run! state {:nixpkgs-only nixpkgs-only :old-lock old-lock :old-hm old-hm})
+          (halt! 0))
         (when-not (zero? (run-with-bar "Running hm-switch..." "just" "hm-switch"))
           (error "hm-switch failed")
           (rollback! state {:skip-list? true})
@@ -523,18 +657,13 @@
         ;; The system now runs the new configuration. From here on, never
         ;; roll back the system; only git-side recovery is correct.
         (swap! state assoc :applied? true)
+        (when (not= old-rev new-rev)
+          (info (str "Nixpkgs updated: " (short-rev old-rev) " → " (short-rev new-rev))))
+        (when (and (not nixpkgs-only) (not= old-hm (hm-rev (read-lock))))
+          (info (str "Home-manager updated: " (short-rev old-hm) " → "
+                     (short-rev (hm-rev (read-lock))))))
         (let [new-lock (read-lock)
-              new-hm (hm-rev new-lock)
-              changes (cond-> []
-                        (not= old-rev new-rev)
-                        (conj (do (info (str "Nixpkgs updated: " (short-rev old-rev) " → " (short-rev new-rev)))
-                                  ["nixpkgs" (format-date (or (extract-update-date @log "nixpkgs")
-                                                              (nixpkgs-date new-lock)))]))
-
-                        (and (not nixpkgs-only) (not= old-hm new-hm))
-                        (conj (do (info (str "Home-manager updated: " (short-rev old-hm) " → " (short-rev new-hm)))
-                                  ["home-manager" (format-date (extract-update-date @log "home-manager"))])))
-              msg (commit-message changes)]
+              msg (commit-message (changes old-lock new-lock {:nixpkgs-only nixpkgs-only}))]
           (info (str "Commit message: " msg))
           (commit! state msg)
           (info "✅ Successfully updated and committed flake.lock")
@@ -574,6 +703,10 @@
                   ""
                   "Update nixpkgs (and home-manager), apply with hm-switch, and commit"
                   "flake.lock. Roll back on failure."
+                  ""
+                  "With --dry-run, only report: the rev, the date and the"
+                  "derivations a real run would build. flake.lock is restored, and"
+                  "nothing is switched or committed."
                   ""
                   "Options:"
                   summary]))
