@@ -284,7 +284,7 @@ dry_run_suite() {
     grep -q '^just nixpkgs-update-flake$' "$MOCK_CALLS" || fail 'dry run did not update the inputs'
     grep -q '^nix build --dry-run ' "$MOCK_CALLS" || fail 'dry run skipped the cache check'
     grep -Fq 'Would use nixpkgs new-nixpkgs (' "$work/output" || fail 'dry run did not report the rev'
-    grep -q 'fully cached, no compilation' "$work/output" || fail 'dry run did not report the cache state'
+    grep -q 'no compilation' "$work/output" || fail 'dry run did not report the cache state'
     grep -q 'Would commit: nix: update nixpkgs & home-manager (' "$work/output" \
         || fail 'dry run did not report the commit message'
     grep -q 'Dry run complete: flake.lock restored' "$work/output" || fail 'dry run did not restore the lock'

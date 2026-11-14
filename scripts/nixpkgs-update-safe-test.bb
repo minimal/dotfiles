@@ -15,8 +15,9 @@
 (def drv-b "/nix/store/cccccccccccccccccccccccccccccccc-ripgrep-14.1.drv")
 
 (deftest parse-uncached
-  (testing "keeps only the will-be-built section, without local derivations"
+  (testing "keeps only the will-be-built section, without the store prefix"
     (is (= ["aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa-dotnet-sdk-8.0.drv"
+            "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb-home-manager-generation.drv"
             "cccccccccccccccccccccccccccccccc-ripgrep-14.1.drv"]
            (nus/parse-uncached
             (str/join "\n" ["warning: Git tree is dirty"
@@ -93,10 +94,42 @@
   (is (= "abc" (nus/truncate "abc" 80))))
 
 (deftest describe-build
-  (is (= "fully cached, no compilation" (nus/describe-build [])))
+  (is (= "no compilation" (nus/describe-build [])))
   (is (= "1 derivation would compile" (nus/describe-build ["a"])))
   (is (= "3 derivations would compile" (nus/describe-build ["a" "b" "c"])))
   (is (= "cache check could not evaluate" (nus/describe-build ::nus/eval-failed))))
+
+(deftest drv-compiles
+  (testing "a source build compiles, and unknown attributes are a build"
+    (is (true? (nus/drv-compiles?
+                {"builder" "/nix/store/x-bash/bin/bash"
+                 "env" {"__structuredAttrs" "" "src" "/nix/store/x-src"
+                        "configurePhase" "configure"}})))
+    (is (true? (nus/drv-compiles? {}))))
+
+  (testing "generated files, wrappers, envs and fetches do not compile"
+    (is (false? (nus/drv-compiles?
+                 {"builder" "/nix/store/x-bash/bin/bash"
+                  "structuredAttrs" {"text" "hello" "destination" "a.conf"}})))
+    (is (false? (nus/drv-compiles?
+                 {"builder" "/nix/store/x-bash/bin/bash"
+                  "structuredAttrs" {"buildCommand" "ln -s $src $out"}})))
+    (is (false? (nus/drv-compiles? {"builder" "builtin:buildenv"})))
+    (is (false? (nus/drv-compiles?
+                 {"builder" "/nix/store/x-bash/bin/bash"
+                  "outputs" {"out" {"hash" "sha256-abc"}}})))
+    (is (false? (nus/drv-compiles?
+                 {"builder" "/nix/store/x-bash/bin/bash"
+                  "env" {"phases" "installPhase"}})))
+    (is (false? (nus/drv-compiles?
+                 {"builder" "/nix/store/x-bash/bin/bash"
+                  "structuredAttrs" {"dontUnpack" true "preferLocalBuild" true
+                                     "buildPhase" "substitute $src $out"}}))))
+
+  (testing "structured attributes in env.__json are read"
+    (is (false? (nus/drv-compiles?
+                 {"builder" "/nix/store/x-bash/bin/bash"
+                  "env" {"__json" "{\"text\":\"hi\"}"}})))))
 
 (deftest input-date
   (let [lock {"nodes" {"home-manager" {"locked" {"lastModified" 1705708800}}}}]
@@ -127,7 +160,7 @@
     (let [chosen (dry-run-lock (rev-of "newnixpk") 1706572800 "newgen01" 1706659200)
           state (atom {:cache-checked {:rev (rev-of "newnixpk") :date "2024-01-30" :drvs []}})
           rows (nus/dry-run-rows state dry-run-old-lock chosen)]
-      (is (= ["in use" "latest, fully cached, no compilation"] (map :note rows)))
+      (is (= ["in use" "latest, no compilation"] (map :note rows)))
       (is (= ["2024-01-20" "2024-01-30"] (map :date rows)))
       (is (= ["oldnixpk" "newnixpk"] (map :rev rows)))))
 
@@ -159,7 +192,7 @@
           state (atom {:cache-checked {:rev (rev-of "newnixpk") :date "2024-01-30" :drvs []}})
           lines (nus/dry-run-summary state dry-run-old-lock chosen {})]
       (is (= [(str "Would use nixpkgs " (rev-of "newnixpk") " (2024-01-30)"
-                   ": fully cached, no compilation")
+                   ": no compilation")
               "Would use home-manager newgen01 (2024-01-31), was oldgen01"]
              (butlast lines)))
       (is (str/starts-with? (last lines) "Would commit: nix: update nixpkgs & home-manager ("))))
@@ -169,7 +202,7 @@
           chosen (dry-run-lock fallback 1706486400 "oldgen01" nil)
           state (atom {:cache-checked {:rev (rev-of "newnixpk") :date "2024-01-30" :drvs ["a"]}})
           lines (nus/dry-run-summary state dry-run-old-lock chosen {})]
-      (is (= (str "Would use nixpkgs " fallback " (2024-01-29): fully cached, no compilation")
+      (is (= (str "Would use nixpkgs " fallback " (2024-01-29): no compilation")
              (first lines)))
       (is (= 2 (count lines)))))
 
@@ -186,6 +219,14 @@
                        :keep-current? true})]
       (is (= [(str "Would keep nixpkgs " (rev-of dry-run-rev) " (2024-01-20)"
                    ": no fully cached release newer than it")]
+             (nus/dry-run-summary state dry-run-old-lock dry-run-old-lock {})))))
+
+  (testing "an unreadable release index is reported as such"
+    (let [state (atom {:cache-checked {:rev (rev-of "newnixpk") :date "2024-01-30"
+                                      :drvs ["a"]}
+                       :keep-current? true :index-failed? true})]
+      (is (= [(str "Would keep nixpkgs " (rev-of dry-run-rev) " (2024-01-20)"
+                   ": could not read the release index, so no older release was tried")]
              (nus/dry-run-summary state dry-run-old-lock dry-run-old-lock {})))))
 
   (testing "--nixpkgs-only leaves home-manager out"

@@ -21,6 +21,9 @@
 ;;   rev lookup does.
 ;; - Unknown options are an error (exit 1).
 ;; - No jq or curl dependency.
+;; - The binary-cache check counts only derivations that run a build. It asks
+;;   nix for each one, so generated files, wrappers and buildEnvs do not count
+;;   as compilation. The bash version filters by derivation name.
 ;; - --dry-run updates flake.lock to check the binary cache, then restores
 ;;   it. It reports the rev, the date and the derivations a real run would
 ;;   build, including the older channel release it would fall back to when
@@ -44,11 +47,6 @@
 
 (def lock-file "flake.lock")
 (def skip-list-file ".nix-skip-commits")
-
-(def local-drv-re
-  "Derivations that always build locally (never cached). Anything else a
-   dry-run would build is a binary-cache miss."
-  #"^[a-z0-9]{32}-(home-manager-|hm_|hm-putter|activation-script)")
 
 (def channel-max-tries
   "Max older channel releases to try when the newest is not cached."
@@ -335,7 +333,7 @@
 
 (defn parse-uncached
   "Return the store paths in the `will be built:` part of nix dry-run OUT,
-   without the always-local ones."
+   without the /nix/store/ prefix."
   [out]
   (->> (str/split-lines out)
        (reduce (fn [{:keys [in? acc]} line]
@@ -346,15 +344,69 @@
                {:in? false :acc []})
        :acc
        (map #(str/replace % #".*/nix/store/" ""))
-       (remove #(re-find local-drv-re %))
        vec))
 
+(defn drv-compiles?
+  "Return true when a derivation with ATTRS runs a build. Return false for
+   fixed-output fetches and for derivations that only write files, join
+   paths, wrap programs or copy prebuilt binaries. Treat unknown attributes
+   as a build: over-reporting is safe, under-reporting is not. ATTRS uses
+   string keys, as `nix derivation show` returns them."
+  [attrs]
+  (let [env (or (get attrs "env") {})
+        ;; Nix 2.35 reports structured attributes at the top level. Older
+        ;; versions put them in env.__json.
+        json (when-let [j (get env "__json")]
+               (try (json/parse-string j) (catch Exception _ {})))
+        sa (merge env json (get attrs "structuredAttrs"))
+        phases (str/trim (str (get sa "phases")))]
+    (cond
+      ;; A fixed-output derivation fetches a file; it does not compile.
+      (get-in attrs ["outputs" "out" "hash"]) false
+      ;; A fetch or an env builder.
+      (str/starts-with? (str (get attrs "builder")) "builtin:") false
+      ;; runCommand, writeTextFile, symlinkJoin and buildEnv.
+      (or (contains? sa "buildCommand") (contains? sa "text")) false
+      ;; A local step that does not unpack a source: it copies, substitutes
+      ;; or wraps files. Compiles unpack a source and accept remote builders.
+      (and (get sa "dontUnpack") (get sa "preferLocalBuild")) false
+      ;; Only unpack, install or similar phases run: nothing compiles.
+      (and (seq phases) (not (str/includes? phases "buildPhase"))) false
+      :else true)))
+
+(defn- drv-attrs
+  "Return the attributes of the derivations at DRV-PATHS. Keys are the store
+   path names (nix 2.35) or the full paths (older nix). Return nil when nix
+   cannot show them."
+  [drv-paths]
+  (let [{:keys [exit out]} (exec {:out :string :err :string}
+                                 (into ["nix" "derivation" "show"] drv-paths))]
+    (when (zero? exit)
+      (let [parsed (try (json/parse-string out) (catch Exception _ nil))]
+        (or (get parsed "derivations") parsed)))))
+
+(defn compiling-drvs
+  "Return the derivations in NAMES that compile something. NAMES are store
+   path names without the prefix, as parse-uncached returns them. A
+   derivation whose attributes cannot be read counts as a compile."
+  [names]
+  (if (empty? names)
+    []
+    (let [path (fn [name] (str "/nix/store/" name))
+          derivs (drv-attrs (map path names))
+          attrs-of (fn [name] (or (get derivs name) (get derivs (path name))))]
+      (filterv (fn [name]
+                 (if-let [attrs (attrs-of name)]
+                   (drv-compiles? attrs)
+                   true))
+               names))))
+
 (defn describe-build
-  "Return a short description of DRVS, the derivations a dry run would build."
+  "Return a short description of DRVS, the derivations a dry run would compile."
   [drvs]
   (cond
     (= drvs ::eval-failed) "cache check could not evaluate"
-    (empty? drvs) "fully cached, no compilation"
+    (empty? drvs) "no compilation"
     (= 1 (count drvs)) "1 derivation would compile"
     :else (str (count drvs) " derivations would compile")))
 
@@ -363,13 +415,13 @@
     (str ".#homeConfigurations." (str/replace host "." "") ".activationPackage")))
 
 (defn- uncached-drvs
-  "Return the derivations that a dry-run of ATTR would build, or
+  "Return the derivations that a dry-run of ATTR would compile, or
    ::eval-failed when the dry-run fails."
   [attr]
   (let [{:keys [exit out]} (exec {:out :string :err :out} ["nix" "build" "--dry-run" attr])]
     (check-interrupt!)
     (if (zero? exit)
-      (parse-uncached out)
+      (compiling-drvs (parse-uncached out))
       (do (log! out) ::eval-failed))))
 
 (defn older-releases
@@ -389,13 +441,14 @@
 
 (defn- channel-candidates
   "Return channel release revs older than NEW-REV, newest first. Source: the
-   nixpkgs release index. Hydra has usually built these."
+   nixpkgs release index. Hydra has usually built these. Return
+   ::index-failed when the index cannot be read."
   [new-rev]
   (let [{:keys [exit out]} (exec {:out :string :err :inherit}
                                  ["nix" "eval" "--raw" (str "github:NixOS/nixpkgs/" new-rev "#lib.version")])]
     (check-interrupt!)
     (if-not (zero? exit)
-      (do (warn "Cannot read the nixpkgs version") ())
+      (do (warn "Cannot read the nixpkgs version") ::index-failed)
       (let [series (str/join "." (take 2 (str/split (str/trim out) #"\.")))
             url (str "https://nix-releases.s3.amazonaws.com/?delimiter=/&prefix=nixpkgs/nixpkgs-"
                      series "pre&max-keys=1000")
@@ -404,34 +457,38 @@
                       (catch Exception e {:status (ex-message e)}))]
         (if (= 200 (:status resp))
           (older-releases (:body resp) new-rev)
-          (do (warn (str "Cannot read the release index: " (:status resp))) ()))))))
+          (do (warn (str "Cannot read the release index: " (or (not-empty (str (:status resp)))
+                                                               "no response")))
+              ::index-failed))))))
 
 (defn- find-cached-release
   "Lock nixpkgs to each older channel release until one is fully cached.
-   Return {:rev rev :tried [{:rev :date :drvs} ...]}; :rev is nil when no
-   release is fully cached."
+   Return {:rev rev :tried [{:rev :date :drvs} ...] :index-failed? bool};
+   :rev is nil when no release is fully cached."
   [attr new-rev old-rev]
-  (loop [[rev & more] (channel-candidates new-rev)
-         tries 1
-         tried []]
-    (let [done {:rev nil :tried tried}]
-      (cond
-        (nil? rev) done
-        ;; Reached the previously applied rev: nothing newer is cached.
-        (and old-rev (str/starts-with? old-rev rev)) done
-        (> tries channel-max-tries) done
-        :else
-        (if-not (zero? (run-with-progress
-                        (format "Trying channel release %s (%d/%d)..." rev tries channel-max-tries)
-                        "nix" "flake" "lock" "--override-input" "nixpkgs" (str "github:NixOS/nixpkgs/" rev)))
-          (recur more (inc tries) tried)
-          (let [drvs (uncached-drvs attr)
-                entry (when (not= drvs ::eval-failed)
-                        {:rev rev :date (nixpkgs-date (read-lock)) :drvs drvs})
-                tried (if entry (conj tried entry) tried)]
-            (if (and entry (empty? drvs))
-              {:rev rev :tried tried}
-              (recur more (inc tries) tried))))))))
+  (let [candidates (channel-candidates new-rev)
+        index-failed? (= candidates ::index-failed)]
+    (loop [[rev & more] (when-not index-failed? candidates)
+           tries 1
+           tried []]
+      (let [done {:rev nil :tried tried :index-failed? index-failed?}]
+        (cond
+          (nil? rev) done
+          ;; Reached the previously applied rev: nothing newer is cached.
+          (and old-rev (str/starts-with? old-rev rev)) done
+          (> tries channel-max-tries) done
+          :else
+          (if-not (zero? (run-with-progress
+                          (format "Trying channel release %s (%d/%d)..." rev tries channel-max-tries)
+                          "nix" "flake" "lock" "--override-input" "nixpkgs" (str "github:NixOS/nixpkgs/" rev)))
+            (recur more (inc tries) tried)
+            (let [drvs (uncached-drvs attr)
+                  entry (when (not= drvs ::eval-failed)
+                          {:rev rev :date (nixpkgs-date (read-lock)) :drvs drvs})
+                  tried (if entry (conj tried entry) tried)]
+              (if (and entry (empty? drvs))
+                {:rev rev :tried tried :index-failed? false}
+                (recur more (inc tries) tried)))))))))
 
 ;; --- Rollback ---
 
@@ -515,11 +572,13 @@
         chosen-hm (hm-rev chosen)
         old-hm (or old-hm (hm-rev old-lock))]
     (if (:keep-current? @state)
-      [(str "Would keep nixpkgs " chosen-rev " (" (or (nixpkgs-date chosen) "unknown date")
-            "): no fully cached release newer than it")]
+      [(str "Would keep nixpkgs " chosen-rev " (" (or (nixpkgs-date chosen) "unknown date") "): "
+            (if (:index-failed? @state)
+              "could not read the release index, so no older release was tried"
+              "no fully cached release newer than it"))]
       (concat
        [(str "Would use nixpkgs " chosen-rev " (" (or (nixpkgs-date chosen) "unknown date") "): "
-             (if (= chosen-rev rev) (describe-build drvs) "fully cached, no compilation"))]
+             (if (= chosen-rev rev) (describe-build drvs) "no compilation"))]
 
        (when (and (not nixpkgs-only) (not= old-hm chosen-hm))
          [(str "Would use home-manager " chosen-hm
@@ -585,15 +644,18 @@
         (doseq [d (take 5 drvs)] (say (str "    " d)))
         (if (= new-rev old-rev)
           (do (warn "nixpkgs unchanged; nothing to step back to. Continuing.") new-rev)
-          (let [{found :rev tried :tried} (find-cached-release attr new-rev old-rev)]
-            (swap! state assoc :cache-tried tried)
+          (let [{found :rev tried :tried index-failed? :index-failed?}
+                (find-cached-release attr new-rev old-rev)]
+            (swap! state assoc :cache-tried tried :index-failed? index-failed?)
             (if found
               (let [rev (nixpkgs-rev (read-lock))]
                 (info (str "Using cached nixpkgs release " found " (" (short-rev rev) ")"))
                 rev)
               (do
-                (warn "No newer fully cached nixpkgs found. Keeping current flake.lock.")
-                (warn "Not skip-listed: retry later, once Hydra catches up.")
+                (if index-failed?
+                  (warn "Cannot read the release index; cannot look for a cached release. Keeping current flake.lock.")
+                  (do (warn "No newer fully cached nixpkgs found. Keeping current flake.lock.")
+                      (warn "Not skip-listed: retry later, once Hydra catches up.")))
                 (swap! state assoc :keep-current? true)
                 (restore-lock! state)
                 ;; A dry run reports this instead of stopping silently.
